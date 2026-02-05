@@ -155,52 +155,52 @@ async function buildReminderContextLines(params: {
 
 export function createCronTool(opts?: CronToolOptions): AnyAgentTool {
   return {
-    label: "Cron",
+    label: "定时任务",
     name: "cron",
-    description: `Manage Gateway cron jobs (status/list/add/update/remove/run/runs) and send wake events.
+    description: `管理网关定时任务（状态/列表/添加/更新/删除/运行/运行记录）和发送唤醒事件。
 
-ACTIONS:
-- status: Check cron scheduler status
-- list: List jobs (use includeDisabled:true to include disabled)
-- add: Create job (requires job object, see schema below)
-- update: Modify job (requires jobId + patch object)
-- remove: Delete job (requires jobId)
-- run: Trigger job immediately (requires jobId)
-- runs: Get job run history (requires jobId)
-- wake: Send wake event (requires text, optional mode)
+操作：
+- status：检查定时调度器状态
+- list：列出任务（使用 includeDisabled:true 包含已禁用的）
+- add：创建任务（需要 job 对象，见下方架构）
+- update：修改任务（需要 jobId + patch 对象）
+- remove：删除任务（需要 jobId）
+- run：立即触发任务（需要 jobId）
+- runs：获取任务运行历史（需要 jobId）
+- wake：发送唤醒事件（需要 text，可选 mode）
 
-JOB SCHEMA (for add action):
+任务架构（用于 add 操作）：
 {
-  "name": "string (optional)",
-  "schedule": { ... },      // Required: when to run
-  "payload": { ... },       // Required: what to execute
-  "sessionTarget": "main" | "isolated",  // Required
-  "enabled": true | false   // Optional, default true
+  "name": "string (可选)",
+  "schedule": { ... },      // 必需：何时运行
+  "payload": { ... },       // 必需：执行什么
+  "sessionTarget": "main" | "isolated",  // 必需
+  "enabled": true | false   // 可选，默认 true
 }
 
-SCHEDULE TYPES (schedule.kind):
-- "at": One-shot at absolute time
-  { "kind": "at", "atMs": <unix-ms-timestamp> }
-- "every": Recurring interval
-  { "kind": "every", "everyMs": <interval-ms>, "anchorMs": <optional-start-ms> }
-- "cron": Cron expression
-  { "kind": "cron", "expr": "<cron-expression>", "tz": "<optional-timezone>" }
+调度类型（schedule.kind）：
+- "at"：在绝对时间一次性执行
+  { "kind": "at", "atMs": <unix毫秒时间戳> }
+- "every"：循环间隔
+  { "kind": "every", "everyMs": <间隔毫秒>, "anchorMs": <可选起始毫秒> }
+- "cron"：Cron 表达式
+  { "kind": "cron", "expr": "<cron表达式>", "tz": "<可选时区>" }
 
-PAYLOAD TYPES (payload.kind):
-- "systemEvent": Injects text as system event into session
-  { "kind": "systemEvent", "text": "<message>" }
-- "agentTurn": Runs agent with message (isolated sessions only)
-  { "kind": "agentTurn", "message": "<prompt>", "model": "<optional>", "thinking": "<optional>", "timeoutSeconds": <optional>, "deliver": <optional-bool>, "channel": "<optional>", "to": "<optional>", "bestEffortDeliver": <optional-bool> }
+载荷类型（payload.kind）：
+- "systemEvent"：将文本作为系统事件注入会话
+  { "kind": "systemEvent", "text": "<消息>" }
+- "agentTurn"：使用消息运行代理（仅限隔离会话）
+  { "kind": "agentTurn", "message": "<提示>", "model": "<可选>", "thinking": "<可选>", "timeoutSeconds": <可选>, "deliver": <可选布尔>, "channel": "<可选>", "to": "<可选>", "bestEffortDeliver": <可选布尔> }
 
-CRITICAL CONSTRAINTS:
-- sessionTarget="main" REQUIRES payload.kind="systemEvent"
-- sessionTarget="isolated" REQUIRES payload.kind="agentTurn"
+关键约束：
+- sessionTarget="main" 必须使用 payload.kind="systemEvent"
+- sessionTarget="isolated" 必须使用 payload.kind="agentTurn"
 
-WAKE MODES (for wake action):
-- "next-heartbeat" (default): Wake on next heartbeat
-- "now": Wake immediately
+唤醒模式（用于 wake 操作）：
+- "next-heartbeat"（默认）：在下次心跳时唤醒
+- "now"：立即唤醒
 
-Use jobId as the canonical identifier; id is accepted for compatibility. Use contextMessages (0-10) to add previous messages as context to the job text.`,
+使用 jobId 作为规范标识符；id 为兼容性而接受。使用 contextMessages（0-10）将之前的消息作为上下文添加到任务文本中。`,
     parameters: CronToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -222,7 +222,7 @@ Use jobId as the canonical identifier; id is accepted for compatibility. Use con
           );
         case "add": {
           if (!params.job || typeof params.job !== "object") {
-            throw new Error("job required");
+            throw new Error("需要提供 job");
           }
           const job = normalizeCronJobCreate(params.job) ?? params.job;
           if (job && typeof job === "object" && !("agentId" in job)) {
@@ -262,10 +262,10 @@ Use jobId as the canonical identifier; id is accepted for compatibility. Use con
         case "update": {
           const id = readStringParam(params, "jobId") ?? readStringParam(params, "id");
           if (!id) {
-            throw new Error("jobId required (id accepted for backward compatibility)");
+            throw new Error("需要提供 jobId（为向后兼容也接受 id）");
           }
           if (!params.patch || typeof params.patch !== "object") {
-            throw new Error("patch required");
+            throw new Error("需要提供 patch");
           }
           const patch = normalizeCronJobPatch(params.patch) ?? params.patch;
           return jsonResult(
@@ -278,21 +278,21 @@ Use jobId as the canonical identifier; id is accepted for compatibility. Use con
         case "remove": {
           const id = readStringParam(params, "jobId") ?? readStringParam(params, "id");
           if (!id) {
-            throw new Error("jobId required (id accepted for backward compatibility)");
+            throw new Error("需要提供 jobId（为向后兼容也接受 id）");
           }
           return jsonResult(await callGatewayTool("cron.remove", gatewayOpts, { id }));
         }
         case "run": {
           const id = readStringParam(params, "jobId") ?? readStringParam(params, "id");
           if (!id) {
-            throw new Error("jobId required (id accepted for backward compatibility)");
+            throw new Error("需要提供 jobId（为向后兼容也接受 id）");
           }
           return jsonResult(await callGatewayTool("cron.run", gatewayOpts, { id }));
         }
         case "runs": {
           const id = readStringParam(params, "jobId") ?? readStringParam(params, "id");
           if (!id) {
-            throw new Error("jobId required (id accepted for backward compatibility)");
+            throw new Error("需要提供 jobId（为向后兼容也接受 id）");
           }
           return jsonResult(await callGatewayTool("cron.runs", gatewayOpts, { id }));
         }
@@ -307,7 +307,7 @@ Use jobId as the canonical identifier; id is accepted for compatibility. Use con
           );
         }
         default:
-          throw new Error(`Unknown action: ${action}`);
+          throw new Error(`未知操作：${action}`);
       }
     },
   };

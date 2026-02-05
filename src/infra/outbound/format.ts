@@ -46,23 +46,23 @@ export function formatOutboundDeliverySummary(
   result?: OutboundDeliveryResult,
 ): string {
   if (!result) {
-    return `✅ Sent via ${resolveChannelLabel(channel)}. Message ID: unknown`;
+    return `✅ 已通过 ${resolveChannelLabel(channel)} 发送。消息 ID：未知`;
   }
 
   const label = resolveChannelLabel(result.channel);
-  const base = `✅ Sent via ${label}. Message ID: ${result.messageId}`;
+  const base = `✅ 已通过 ${label} 发送。消息 ID：${result.messageId}`;
 
   if ("chatId" in result) {
-    return `${base} (chat ${result.chatId})`;
+    return `${base}（聊天 ${result.chatId}）`;
   }
   if ("channelId" in result) {
-    return `${base} (channel ${result.channelId})`;
+    return `${base}（频道 ${result.channelId}）`;
   }
   if ("roomId" in result) {
-    return `${base} (room ${result.roomId})`;
+    return `${base}（房间 ${result.roomId}）`;
   }
   if ("conversationId" in result) {
-    return `${base} (conversation ${result.conversationId})`;
+    return `${base}（会话 ${result.conversationId}）`;
   }
   return base;
 }
@@ -114,8 +114,8 @@ export function formatGatewaySummary(params: {
   channel?: string;
   messageId?: string | null;
 }): string {
-  const action = params.action ?? "Sent";
-  const channelSuffix = params.channel ? ` (${params.channel})` : "";
-  const messageId = params.messageId ?? "unknown";
-  return `✅ ${action} via gateway${channelSuffix}. Message ID: ${messageId}`;
+  const action = params.action ?? "已发送";
+  const channelSuffix = params.channel ? `（${params.channel}）` : "";
+  const messageId = params.messageId ?? "未知";
+  return `✅ ${action} 通过网关${channelSuffix}。消息 ID：${messageId}`;
 }

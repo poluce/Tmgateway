@@ -276,12 +276,12 @@ export async function sandboxExplainCommand(
   const bool = (flag: boolean) => (flag ? ok("true") : err("false"));
 
   const lines: string[] = [];
-  lines.push(heading("Effective sandbox:"));
+  lines.push(heading("有效沙箱配置:"));
   lines.push(`  ${key("agentId:")} ${value(payload.agentId)}`);
   lines.push(`  ${key("sessionKey:")} ${value(payload.sessionKey)}`);
   lines.push(`  ${key("mainSessionKey:")} ${value(payload.mainSessionKey)}`);
   lines.push(
-    `  ${key("runtime:")} ${payload.sandbox.sessionIsSandboxed ? warn("sandboxed") : ok("direct")}`,
+    `  ${key("运行时:")} ${payload.sandbox.sessionIsSandboxed ? warn("沙箱模式") : ok("直接模式")}`,
   );
   lines.push(
     `  ${key("mode:")} ${value(payload.sandbox.mode)} ${key("scope:")} ${value(
@@ -294,25 +294,25 @@ export async function sandboxExplainCommand(
     )} ${key("workspaceRoot:")} ${value(payload.sandbox.workspaceRoot)}`,
   );
   lines.push("");
-  lines.push(heading("Sandbox tool policy:"));
+  lines.push(heading("沙箱工具策略:"));
   lines.push(
     `  ${key(`allow (${payload.sandbox.tools.sources.allow.source}):`)} ${value(
-      payload.sandbox.tools.allow.join(", ") || "(empty)",
+      payload.sandbox.tools.allow.join(", ") || "（空）",
     )}`,
   );
   lines.push(
     `  ${key(`deny  (${payload.sandbox.tools.sources.deny.source}):`)} ${value(
-      payload.sandbox.tools.deny.join(", ") || "(empty)",
+      payload.sandbox.tools.deny.join(", ") || "（空）",
     )}`,
   );
   lines.push("");
-  lines.push(heading("Elevated:"));
+  lines.push(heading("提权配置:"));
   lines.push(`  ${key("enabled:")} ${bool(payload.elevated.enabled)}`);
-  lines.push(`  ${key("channel:")} ${value(payload.elevated.channel ?? "(unknown)")}`);
+  lines.push(`  ${key("channel:")} ${value(payload.elevated.channel ?? "（未知）")}`);
   lines.push(`  ${key("allowedByConfig:")} ${bool(payload.elevated.allowedByConfig)}`);
   if (payload.elevated.failures.length > 0) {
     lines.push(
-      `  ${key("failing gates:")} ${warn(
+      `  ${key("失败的检查点:")} ${warn(
         payload.elevated.failures.map((f) => `${f.gate} (${f.key})`).join(", "),
       )}`,
     );
@@ -320,18 +320,18 @@ export async function sandboxExplainCommand(
   if (payload.sandbox.mode === "non-main" && payload.sandbox.sessionIsSandboxed) {
     lines.push("");
     lines.push(
-      `${warn("Hint:")} sandbox mode is non-main; use main session key to run direct: ${value(
+      `${warn("提示:")} 沙箱模式为 non-main；使用主会话密钥以直接运行: ${value(
         payload.mainSessionKey,
       )}`,
     );
   }
   lines.push("");
-  lines.push(heading("Fix-it:"));
+  lines.push(heading("修复建议:"));
   for (const key of payload.fixIt) {
     lines.push(`  - ${key}`);
   }
   lines.push("");
-  lines.push(`${key("Docs:")} ${formatDocsLink("/sandbox", "docs.openclaw.ai/sandbox")}`);
+  lines.push(`${key("文档:")} ${formatDocsLink("/sandbox", "docs.openclaw.ai/sandbox")}`);
 
   runtime.log(`${lines.join("\n")}\n`);
 }

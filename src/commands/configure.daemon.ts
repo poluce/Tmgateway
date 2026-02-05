@@ -27,25 +27,25 @@ export async function maybeInstallDaemon(params: {
   if (loaded) {
     const action = guardCancel(
       await select({
-        message: "Gateway service already installed",
+        message: "网关服务已安装",
         options: [
-          { value: "restart", label: "Restart" },
-          { value: "reinstall", label: "Reinstall" },
-          { value: "skip", label: "Skip" },
+          { value: "restart", label: "重启" },
+          { value: "reinstall", label: "重新安装" },
+          { value: "skip", label: "跳过" },
         ],
       }),
       params.runtime,
     );
     if (action === "restart") {
       await withProgress(
-        { label: "Gateway service", indeterminate: true, delayMs: 0 },
+        { label: "网关服务", indeterminate: true, delayMs: 0 },
         async (progress) => {
-          progress.setLabel("Restarting Gateway service…");
+          progress.setLabel("正在重启网关服务…");
           await service.restart({
             env: process.env,
             stdout: process.stdout,
           });
-          progress.setLabel("Gateway service restarted.");
+          progress.setLabel("网关服务已重启。");
         },
       );
       shouldCheckLinger = true;
@@ -56,11 +56,11 @@ export async function maybeInstallDaemon(params: {
     }
     if (action === "reinstall") {
       await withProgress(
-        { label: "Gateway service", indeterminate: true, delayMs: 0 },
+        { label: "网关服务", indeterminate: true, delayMs: 0 },
         async (progress) => {
-          progress.setLabel("Uninstalling Gateway service…");
+          progress.setLabel("正在卸载网关服务…");
           await service.uninstall({ env: process.env, stdout: process.stdout });
-          progress.setLabel("Gateway service uninstalled.");
+          progress.setLabel("网关服务已卸载。");
         },
       );
     }
@@ -74,7 +74,7 @@ export async function maybeInstallDaemon(params: {
       } else {
         daemonRuntime = guardCancel(
           await select({
-            message: "Gateway service runtime",
+            message: "网关服务运行时",
             options: GATEWAY_DAEMON_RUNTIME_OPTIONS,
             initialValue: DEFAULT_GATEWAY_DAEMON_RUNTIME,
           }),
@@ -82,40 +82,37 @@ export async function maybeInstallDaemon(params: {
         ) as GatewayDaemonRuntime;
       }
     }
-    await withProgress(
-      { label: "Gateway service", indeterminate: true, delayMs: 0 },
-      async (progress) => {
-        progress.setLabel("Preparing Gateway service…");
+    await withProgress({ label: "网关服务", indeterminate: true, delayMs: 0 }, async (progress) => {
+      progress.setLabel("正在准备网关服务…");
 
-        const cfg = loadConfig();
-        const { programArguments, workingDirectory, environment } = await buildGatewayInstallPlan({
+      const cfg = loadConfig();
+      const { programArguments, workingDirectory, environment } = await buildGatewayInstallPlan({
+        env: process.env,
+        port: params.port,
+        token: params.gatewayToken,
+        runtime: daemonRuntime,
+        warn: (message, title) => note(message, title),
+        config: cfg,
+      });
+
+      progress.setLabel("正在安装网关服务…");
+      try {
+        await service.install({
           env: process.env,
-          port: params.port,
-          token: params.gatewayToken,
-          runtime: daemonRuntime,
-          warn: (message, title) => note(message, title),
-          config: cfg,
+          stdout: process.stdout,
+          programArguments,
+          workingDirectory,
+          environment,
         });
-
-        progress.setLabel("Installing Gateway service…");
-        try {
-          await service.install({
-            env: process.env,
-            stdout: process.stdout,
-            programArguments,
-            workingDirectory,
-            environment,
-          });
-          progress.setLabel("Gateway service installed.");
-        } catch (err) {
-          installError = err instanceof Error ? err.message : String(err);
-          progress.setLabel("Gateway service install failed.");
-        }
-      },
-    );
+        progress.setLabel("网关服务已安装。");
+      } catch (err) {
+        installError = err instanceof Error ? err.message : String(err);
+        progress.setLabel("网关服务安装失败。");
+      }
+    });
     if (installError) {
-      note("Gateway service install failed: " + installError, "Gateway");
-      note(gatewayInstallErrorHint(), "Gateway");
+      note("网关服务安装失败：" + installError, "网关");
+      note(gatewayInstallErrorHint(), "网关");
       return;
     }
     shouldCheckLinger = true;
@@ -129,7 +126,7 @@ export async function maybeInstallDaemon(params: {
         note,
       },
       reason:
-        "Linux installs use a systemd user service. Without lingering, systemd stops the user session on logout/idle and kills the Gateway.",
+        "Linux 安装使用 systemd 用户服务。没有 lingering，systemd 会在注销/空闲时停止用户会话并终止网关。",
       requireConfirm: true,
     });
   }

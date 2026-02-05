@@ -30,36 +30,31 @@ export async function ensureSystemdUserLingerInteractive(params: {
   const prompter = params.prompter ?? { note };
   const title = params.title ?? "Systemd";
   if (!(await isSystemdUserServiceAvailable())) {
-    await prompter.note("Systemd user services are unavailable. Skipping lingering checks.", title);
+    await prompter.note("Systemd 用户服务不可用。跳过 lingering 检查。", title);
     return;
   }
   const status = await readSystemdUserLingerStatus(env);
   if (!status) {
-    await prompter.note(
-      "Unable to read loginctl linger status. Ensure systemd + loginctl are available.",
-      title,
-    );
+    await prompter.note("无法读取 loginctl linger 状态。请确保 systemd + loginctl 可用。", title);
     return;
   }
   if (status.linger === "yes") {
     return;
   }
 
-  const reason =
-    params.reason ??
-    "Systemd user services stop when you log out or go idle, which kills the Gateway.";
+  const reason = params.reason ?? "Systemd 用户服务在您注销或空闲时会停止，这会终止网关。";
   const actionNote = params.requireConfirm
-    ? "We can enable lingering now (may require sudo; writes /var/lib/systemd/linger)."
-    : "Enabling lingering now (may require sudo; writes /var/lib/systemd/linger).";
+    ? "我们现在可以启用 lingering（可能需要 sudo；写入 /var/lib/systemd/linger）。"
+    : "正在启用 lingering（可能需要 sudo；写入 /var/lib/systemd/linger）。";
   await prompter.note(`${reason}\n${actionNote}`, title);
 
   if (params.requireConfirm && prompter.confirm) {
     const ok = await prompter.confirm({
-      message: `Enable systemd lingering for ${status.user}?`,
+      message: `为 ${status.user} 启用 systemd lingering？`,
       initialValue: true,
     });
     if (!ok) {
-      await prompter.note("Without lingering, the Gateway will stop when you log out.", title);
+      await prompter.note("没有 lingering，网关将在您注销时停止。", title);
       return;
     }
   }
@@ -69,7 +64,7 @@ export async function ensureSystemdUserLingerInteractive(params: {
     user: status.user,
   });
   if (resultNoSudo.ok) {
-    await prompter.note(`Enabled systemd lingering for ${status.user}.`, title);
+    await prompter.note(`已为 ${status.user} 启用 systemd lingering。`, title);
     return;
   }
 
@@ -79,14 +74,12 @@ export async function ensureSystemdUserLingerInteractive(params: {
     sudoMode: "prompt",
   });
   if (result.ok) {
-    await prompter.note(`Enabled systemd lingering for ${status.user}.`, title);
+    await prompter.note(`已为 ${status.user} 启用 systemd lingering。`, title);
     return;
   }
 
-  params.runtime.error(
-    `Failed to enable lingering: ${result.stderr || result.stdout || "unknown error"}`,
-  );
-  await prompter.note(`Run manually: sudo loginctl enable-linger ${status.user}`, title);
+  params.runtime.error(`启用 lingering 失败：${result.stderr || result.stdout || "未知错误"}`);
+  await prompter.note(`手动运行：sudo loginctl enable-linger ${status.user}`, title);
 }
 
 export async function ensureSystemdUserLingerNonInteractive(params: {
@@ -111,11 +104,11 @@ export async function ensureSystemdUserLingerNonInteractive(params: {
     sudoMode: "non-interactive",
   });
   if (result.ok) {
-    params.runtime.log(`Enabled systemd lingering for ${status.user}.`);
+    params.runtime.log(`已为 ${status.user} 启用 systemd lingering。`);
     return;
   }
 
   params.runtime.log(
-    `Systemd lingering is disabled for ${status.user}. Run: sudo loginctl enable-linger ${status.user}`,
+    `${status.user} 的 systemd lingering 已禁用。运行：sudo loginctl enable-linger ${status.user}`,
   );
 }

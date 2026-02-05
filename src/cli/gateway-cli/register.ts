@@ -96,14 +96,12 @@ function renderCostUsageSummary(summary: CostUsageSummary, days: number, rich: b
   const totalCost = formatUsd(summary.totals.totalCost) ?? "$0.00";
   const totalTokens = formatTokenCount(summary.totals.totalTokens) ?? "0";
   const lines = [
-    colorize(rich, theme.heading, `Usage cost (${days} days)`),
-    `${colorize(rich, theme.muted, "Total:")} ${totalCost} · ${totalTokens} tokens`,
+    colorize(rich, theme.heading, `用量成本（${days} 天）`),
+    `${colorize(rich, theme.muted, "总计：")} ${totalCost} · ${totalTokens} tokens`,
   ];
 
   if (summary.totals.missingCostEntries > 0) {
-    lines.push(
-      `${colorize(rich, theme.muted, "Missing entries:")} ${summary.totals.missingCostEntries}`,
-    );
+    lines.push(`${colorize(rich, theme.muted, "缺失条目：")} ${summary.totals.missingCostEntries}`);
   }
 
   const latest = summary.daily.at(-1);
@@ -111,7 +109,7 @@ function renderCostUsageSummary(summary: CostUsageSummary, days: number, rich: b
     const latestCost = formatUsd(latest.totalCost) ?? "$0.00";
     const latestTokens = formatTokenCount(latest.totalTokens) ?? "0";
     lines.push(
-      `${colorize(rich, theme.muted, "Latest day:")} ${latest.date} · ${latestCost} · ${latestTokens} tokens`,
+      `${colorize(rich, theme.muted, "最近一天：")} ${latest.date} · ${latestCost} · ${latestTokens} tokens`,
     );
   }
 
@@ -122,28 +120,26 @@ export function registerGatewayCli(program: Command) {
   const gateway = addGatewayRunCommand(
     program
       .command("gateway")
-      .description("Run the WebSocket Gateway")
+      .description("运行 WebSocket 网关")
       .addHelpText(
         "after",
         () =>
-          `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/gateway", "docs.openclaw.ai/cli/gateway")}\n`,
+          `\n${theme.muted("文档：")} ${formatDocsLink("/cli/gateway", "docs.openclaw.ai/cli/gateway")}\n`,
       ),
   );
 
-  addGatewayRunCommand(
-    gateway.command("run").description("Run the WebSocket Gateway (foreground)"),
-  );
+  addGatewayRunCommand(gateway.command("run").description("运行 WebSocket 网关（前台）"));
 
   gateway
     .command("status")
-    .description("Show gateway service status + probe the Gateway")
-    .option("--url <url>", "Gateway WebSocket URL (defaults to config/remote/local)")
-    .option("--token <token>", "Gateway token (if required)")
-    .option("--password <password>", "Gateway password (password auth)")
-    .option("--timeout <ms>", "Timeout in ms", "10000")
-    .option("--no-probe", "Skip RPC probe")
-    .option("--deep", "Scan system-level services", false)
-    .option("--json", "Output JSON", false)
+    .description("显示网关服务状态 + 探测网关")
+    .option("--url <url>", "网关 WebSocket URL（默认为配置/远程/本地）")
+    .option("--token <token>", "网关令牌（如需要）")
+    .option("--password <password>", "网关密码（密码认证）")
+    .option("--timeout <ms>", "超时时间（毫秒）", "10000")
+    .option("--no-probe", "跳过 RPC 探测")
+    .option("--deep", "扫描系统级服务", false)
+    .option("--json", "输出 JSON", false)
     .action(async (opts) => {
       await runDaemonStatus({
         rpc: opts,
@@ -155,44 +151,44 @@ export function registerGatewayCli(program: Command) {
 
   gateway
     .command("install")
-    .description("Install the Gateway service (launchd/systemd/schtasks)")
-    .option("--port <port>", "Gateway port")
-    .option("--runtime <runtime>", "Daemon runtime (node|bun). Default: node")
-    .option("--token <token>", "Gateway token (token auth)")
-    .option("--force", "Reinstall/overwrite if already installed", false)
-    .option("--json", "Output JSON", false)
+    .description("安装网关服务（launchd/systemd/schtasks）")
+    .option("--port <port>", "网关端口")
+    .option("--runtime <runtime>", "守护进程运行时（node|bun），默认：node")
+    .option("--token <token>", "网关令牌（令牌认证）")
+    .option("--force", "如已安装则重新安装/覆盖", false)
+    .option("--json", "输出 JSON", false)
     .action(async (opts) => {
       await runDaemonInstall(opts);
     });
 
   gateway
     .command("uninstall")
-    .description("Uninstall the Gateway service (launchd/systemd/schtasks)")
-    .option("--json", "Output JSON", false)
+    .description("卸载网关服务（launchd/systemd/schtasks）")
+    .option("--json", "输出 JSON", false)
     .action(async (opts) => {
       await runDaemonUninstall(opts);
     });
 
   gateway
     .command("start")
-    .description("Start the Gateway service (launchd/systemd/schtasks)")
-    .option("--json", "Output JSON", false)
+    .description("启动网关服务（launchd/systemd/schtasks）")
+    .option("--json", "输出 JSON", false)
     .action(async (opts) => {
       await runDaemonStart(opts);
     });
 
   gateway
     .command("stop")
-    .description("Stop the Gateway service (launchd/systemd/schtasks)")
-    .option("--json", "Output JSON", false)
+    .description("停止网关服务（launchd/systemd/schtasks）")
+    .option("--json", "输出 JSON", false)
     .action(async (opts) => {
       await runDaemonStop(opts);
     });
 
   gateway
     .command("restart")
-    .description("Restart the Gateway service (launchd/systemd/schtasks)")
-    .option("--json", "Output JSON", false)
+    .description("重启网关服务（launchd/systemd/schtasks）")
+    .option("--json", "输出 JSON", false)
     .action(async (opts) => {
       await runDaemonRestart(opts);
     });
@@ -200,9 +196,9 @@ export function registerGatewayCli(program: Command) {
   gatewayCallOpts(
     gateway
       .command("call")
-      .description("Call a Gateway method")
-      .argument("<method>", "Method name (health/status/system-presence/cron.*)")
-      .option("--params <json>", "JSON object string for params", "{}")
+      .description("调用网关方法")
+      .argument("<method>", "方法名（health/status/system-presence/cron.*）")
+      .option("--params <json>", "参数的 JSON 对象字符串", "{}")
       .action(async (method, opts) => {
         await runGatewayCommand(async () => {
           const params = JSON.parse(String(opts.params ?? "{}"));
@@ -213,18 +209,18 @@ export function registerGatewayCli(program: Command) {
           }
           const rich = isRich();
           defaultRuntime.log(
-            `${colorize(rich, theme.heading, "Gateway call")}: ${colorize(rich, theme.muted, String(method))}`,
+            `${colorize(rich, theme.heading, "网关调用")}: ${colorize(rich, theme.muted, String(method))}`,
           );
           defaultRuntime.log(JSON.stringify(result, null, 2));
-        }, "Gateway call failed");
+        }, "网关调用失败");
       }),
   );
 
   gatewayCallOpts(
     gateway
       .command("usage-cost")
-      .description("Fetch usage cost summary from session logs")
-      .option("--days <days>", "Number of days to include", "30")
+      .description("从会话日志获取用量成本摘要")
+      .option("--days <days>", "包含的天数", "30")
       .action(async (opts) => {
         await runGatewayCommand(async () => {
           const days = parseDaysOption(opts.days);
@@ -238,14 +234,14 @@ export function registerGatewayCli(program: Command) {
           for (const line of renderCostUsageSummary(summary, days, rich)) {
             defaultRuntime.log(line);
           }
-        }, "Gateway usage cost failed");
+        }, "网关用量成本获取失败");
       }),
   );
 
   gatewayCallOpts(
     gateway
       .command("health")
-      .description("Fetch Gateway health")
+      .description("获取网关健康状态")
       .action(async (opts) => {
         await runGatewayCommand(async () => {
           const result = await callGatewayCli("health", opts);
@@ -256,9 +252,9 @@ export function registerGatewayCli(program: Command) {
           const rich = isRich();
           const obj: Record<string, unknown> = result && typeof result === "object" ? result : {};
           const durationMs = typeof obj.durationMs === "number" ? obj.durationMs : null;
-          defaultRuntime.log(colorize(rich, theme.heading, "Gateway Health"));
+          defaultRuntime.log(colorize(rich, theme.heading, "网关健康状态"));
           defaultRuntime.log(
-            `${colorize(rich, theme.success, "OK")}${durationMs != null ? ` (${durationMs}ms)` : ""}`,
+            `${colorize(rich, theme.success, "正常")}${durationMs != null ? ` (${durationMs}ms)` : ""}`,
           );
           if (obj.channels && typeof obj.channels === "object") {
             for (const line of formatHealthChannelLines(obj as HealthSummary)) {
@@ -271,15 +267,15 @@ export function registerGatewayCli(program: Command) {
 
   gateway
     .command("probe")
-    .description("Show gateway reachability + discovery + health + status summary (local + remote)")
-    .option("--url <url>", "Explicit Gateway WebSocket URL (still probes localhost)")
-    .option("--ssh <target>", "SSH target for remote gateway tunnel (user@host or user@host:port)")
-    .option("--ssh-identity <path>", "SSH identity file path")
-    .option("--ssh-auto", "Try to derive an SSH target from Bonjour discovery", false)
-    .option("--token <token>", "Gateway token (applies to all probes)")
-    .option("--password <password>", "Gateway password (applies to all probes)")
-    .option("--timeout <ms>", "Overall probe budget in ms", "3000")
-    .option("--json", "Output JSON", false)
+    .description("显示网关可达性 + 发现 + 健康 + 状态摘要（本地 + 远程）")
+    .option("--url <url>", "显式网关 WebSocket URL（仍探测本地）")
+    .option("--ssh <target>", "远程网关隧道的 SSH 目标（user@host 或 user@host:port）")
+    .option("--ssh-identity <path>", "SSH 身份文件路径")
+    .option("--ssh-auto", "尝试从 Bonjour 发现推导 SSH 目标", false)
+    .option("--token <token>", "网关令牌（应用于所有探测）")
+    .option("--password <password>", "网关密码（应用于所有探测）")
+    .option("--timeout <ms>", "总探测预算（毫秒）", "3000")
+    .option("--json", "输出 JSON", false)
     .action(async (opts) => {
       await runGatewayCommand(async () => {
         await gatewayStatusCommand(opts, defaultRuntime);
@@ -288,9 +284,9 @@ export function registerGatewayCli(program: Command) {
 
   gateway
     .command("discover")
-    .description("Discover gateways via Bonjour (local + wide-area if configured)")
-    .option("--timeout <ms>", "Per-command timeout in ms", "2000")
-    .option("--json", "Output JSON", false)
+    .description("通过 Bonjour 发现网关（本地 + 广域，如已配置）")
+    .option("--timeout <ms>", "每个命令的超时时间（毫秒）", "2000")
+    .option("--json", "输出 JSON", false)
     .action(async (opts: GatewayDiscoverOpts) => {
       await runGatewayCommand(async () => {
         const cfg = loadConfig();
@@ -301,7 +297,7 @@ export function registerGatewayCli(program: Command) {
         const domains = ["local.", ...(wideAreaDomain ? [wideAreaDomain] : [])];
         const beacons = await withProgress(
           {
-            label: "Scanning for gateways…",
+            label: "正在扫描网关…",
             indeterminate: true,
             enabled: opts.json !== true,
             delayMs: 0,
@@ -337,13 +333,9 @@ export function registerGatewayCli(program: Command) {
         }
 
         const rich = isRich();
-        defaultRuntime.log(colorize(rich, theme.heading, "Gateway Discovery"));
+        defaultRuntime.log(colorize(rich, theme.heading, "网关发现"));
         defaultRuntime.log(
-          colorize(
-            rich,
-            theme.muted,
-            `Found ${deduped.length} gateway(s) · domains: ${domains.join(", ")}`,
-          ),
+          colorize(rich, theme.muted, `发现 ${deduped.length} 个网关 · 域：${domains.join(", ")}`),
         );
         if (deduped.length === 0) {
           return;
@@ -354,6 +346,6 @@ export function registerGatewayCli(program: Command) {
             defaultRuntime.log(line);
           }
         }
-      }, "gateway discover failed");
+      }, "网关发现失败");
     });
 }

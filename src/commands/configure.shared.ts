@@ -32,25 +32,25 @@ export const CONFIGURE_SECTION_OPTIONS: Array<{
   label: string;
   hint: string;
 }> = [
-  { value: "workspace", label: "Workspace", hint: "Set workspace + sessions" },
-  { value: "model", label: "Model", hint: "Pick provider + credentials" },
-  { value: "web", label: "Web tools", hint: "Configure Brave search + fetch" },
-  { value: "gateway", label: "Gateway", hint: "Port, bind, auth, tailscale" },
+  { value: "workspace", label: "工作空间", hint: "设置工作空间和会话目录" },
+  { value: "model", label: "模型", hint: "选择提供商和凭证" },
+  { value: "web", label: "网络工具", hint: "配置 Brave 搜索和网页抓取" },
+  { value: "gateway", label: "网关", hint: "端口、绑定、认证、Tailscale" },
   {
     value: "daemon",
-    label: "Daemon",
-    hint: "Install/manage the background service",
+    label: "守护进程",
+    hint: "安装/管理后台服务",
   },
   {
     value: "channels",
-    label: "Channels",
-    hint: "Link WhatsApp/Telegram/etc and defaults",
+    label: "频道",
+    hint: "连接 WhatsApp/Telegram 等并设置默认值",
   },
-  { value: "skills", label: "Skills", hint: "Install/enable workspace skills" },
+  { value: "skills", label: "技能", hint: "安装/启用工作空间技能" },
   {
     value: "health",
-    label: "Health check",
-    hint: "Run gateway + channel checks",
+    label: "健康检查",
+    hint: "运行网关和频道检查",
   },
 ];
 

@@ -93,7 +93,7 @@ function formatExecApprovalEmbed(request: ExecApprovalRequest) {
 
   const fields: Array<{ name: string; value: string; inline: boolean }> = [
     {
-      name: "Command",
+      name: "命令",
       value: `\`\`\`\n${commandPreview}\n\`\`\``,
       inline: false,
     },
@@ -101,7 +101,7 @@ function formatExecApprovalEmbed(request: ExecApprovalRequest) {
 
   if (request.request.cwd) {
     fields.push({
-      name: "Working Directory",
+      name: "工作目录",
       value: request.request.cwd,
       inline: true,
     });
@@ -109,7 +109,7 @@ function formatExecApprovalEmbed(request: ExecApprovalRequest) {
 
   if (request.request.host) {
     fields.push({
-      name: "Host",
+      name: "主机",
       value: request.request.host,
       inline: true,
     });
@@ -117,18 +117,18 @@ function formatExecApprovalEmbed(request: ExecApprovalRequest) {
 
   if (request.request.agentId) {
     fields.push({
-      name: "Agent",
+      name: "代理",
       value: request.request.agentId,
       inline: true,
     });
   }
 
   return {
-    title: "Exec Approval Required",
-    description: "A command needs your approval.",
+    title: "需要执行批准",
+    description: "一个命令需要你的批准。",
     color: 0xffa500, // Orange
     fields,
-    footer: { text: `Expires in ${expiresIn}s | ID: ${request.id}` },
+    footer: { text: `${expiresIn}秒后过期 | ID: ${request.id}` },
     timestamp: new Date().toISOString(),
   };
 }
@@ -143,20 +143,20 @@ function formatResolvedEmbed(
 
   const decisionLabel =
     decision === "allow-once"
-      ? "Allowed (once)"
+      ? "已允许（一次）"
       : decision === "allow-always"
-        ? "Allowed (always)"
-        : "Denied";
+        ? "已允许（始终）"
+        : "已拒绝";
 
   const color = decision === "deny" ? 0xed4245 : decision === "allow-always" ? 0x5865f2 : 0x57f287;
 
   return {
-    title: `Exec Approval: ${decisionLabel}`,
-    description: resolvedBy ? `Resolved by ${resolvedBy}` : "Resolved",
+    title: `执行批准：${decisionLabel}`,
+    description: resolvedBy ? `由 ${resolvedBy} 处理` : "已处理",
     color,
     fields: [
       {
-        name: "Command",
+        name: "命令",
         value: `\`\`\`\n${commandPreview}\n\`\`\``,
         inline: false,
       },
@@ -171,12 +171,12 @@ function formatExpiredEmbed(request: ExecApprovalRequest) {
   const commandPreview = commandText.length > 500 ? `${commandText.slice(0, 500)}...` : commandText;
 
   return {
-    title: "Exec Approval: Expired",
-    description: "This approval request has expired.",
+    title: "执行批准：已过期",
+    description: "此批准请求已过期。",
     color: 0x99aab5, // Gray
     fields: [
       {
-        name: "Command",
+        name: "命令",
         value: `\`\`\`\n${commandPreview}\n\`\`\``,
         inline: false,
       },
@@ -340,19 +340,19 @@ export class DiscordExecApprovalHandler {
           {
             type: 2, // BUTTON
             style: ButtonStyle.Success,
-            label: "Allow once",
+            label: "允许一次",
             custom_id: buildExecApprovalCustomId(request.id, "allow-once"),
           },
           {
             type: 2, // BUTTON
             style: ButtonStyle.Primary,
-            label: "Always allow",
+            label: "始终允许",
             custom_id: buildExecApprovalCustomId(request.id, "allow-always"),
           },
           {
             type: 2, // BUTTON
             style: ButtonStyle.Danger,
-            label: "Deny",
+            label: "拒绝",
             custom_id: buildExecApprovalCustomId(request.id, "deny"),
           },
         ],
@@ -531,7 +531,7 @@ export class ExecApprovalButton extends Button {
     if (!parsed) {
       try {
         await interaction.update({
-          content: "This approval is no longer valid.",
+          content: "此批准已不再有效。",
           components: [],
         });
       } catch {
@@ -542,15 +542,15 @@ export class ExecApprovalButton extends Button {
 
     const decisionLabel =
       parsed.action === "allow-once"
-        ? "Allowed (once)"
+        ? "已允许（一次）"
         : parsed.action === "allow-always"
-          ? "Allowed (always)"
-          : "Denied";
+          ? "已允许（始终）"
+          : "已拒绝";
 
     // Update the message immediately to show the decision
     try {
       await interaction.update({
-        content: `Submitting decision: **${decisionLabel}**...`,
+        content: `正在提交决定：**${decisionLabel}**...`,
         components: [], // Remove buttons
       });
     } catch {
@@ -562,8 +562,7 @@ export class ExecApprovalButton extends Button {
     if (!ok) {
       try {
         await interaction.followUp({
-          content:
-            "Failed to submit approval decision. The request may have expired or already been resolved.",
+          content: "提交批准决定失败。请求可能已过期或已被处理。",
           ephemeral: true,
         });
       } catch {

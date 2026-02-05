@@ -138,12 +138,12 @@ export function parseBindingSpecs(params: {
     const [channelRaw, accountRaw] = trimmed.split(":", 2);
     const channel = normalizeChannelId(channelRaw);
     if (!channel) {
-      errors.push(`Unknown channel "${channelRaw}".`);
+      errors.push(`未知频道 "${channelRaw}"。`);
       continue;
     }
     let accountId = accountRaw?.trim();
     if (accountRaw !== undefined && !accountId) {
-      errors.push(`Invalid binding "${trimmed}" (empty account id).`);
+      errors.push(`无效绑定 "${trimmed}"（账户 ID 为空）。`);
       continue;
     }
     if (!accountId) {

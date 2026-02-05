@@ -14,7 +14,7 @@ export async function runNonInteractiveOnboarding(
   const snapshot = await readConfigFileSnapshot();
   if (snapshot.exists && !snapshot.valid) {
     runtime.error(
-      `Config invalid. Run \`${formatCliCommand("openclaw doctor")}\` to repair it, then re-run onboarding.`,
+      `配置无效。运行 \`${formatCliCommand("openclaw doctor")}\` 修复它，然后重新运行引导。`,
     );
     runtime.exit(1);
     return;
@@ -23,7 +23,7 @@ export async function runNonInteractiveOnboarding(
   const baseConfig: OpenClawConfig = snapshot.valid ? snapshot.config : {};
   const mode = opts.mode ?? "local";
   if (mode !== "local" && mode !== "remote") {
-    runtime.error(`Invalid --mode "${String(mode)}" (use local|remote).`);
+    runtime.error(`无效的 --mode "${String(mode)}"（使用 local|remote）。`);
     runtime.exit(1);
     return;
   }

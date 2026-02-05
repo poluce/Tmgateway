@@ -12,7 +12,7 @@ class PortInUseError extends Error {
   details?: string;
 
   constructor(port: number, details?: string) {
-    super(`Port ${port} is already in use.`);
+    super(`端口 ${port} 已被占用。`);
     this.name = "PortInUseError";
     this.port = port;
     this.details = details;
@@ -61,24 +61,18 @@ export async function handlePortError(
   // Uniform messaging for EADDRINUSE with optional owner details.
   if (err instanceof PortInUseError || (isErrno(err) && err.code === "EADDRINUSE")) {
     const details = err instanceof PortInUseError ? err.details : await describePortOwner(port);
-    runtime.error(danger(`${context} failed: port ${port} is already in use.`));
+    runtime.error(danger(`${context} 失败：端口 ${port} 已被占用。`));
     if (details) {
-      runtime.error(info("Port listener details:"));
+      runtime.error(info("端口监听详情："));
       runtime.error(details);
       if (/openclaw|src\/index\.ts|dist\/index\.js/.test(details)) {
-        runtime.error(
-          warn(
-            "It looks like another OpenClaw instance is already running. Stop it or pick a different port.",
-          ),
-        );
+        runtime.error(warn("看起来另一个 OpenClaw 实例已在运行。请停止它或选择其他端口。"));
       }
     }
-    runtime.error(
-      info("Resolve by stopping the process using the port or passing --port <free-port>."),
-    );
+    runtime.error(info("解决方法：停止占用端口的进程或使用 --port <空闲端口>。"));
     runtime.exit(1);
   }
-  runtime.error(danger(`${context} failed: ${String(err)}`));
+  runtime.error(danger(`${context} 失败：${String(err)}`));
   if (shouldLogVerbose()) {
     const stdout = (err as { stdout?: string })?.stdout;
     const stderr = (err as { stderr?: string })?.stderr;

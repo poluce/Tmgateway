@@ -32,7 +32,7 @@ function resolveNodeRunner(): NodeRunner {
   if (hasBinary("npx")) {
     return { cmd: "npx", args: ["-y"] };
   }
-  throw new Error("Missing pnpm or npx; install a Node package runner.");
+  throw new Error("缺少 pnpm 或 npx；请安装 Node 包运行器。");
 }
 
 async function runNodeTool(tool: string, toolArgs: string[], options: ToolRunOptions = {}) {
@@ -117,9 +117,9 @@ function escapeMarkdown(text: string): string {
 }
 
 function buildMarkdown(query: string, results: DocResult[]): string {
-  const lines: string[] = [`# Docs search: ${escapeMarkdown(query)}`, ""];
+  const lines: string[] = [`# 文档搜索：${escapeMarkdown(query)}`, ""];
   if (results.length === 0) {
-    lines.push("_No results._");
+    lines.push("_无结果。_");
     return lines.join("\n");
   }
   for (const item of results) {
@@ -136,9 +136,9 @@ function formatLinkLabel(link: string): string {
 }
 
 function renderRichResults(query: string, results: DocResult[], runtime: RuntimeEnv) {
-  runtime.log(`${theme.heading("Docs search:")} ${theme.info(query)}`);
+  runtime.log(`${theme.heading("文档搜索：")} ${theme.info(query)}`);
   if (results.length === 0) {
-    runtime.log(theme.muted("No results."));
+    runtime.log(theme.muted("无结果。"));
     return;
   }
   for (const item of results) {
@@ -162,11 +162,11 @@ export async function docsSearchCommand(queryParts: string[], runtime: RuntimeEn
   if (!query) {
     const docs = formatDocsLink("/", "docs.openclaw.ai");
     if (isRich()) {
-      runtime.log(`${theme.muted("Docs:")} ${docs}`);
-      runtime.log(`${theme.muted("Search:")} ${formatCliCommand('openclaw docs "your query"')}`);
+      runtime.log(`${theme.muted("文档：")} ${docs}`);
+      runtime.log(`${theme.muted("搜索：")} ${formatCliCommand('openclaw docs "您的查询"')}`);
     } else {
-      runtime.log("Docs: https://docs.openclaw.ai/");
-      runtime.log(`Search: ${formatCliCommand('openclaw docs "your query"')}`);
+      runtime.log("文档：https://docs.openclaw.ai/");
+      runtime.log(`搜索：${formatCliCommand('openclaw docs "您的查询"')}`);
     }
     return;
   }
@@ -179,8 +179,8 @@ export async function docsSearchCommand(queryParts: string[], runtime: RuntimeEn
   );
 
   if (res.code !== 0) {
-    const err = res.stderr.trim() || res.stdout.trim() || `exit ${res.code}`;
-    runtime.error(`Docs search failed: ${err}`);
+    const err = res.stderr.trim() || res.stdout.trim() || `退出码 ${res.code}`;
+    runtime.error(`文档搜索失败：${err}`);
     runtime.exit(1);
     return;
   }

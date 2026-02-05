@@ -100,10 +100,9 @@ export function createNodesTool(options?: {
     config: options?.config,
   });
   return {
-    label: "Nodes",
+    label: "节点",
     name: "nodes",
-    description:
-      "Discover and control paired nodes (status/describe/pairing/notify/camera/screen/location/run/invoke).",
+    description: "发现和控制配对的节点（状态/描述/配对/通知/相机/屏幕/位置/运行/调用）。",
     parameters: NodesToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -150,7 +149,7 @@ export function createNodesTool(options?: {
             const title = typeof params.title === "string" ? params.title : "";
             const body = typeof params.body === "string" ? params.body : "";
             if (!title.trim() && !body.trim()) {
-              throw new Error("title or body required");
+              throw new Error("需要提供 title 或 body");
             }
             const nodeId = await resolveNodeId(gatewayOpts, node);
             await callGatewayTool("node.invoke", gatewayOpts, {
@@ -178,7 +177,7 @@ export function createNodesTool(options?: {
                 : facingRaw === "front" || facingRaw === "back"
                   ? [facingRaw]
                   : (() => {
-                      throw new Error("invalid facing (front|back|both)");
+                      throw new Error("无效的 facing 参数（front|back|both）");
                     })();
             const maxWidth =
               typeof params.maxWidth === "number" && Number.isFinite(params.maxWidth)
@@ -221,7 +220,7 @@ export function createNodesTool(options?: {
                 normalizedFormat !== "jpeg" &&
                 normalizedFormat !== "png"
               ) {
-                throw new Error(`unsupported camera.snap format: ${payload.format}`);
+                throw new Error(`不支持的 camera.snap 格式：${payload.format}`);
               }
 
               const isJpeg = normalizedFormat === "jpg" || normalizedFormat === "jpeg";
@@ -268,7 +267,7 @@ export function createNodesTool(options?: {
             const facing =
               typeof params.facing === "string" ? params.facing.toLowerCase() : "front";
             if (facing !== "front" && facing !== "back") {
-              throw new Error("invalid facing (front|back)");
+              throw new Error("无效的 facing 参数（front|back）");
             }
             const durationMs =
               typeof params.durationMs === "number" && Number.isFinite(params.durationMs)
@@ -391,9 +390,7 @@ export function createNodesTool(options?: {
             const node = readStringParam(params, "node", { required: true });
             const nodes = await listNodes(gatewayOpts);
             if (nodes.length === 0) {
-              throw new Error(
-                "system.run requires a paired companion app or node host (no nodes available).",
-              );
+              throw new Error("system.run 需要配对的伴侣应用或节点主机（没有可用节点）。");
             }
             const nodeId = resolveNodeIdFromList(nodes, node);
             const nodeInfo = nodes.find((entry) => entry.nodeId === nodeId);
@@ -401,20 +398,18 @@ export function createNodesTool(options?: {
               ? nodeInfo?.commands?.includes("system.run")
               : false;
             if (!supportsSystemRun) {
-              throw new Error(
-                "system.run requires a companion app or node host; the selected node does not support system.run.",
-              );
+              throw new Error("system.run 需要伴侣应用或节点主机；所选节点不支持 system.run。");
             }
             const commandRaw = params.command;
             if (!commandRaw) {
-              throw new Error("command required (argv array, e.g. ['echo', 'Hello'])");
+              throw new Error("需要提供 command（argv 数组，例如 ['echo', 'Hello']）");
             }
             if (!Array.isArray(commandRaw)) {
-              throw new Error("command must be an array of strings (argv), e.g. ['echo', 'Hello']");
+              throw new Error("command 必须是字符串数组（argv），例如 ['echo', 'Hello']");
             }
             const command = commandRaw.map((c) => String(c));
             if (command.length === 0) {
-              throw new Error("command must not be empty");
+              throw new Error("command 不能为空");
             }
             const cwd =
               typeof params.cwd === "string" && params.cwd.trim() ? params.cwd.trim() : undefined;
@@ -454,7 +449,7 @@ export function createNodesTool(options?: {
                 invokeParams = JSON.parse(invokeParamsJson);
               } catch (err) {
                 const message = err instanceof Error ? err.message : String(err);
-                throw new Error(`invokeParamsJson must be valid JSON: ${message}`, {
+                throw new Error(`invokeParamsJson 必须是有效的 JSON：${message}`, {
                   cause: err,
                 });
               }
@@ -470,7 +465,7 @@ export function createNodesTool(options?: {
             return jsonResult(raw ?? {});
           }
           default:
-            throw new Error(`Unknown action: ${action}`);
+            throw new Error(`未知操作：${action}`);
         }
       } catch (err) {
         const nodeLabel =

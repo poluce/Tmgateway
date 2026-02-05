@@ -337,7 +337,7 @@ function buildMessageToolDescription(options?: {
   currentChannel?: string;
   currentChannelId?: string;
 }): string {
-  const baseDescription = "Send, delete, and manage messages via channel plugins.";
+  const baseDescription = "通过渠道插件发送、删除和管理消息。";
 
   // If we have a current channel, show only its supported actions
   if (options?.currentChannel) {
@@ -378,14 +378,14 @@ export function createMessageTool(options?: MessageToolOptions): AnyAgentTool {
   });
 
   return {
-    label: "Message",
+    label: "消息",
     name: "message",
     description,
     parameters: schema,
     execute: async (_toolCallId, args, signal) => {
       // Check if already aborted before doing any work
       if (signal?.aborted) {
-        const err = new Error("Message send aborted");
+        const err = new Error("消息发送已中止");
         err.name = "AbortError";
         throw err;
       }

@@ -18,10 +18,10 @@ export function createTtsTool(opts?: {
   agentChannel?: GatewayMessageChannel;
 }): AnyAgentTool {
   return {
-    label: "TTS",
+    label: "语音合成",
     name: "tts",
     description:
-      "Convert text to speech and return a MEDIA: path. Use when the user requests audio or TTS is enabled. Copy the MEDIA line exactly.",
+      "将文本转换为语音并返回 MEDIA: 路径。当用户请求音频或启用 TTS 时使用。请完整复制 MEDIA 行。",
     parameters: TtsToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -51,7 +51,7 @@ export function createTtsTool(opts?: {
         content: [
           {
             type: "text",
-            text: result.error ?? "TTS conversion failed",
+            text: result.error ?? "TTS 转换失败",
           },
         ],
         details: { error: result.error },

@@ -94,19 +94,19 @@ export async function prepareSlackMessage(params: {
       return null;
     }
     if (!allowBots) {
-      logVerbose(`slack: drop bot message ${message.bot_id ?? "unknown"} (allowBots=false)`);
+      logVerbose(`slack: 丢弃机器人消息 ${message.bot_id ?? "unknown"} (allowBots=false)`);
       return null;
     }
   }
 
   if (isDirectMessage && !message.user) {
-    logVerbose("slack: drop dm message (missing user id)");
+    logVerbose("slack: 丢弃私信消息 (缺少用户ID)");
     return null;
   }
 
   const senderId = message.user ?? (isBotMessage ? message.bot_id : undefined);
   if (!senderId) {
-    logVerbose("slack: drop message (missing sender id)");
+    logVerbose("slack: 丢弃消息 (缺少发送者ID)");
     return null;
   }
 
@@ -117,7 +117,7 @@ export async function prepareSlackMessage(params: {
       channelType: resolvedChannelType,
     })
   ) {
-    logVerbose("slack: drop message (channel not allowed)");
+    logVerbose("slack: 丢弃消息 (频道不被允许)");
     return null;
   }
 
@@ -126,11 +126,11 @@ export async function prepareSlackMessage(params: {
   if (isDirectMessage) {
     const directUserId = message.user;
     if (!directUserId) {
-      logVerbose("slack: drop dm message (missing user id)");
+      logVerbose("slack: 丢弃私信消息 (缺少用户ID)");
       return null;
     }
     if (!ctx.dmEnabled || ctx.dmPolicy === "disabled") {
-      logVerbose("slack: drop dm (dms disabled)");
+      logVerbose("slack: 丢弃私信 (私信已禁用)");
       return null;
     }
     if (ctx.dmPolicy !== "open") {
@@ -169,12 +169,12 @@ export async function prepareSlackMessage(params: {
                 },
               );
             } catch (err) {
-              logVerbose(`slack pairing reply failed for ${message.user}: ${String(err)}`);
+              logVerbose(`slack 配对回复失败，用户 ${message.user}: ${String(err)}`);
             }
           }
         } else {
           logVerbose(
-            `Blocked unauthorized slack sender ${message.user} (dmPolicy=${ctx.dmPolicy}, ${allowMatchMeta})`,
+            `已阻止未授权的 slack 发送者 ${message.user} (dmPolicy=${ctx.dmPolicy}, ${allowMatchMeta})`,
           );
         }
         return null;
@@ -242,7 +242,7 @@ export async function prepareSlackMessage(params: {
       })
     : true;
   if (isRoom && !channelUserAuthorized) {
-    logVerbose(`Blocked unauthorized slack sender ${senderId} (not in channel users)`);
+    logVerbose(`已阻止未授权的 slack 发送者 ${senderId} (不在频道用户列表中)`);
     return null;
   }
 
@@ -368,7 +368,7 @@ export async function prepareSlackMessage(params: {
         }).then(
           () => true,
           (err) => {
-            logVerbose(`slack react failed for channel ${message.channel}: ${String(err)}`);
+            logVerbose(`slack 添加反应失败，频道 ${message.channel}: ${String(err)}`);
             return false;
           },
         )
@@ -484,9 +484,7 @@ export async function prepareSlackMessage(params: {
           maxBytes: ctx.mediaMaxBytes,
         });
         if (threadStarterMedia) {
-          logVerbose(
-            `slack: hydrated thread starter file ${threadStarterMedia.placeholder} from root message`,
-          );
+          logVerbose(`slack: 从根消息获取了帖子发起者文件 ${threadStarterMedia.placeholder}`);
         }
       }
     } else {
@@ -550,7 +548,7 @@ export async function prepareSlackMessage(params: {
           storePath,
           sessionKey,
         },
-        "failed updating session meta",
+        "更新会话元数据失败",
       );
     },
   });

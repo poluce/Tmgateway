@@ -44,7 +44,7 @@ async function stopGatewayIfRunning(runtime: RuntimeEnv) {
   try {
     loaded = await service.isLoaded({ env: process.env });
   } catch (err) {
-    runtime.error(`Gateway service check failed: ${String(err)}`);
+    runtime.error(`网关服务检查失败：${String(err)}`);
     return;
   }
   if (!loaded) {
@@ -53,14 +53,14 @@ async function stopGatewayIfRunning(runtime: RuntimeEnv) {
   try {
     await service.stop({ env: process.env, stdout: process.stdout });
   } catch (err) {
-    runtime.error(`Gateway stop failed: ${String(err)}`);
+    runtime.error(`网关停止失败：${String(err)}`);
   }
 }
 
 export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
   const interactive = !opts.nonInteractive;
   if (!interactive && !opts.yes) {
-    runtime.error("Non-interactive mode requires --yes.");
+    runtime.error("非交互模式需要 --yes。");
     runtime.exit(1);
     return;
   }
@@ -68,33 +68,33 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
   let scope = opts.scope;
   if (!scope) {
     if (!interactive) {
-      runtime.error("Non-interactive mode requires --scope.");
+      runtime.error("非交互模式需要 --scope。");
       runtime.exit(1);
       return;
     }
     const selection = await selectStyled<ResetScope>({
-      message: "Reset scope",
+      message: "重置范围",
       options: [
         {
           value: "config",
-          label: "Config only",
+          label: "仅配置",
           hint: "openclaw.json",
         },
         {
           value: "config+creds+sessions",
-          label: "Config + credentials + sessions",
-          hint: "keeps workspace + auth profiles",
+          label: "配置 + 凭证 + 会话",
+          hint: "保留工作空间 + 认证配置",
         },
         {
           value: "full",
-          label: "Full reset",
-          hint: "state dir + workspace",
+          label: "完全重置",
+          hint: "状态目录 + 工作空间",
         },
       ],
       initialValue: "config+creds+sessions",
     });
     if (isCancel(selection)) {
-      cancel(stylePromptTitle("Reset cancelled.") ?? "Reset cancelled.");
+      cancel(stylePromptTitle("重置已取消。") ?? "重置已取消。");
       runtime.exit(0);
       return;
     }
@@ -102,17 +102,17 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
   }
 
   if (!["config", "config+creds+sessions", "full"].includes(scope)) {
-    runtime.error('Invalid --scope. Expected "config", "config+creds+sessions", or "full".');
+    runtime.error('无效的 --scope。期望 "config"、"config+creds+sessions" 或 "full"。');
     runtime.exit(1);
     return;
   }
 
   if (interactive && !opts.yes) {
     const ok = await confirm({
-      message: stylePromptMessage(`Proceed with ${scope} reset?`),
+      message: stylePromptMessage(`继续 ${scope} 重置？`),
     });
     if (isCancel(ok) || !ok) {
-      cancel(stylePromptTitle("Reset cancelled.") ?? "Reset cancelled.");
+      cancel(stylePromptTitle("重置已取消。") ?? "重置已取消。");
       runtime.exit(0);
       return;
     }

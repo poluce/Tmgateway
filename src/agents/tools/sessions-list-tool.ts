@@ -32,9 +32,9 @@ export function createSessionsListTool(opts?: {
   sandboxed?: boolean;
 }): AnyAgentTool {
   return {
-    label: "Sessions",
+    label: "会话列表",
     name: "sessions_list",
-    description: "List sessions with optional filters and last messages.",
+    description: "列出会话，支持可选过滤器和最近消息。",
     parameters: SessionsListToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;

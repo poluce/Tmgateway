@@ -29,9 +29,9 @@ export async function modelsFallbacksListCommand(
     return;
   }
 
-  runtime.log(`Fallbacks (${fallbacks.length}):`);
+  runtime.log(`备选模型（${fallbacks.length}）：`);
   if (fallbacks.length === 0) {
-    runtime.log("- none");
+    runtime.log("- 无");
     return;
   }
   for (const entry of fallbacks) {
@@ -88,7 +88,7 @@ export async function modelsFallbacksAddCommand(modelRaw: string, runtime: Runti
   });
 
   logConfigUpdated(runtime);
-  runtime.log(`Fallbacks: ${(updated.agents?.defaults?.model?.fallbacks ?? []).join(", ")}`);
+  runtime.log(`备选模型：${(updated.agents?.defaults?.model?.fallbacks ?? []).join(", ")}`);
 }
 
 export async function modelsFallbacksRemoveCommand(modelRaw: string, runtime: RuntimeEnv) {
@@ -113,7 +113,7 @@ export async function modelsFallbacksRemoveCommand(modelRaw: string, runtime: Ru
     });
 
     if (filtered.length === existing.length) {
-      throw new Error(`Fallback not found: ${targetKey}`);
+      throw new Error(`未找到备选模型：${targetKey}`);
     }
 
     const existingModel = cfg.agents?.defaults?.model as
@@ -136,7 +136,7 @@ export async function modelsFallbacksRemoveCommand(modelRaw: string, runtime: Ru
   });
 
   logConfigUpdated(runtime);
-  runtime.log(`Fallbacks: ${(updated.agents?.defaults?.model?.fallbacks ?? []).join(", ")}`);
+  runtime.log(`备选模型：${(updated.agents?.defaults?.model?.fallbacks ?? []).join(", ")}`);
 }
 
 export async function modelsFallbacksClearCommand(runtime: RuntimeEnv) {
@@ -160,5 +160,5 @@ export async function modelsFallbacksClearCommand(runtime: RuntimeEnv) {
   });
 
   logConfigUpdated(runtime);
-  runtime.log("Fallback list cleared.");
+  runtime.log("备选模型列表已清空。");
 }

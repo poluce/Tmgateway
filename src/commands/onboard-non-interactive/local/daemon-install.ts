@@ -23,12 +23,12 @@ export async function installGatewayDaemonNonInteractive(params: {
   const systemdAvailable =
     process.platform === "linux" ? await isSystemdUserServiceAvailable() : true;
   if (process.platform === "linux" && !systemdAvailable) {
-    runtime.log("Systemd user services are unavailable; skipping service install.");
+    runtime.log("Systemd 用户服务不可用；跳过服务安装。");
     return;
   }
 
   if (!isGatewayDaemonRuntime(daemonRuntimeRaw)) {
-    runtime.error("Invalid --daemon-runtime (use node or bun)");
+    runtime.error("无效的 --daemon-runtime（使用 node 或 bun）");
     runtime.exit(1);
     return;
   }
@@ -51,7 +51,7 @@ export async function installGatewayDaemonNonInteractive(params: {
       environment,
     });
   } catch (err) {
-    runtime.error(`Gateway service install failed: ${String(err)}`);
+    runtime.error(`网关服务安装失败：${String(err)}`);
     runtime.log(gatewayInstallErrorHint());
     return;
   }

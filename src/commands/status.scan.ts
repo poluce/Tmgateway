@@ -29,7 +29,7 @@ type MemoryPluginStatus = {
 function resolveMemoryPluginStatus(cfg: ReturnType<typeof loadConfig>): MemoryPluginStatus {
   const pluginsEnabled = cfg.plugins?.enabled !== false;
   if (!pluginsEnabled) {
-    return { enabled: false, slot: null, reason: "plugins disabled" };
+    return { enabled: false, slot: null, reason: "插件已禁用" };
   }
   const raw = typeof cfg.plugins?.slots?.memory === "string" ? cfg.plugins.slots.memory.trim() : "";
   if (raw && raw.toLowerCase() === "none") {
@@ -69,17 +69,17 @@ export async function scanStatus(
 ): Promise<StatusScanResult> {
   return await withProgress(
     {
-      label: "Scanning status…",
+      label: "正在扫描状态…",
       total: 10,
       enabled: opts.json !== true,
     },
     async (progress) => {
-      progress.setLabel("Loading config…");
+      progress.setLabel("正在加载配置…");
       const cfg = loadConfig();
       const osSummary = resolveOsSummary();
       progress.tick();
 
-      progress.setLabel("Checking Tailscale…");
+      progress.setLabel("正在检查 Tailscale…");
       const tailscaleMode = cfg.gateway?.tailscale?.mode ?? "off";
       const tailscaleDns =
         tailscaleMode === "off"
@@ -93,7 +93,7 @@ export async function scanStatus(
           : null;
       progress.tick();
 
-      progress.setLabel("Checking for updates…");
+      progress.setLabel("正在检查更新…");
       const updateTimeoutMs = opts.all ? 6500 : 2500;
       const update = await getUpdateCheckResult({
         timeoutMs: updateTimeoutMs,
@@ -102,11 +102,11 @@ export async function scanStatus(
       });
       progress.tick();
 
-      progress.setLabel("Resolving agents…");
+      progress.setLabel("正在解析代理…");
       const agentStatus = await getAgentLocalStatuses();
       progress.tick();
 
-      progress.setLabel("Probing gateway…");
+      progress.setLabel("正在探测网关…");
       const gatewayConnection = buildGatewayConnectionDetails();
       const isRemoteMode = cfg.gateway?.mode === "remote";
       const remoteUrlRaw =
@@ -126,7 +126,7 @@ export async function scanStatus(
         : null;
       progress.tick();
 
-      progress.setLabel("Querying channel status…");
+      progress.setLabel("正在查询频道状态…");
       const channelsStatus = gatewayReachable
         ? await callGateway({
             method: "channels.status",
@@ -140,7 +140,7 @@ export async function scanStatus(
       const channelIssues = channelsStatus ? collectChannelStatusIssues(channelsStatus) : [];
       progress.tick();
 
-      progress.setLabel("Summarizing channels…");
+      progress.setLabel("正在汇总频道…");
       const channels = await buildChannelsTable(cfg, {
         // Show token previews in regular status; keep `status --all` redacted.
         // Set `CLAWDBOT_SHOW_SECRETS=0` to force redaction.
@@ -148,7 +148,7 @@ export async function scanStatus(
       });
       progress.tick();
 
-      progress.setLabel("Checking memory…");
+      progress.setLabel("正在检查内存…");
       const memoryPlugin = resolveMemoryPluginStatus(cfg);
       const memory = await (async (): Promise<MemoryStatusSnapshot | null> => {
         if (!memoryPlugin.enabled) {
@@ -171,11 +171,11 @@ export async function scanStatus(
       })();
       progress.tick();
 
-      progress.setLabel("Reading sessions…");
+      progress.setLabel("正在读取会话…");
       const summary = await getStatusSummary();
       progress.tick();
 
-      progress.setLabel("Rendering…");
+      progress.setLabel("正在渲染…");
       progress.tick();
 
       return {

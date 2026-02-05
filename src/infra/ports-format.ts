@@ -27,20 +27,18 @@ export function buildPortHints(listeners: PortListener[], port: number): string[
   const hints: string[] = [];
   if (kinds.has("gateway")) {
     hints.push(
-      `Gateway already running locally. Stop it (${formatCliCommand("openclaw gateway stop")}) or use a different port.`,
+      `网关已在本地运行。停止它（${formatCliCommand("openclaw gateway stop")}）或使用其他端口。`,
     );
   }
   if (kinds.has("ssh")) {
-    hints.push(
-      "SSH tunnel already bound to this port. Close the tunnel or use a different local port in -L.",
-    );
+    hints.push("SSH 隧道已绑定到此端口。关闭隧道或在 -L 中使用其他本地端口。");
   }
   if (kinds.has("unknown")) {
-    hints.push("Another process is listening on this port.");
+    hints.push("另一个进程正在监听此端口。");
   }
   if (listeners.length > 1) {
     hints.push(
-      "Multiple listeners detected; ensure only one gateway/tunnel per port unless intentionally running isolated profiles.",
+      "检测到多个监听器；除非有意运行隔离的配置文件，否则请确保每个端口只有一个网关/隧道。",
     );
   }
   return hints;
@@ -56,9 +54,9 @@ export function formatPortListener(listener: PortListener): string {
 
 export function formatPortDiagnostics(diagnostics: PortUsage): string[] {
   if (diagnostics.status !== "busy") {
-    return [`Port ${diagnostics.port} is free.`];
+    return [`端口 ${diagnostics.port} 空闲。`];
   }
-  const lines = [`Port ${diagnostics.port} is already in use.`];
+  const lines = [`端口 ${diagnostics.port} 已被占用。`];
   for (const listener of diagnostics.listeners) {
     lines.push(`- ${formatPortListener(listener)}`);
   }

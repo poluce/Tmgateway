@@ -84,9 +84,7 @@ async function restartLoginSocket(login: ActiveLogin, runtime: RuntimeEnv) {
     return false;
   }
   login.restartAttempted = true;
-  runtime.log(
-    info("WhatsApp asked for a restart after pairing (code 515); retrying connection once…"),
-  );
+  runtime.log(info("WhatsApp 在配对后请求重启 (代码 515)；正在重试连接…"));
   closeSocket(login.sock);
   try {
     const sock = await createWaSocket(false, login.verbose, {
@@ -120,9 +118,9 @@ export async function startWebLoginWithQr(
   const hasWeb = await webAuthExists(account.authDir);
   const selfId = readWebSelfId(account.authDir);
   if (hasWeb && !opts.force) {
-    const who = selfId.e164 ?? selfId.jid ?? "unknown";
+    const who = selfId.e164 ?? selfId.jid ?? "未知";
     return {
-      message: `WhatsApp is already linked (${who}). Say “relink” if you want a fresh QR.`,
+      message: `WhatsApp 已关联 (${who})。如需重新关联，请说"重新关联"。`,
     };
   }
 
@@ -130,7 +128,7 @@ export async function startWebLoginWithQr(
   if (existing && isLoginFresh(existing) && existing.qrDataUrl) {
     return {
       qrDataUrl: existing.qrDataUrl,
-      message: "QR already active. Scan it in WhatsApp → Linked Devices.",
+      message: "二维码已生成。请在 WhatsApp → 关联设备 中扫描。",
     };
   }
 
@@ -145,7 +143,7 @@ export async function startWebLoginWithQr(
 
   const qrTimer = setTimeout(
     () => {
-      rejectQr?.(new Error("Timed out waiting for WhatsApp QR"));
+      rejectQr?.(new Error("等待 WhatsApp 二维码超时"));
     },
     Math.max(opts.timeoutMs ?? 30_000, 5000),
   );
@@ -165,7 +163,7 @@ export async function startWebLoginWithQr(
           current.qr = qr;
         }
         clearTimeout(qrTimer);
-        runtime.log(info("WhatsApp QR received."));
+        runtime.log(info("已收到 WhatsApp 二维码。"));
         resolveQr?.(qr);
       },
     });
@@ -173,7 +171,7 @@ export async function startWebLoginWithQr(
     clearTimeout(qrTimer);
     await resetActiveLogin(account.accountId);
     return {
-      message: `Failed to start WhatsApp login: ${String(err)}`,
+      message: `启动 WhatsApp 登录失败: ${String(err)}`,
     };
   }
   const login: ActiveLogin = {
@@ -201,7 +199,7 @@ export async function startWebLoginWithQr(
     clearTimeout(qrTimer);
     await resetActiveLogin(account.accountId);
     return {
-      message: `Failed to get QR: ${String(err)}`,
+      message: `获取二维码失败: ${String(err)}`,
     };
   }
 
@@ -209,7 +207,7 @@ export async function startWebLoginWithQr(
   login.qrDataUrl = `data:image/png;base64,${base64}`;
   return {
     qrDataUrl: login.qrDataUrl,
-    message: "Scan this QR in WhatsApp → Linked Devices.",
+    message: "请在 WhatsApp → 关联设备 中扫描此二维码。",
   };
 }
 
@@ -223,7 +221,7 @@ export async function waitForWebLogin(
   if (!activeLogin) {
     return {
       connected: false,
-      message: "No active WhatsApp login in progress.",
+      message: "当前没有进行中的 WhatsApp 登录。",
     };
   }
 
@@ -232,7 +230,7 @@ export async function waitForWebLogin(
     await resetActiveLogin(account.accountId);
     return {
       connected: false,
-      message: "The login QR expired. Ask me to generate a new one.",
+      message: "登录二维码已过期。请让我生成一个新的。",
     };
   }
   const timeoutMs = Math.max(opts.timeoutMs ?? 120_000, 1000);
@@ -243,7 +241,7 @@ export async function waitForWebLogin(
     if (remaining <= 0) {
       return {
         connected: false,
-        message: "Still waiting for the QR scan. Let me know when you’ve scanned it.",
+        message: "仍在等待扫描二维码。扫描完成后请告诉我。",
       };
     }
     const timeout = new Promise<"timeout">((resolve) =>
@@ -254,7 +252,7 @@ export async function waitForWebLogin(
     if (result === "timeout") {
       return {
         connected: false,
-        message: "Still waiting for the QR scan. Let me know when you’ve scanned it.",
+        message: "仍在等待扫描二维码。扫描完成后请告诉我。",
       };
     }
 
@@ -265,8 +263,7 @@ export async function waitForWebLogin(
           isLegacyAuthDir: login.isLegacyAuthDir,
           runtime,
         });
-        const message =
-          "WhatsApp reported the session is logged out. Cleared cached web session; please scan a new QR.";
+        const message = "WhatsApp 报告会话已登出。已清除缓存的网页会话；请扫描新的二维码。";
         await resetActiveLogin(account.accountId, message);
         runtime.log(danger(message));
         return { connected: false, message };
@@ -277,19 +274,19 @@ export async function waitForWebLogin(
           continue;
         }
       }
-      const message = `WhatsApp login failed: ${login.error}`;
+      const message = `WhatsApp 登录失败: ${login.error}`;
       await resetActiveLogin(account.accountId, message);
       runtime.log(danger(message));
       return { connected: false, message };
     }
 
     if (login.connected) {
-      const message = "✅ Linked! WhatsApp is ready.";
+      const message = "已关联！WhatsApp 已就绪。";
       runtime.log(success(message));
       await resetActiveLogin(account.accountId);
       return { connected: true, message };
     }
 
-    return { connected: false, message: "Login ended without a connection." };
+    return { connected: false, message: "登录结束但未建立连接。" };
   }
 }

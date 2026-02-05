@@ -73,39 +73,39 @@ export function buildGatewayRuntimeHints(
   if (platform === "linux" && isSystemdUnavailableDetail(runtime.detail)) {
     hints.push(...renderSystemdUnavailableHints({ wsl: isWSLEnv() }));
     if (fileLog) {
-      hints.push(`File logs: ${fileLog}`);
+      hints.push(`文件日志：${fileLog}`);
     }
     return hints;
   }
   if (runtime.cachedLabel && platform === "darwin") {
     const label = resolveGatewayLaunchAgentLabel(env.OPENCLAW_PROFILE);
     hints.push(
-      `LaunchAgent label cached but plist missing. Clear with: launchctl bootout gui/$UID/${label}`,
+      `LaunchAgent 标签已缓存但 plist 缺失。清除方法：launchctl bootout gui/$UID/${label}`,
     );
-    hints.push(`Then reinstall: ${formatCliCommand("openclaw gateway install", env)}`);
+    hints.push(`然后重新安装：${formatCliCommand("openclaw gateway install", env)}`);
   }
   if (runtime.missingUnit) {
-    hints.push(`Service not installed. Run: ${formatCliCommand("openclaw gateway install", env)}`);
+    hints.push(`服务未安装。运行：${formatCliCommand("openclaw gateway install", env)}`);
     if (fileLog) {
-      hints.push(`File logs: ${fileLog}`);
+      hints.push(`文件日志：${fileLog}`);
     }
     return hints;
   }
   if (runtime.status === "stopped") {
-    hints.push("Service is loaded but not running (likely exited immediately).");
+    hints.push("服务已加载但未运行（可能立即退出）。");
     if (fileLog) {
-      hints.push(`File logs: ${fileLog}`);
+      hints.push(`文件日志：${fileLog}`);
     }
     if (platform === "darwin") {
       const logs = resolveGatewayLogPaths(env);
-      hints.push(`Launchd stdout (if installed): ${logs.stdoutPath}`);
-      hints.push(`Launchd stderr (if installed): ${logs.stderrPath}`);
+      hints.push(`Launchd 标准输出（如已安装）：${logs.stdoutPath}`);
+      hints.push(`Launchd 标准错误（如已安装）：${logs.stderrPath}`);
     } else if (platform === "linux") {
       const unit = resolveGatewaySystemdServiceName(env.OPENCLAW_PROFILE);
-      hints.push(`Logs: journalctl --user -u ${unit}.service -n 200 --no-pager`);
+      hints.push(`日志：journalctl --user -u ${unit}.service -n 200 --no-pager`);
     } else if (platform === "win32") {
       const task = resolveGatewayWindowsTaskName(env.OPENCLAW_PROFILE);
-      hints.push(`Logs: schtasks /Query /TN "${task}" /V /FO LIST`);
+      hints.push(`日志：schtasks /Query /TN "${task}" /V /FO LIST`);
     }
   }
   return hints;

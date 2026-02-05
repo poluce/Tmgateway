@@ -40,10 +40,9 @@ export function createSessionsSendTool(opts?: {
   sandboxed?: boolean;
 }): AnyAgentTool {
   return {
-    label: "Session Send",
+    label: "会话发送",
     name: "sessions_send",
-    description:
-      "Send a message into another session. Use sessionKey or label to identify the target.",
+    description: "向另一个会话发送消息。使用 sessionKey 或 label 来标识目标。",
     parameters: SessionsSendToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -74,7 +73,7 @@ export function createSessionsSendTool(opts?: {
         return jsonResult({
           runId: crypto.randomUUID(),
           status: "error",
-          error: "Provide either sessionKey or label (not both).",
+          error: "请提供 sessionKey 或 label（不能同时提供）。",
         });
       }
 
@@ -105,7 +104,7 @@ export function createSessionsSendTool(opts?: {
           return jsonResult({
             runId: crypto.randomUUID(),
             status: "forbidden",
-            error: "Sandboxed sessions_send label lookup is limited to this agent",
+            error: "沙盒 sessions_send 标签查找仅限于此代理",
           });
         }
 
@@ -114,15 +113,14 @@ export function createSessionsSendTool(opts?: {
             return jsonResult({
               runId: crypto.randomUUID(),
               status: "forbidden",
-              error:
-                "Agent-to-agent messaging is disabled. Set tools.agentToAgent.enabled=true to allow cross-agent sends.",
+              error: "代理间消息已禁用。设置 tools.agentToAgent.enabled=true 以允许跨代理发送。",
             });
           }
           if (!a2aPolicy.isAllowed(requesterAgentId, requestedAgentId)) {
             return jsonResult({
               runId: crypto.randomUUID(),
               status: "forbidden",
-              error: "Agent-to-agent messaging denied by tools.agentToAgent.allow.",
+              error: "代理间消息被 tools.agentToAgent.allow 拒绝。",
             });
           }
         }
@@ -146,7 +144,7 @@ export function createSessionsSendTool(opts?: {
             return jsonResult({
               runId: crypto.randomUUID(),
               status: "forbidden",
-              error: "Session not visible from this sandboxed agent session.",
+              error: "从此沙盒代理会话无法访问该会话。",
             });
           }
           return jsonResult({
@@ -161,13 +159,13 @@ export function createSessionsSendTool(opts?: {
             return jsonResult({
               runId: crypto.randomUUID(),
               status: "forbidden",
-              error: "Session not visible from this sandboxed agent session.",
+              error: "从此沙盒代理会话无法访问该会话。",
             });
           }
           return jsonResult({
             runId: crypto.randomUUID(),
             status: "error",
-            error: `No session found with label: ${labelParam}`,
+            error: `未找到标签为 ${labelParam} 的会话`,
           });
         }
         sessionKey = resolvedKey;
@@ -232,8 +230,7 @@ export function createSessionsSendTool(opts?: {
           return jsonResult({
             runId: crypto.randomUUID(),
             status: "forbidden",
-            error:
-              "Agent-to-agent messaging is disabled. Set tools.agentToAgent.enabled=true to allow cross-agent sends.",
+            error: "代理间消息已禁用。设置 tools.agentToAgent.enabled=true 以允许跨代理发送。",
             sessionKey: displayKey,
           });
         }
@@ -241,7 +238,7 @@ export function createSessionsSendTool(opts?: {
           return jsonResult({
             runId: crypto.randomUUID(),
             status: "forbidden",
-            error: "Agent-to-agent messaging denied by tools.agentToAgent.allow.",
+            error: "代理间消息被 tools.agentToAgent.allow 拒绝。",
             sessionKey: displayKey,
           });
         }

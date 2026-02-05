@@ -18,7 +18,7 @@ export function parseConfigCommand(raw: string): ConfigCommand | null {
 
   const match = rest.match(/^(\S+)(?:\s+([\s\S]+))?$/);
   if (!match) {
-    return { action: "error", message: "Invalid /config syntax." };
+    return { action: "error", message: "无效的 /config 语法。" };
   }
   const action = match[1].toLowerCase();
   const args = (match[2] ?? "").trim();
@@ -30,7 +30,7 @@ export function parseConfigCommand(raw: string): ConfigCommand | null {
       return { action: "show", path: args || undefined };
     case "unset": {
       if (!args) {
-        return { action: "error", message: "Usage: /config unset path" };
+        return { action: "error", message: "用法：/config unset 路径" };
       }
       return { action: "unset", path: args };
     }
@@ -38,14 +38,14 @@ export function parseConfigCommand(raw: string): ConfigCommand | null {
       if (!args) {
         return {
           action: "error",
-          message: "Usage: /config set path=value",
+          message: "用法：/config set 路径=值",
         };
       }
       const eqIndex = args.indexOf("=");
       if (eqIndex <= 0) {
         return {
           action: "error",
-          message: "Usage: /config set path=value",
+          message: "用法：/config set 路径=值",
         };
       }
       const path = args.slice(0, eqIndex).trim();
@@ -53,7 +53,7 @@ export function parseConfigCommand(raw: string): ConfigCommand | null {
       if (!path) {
         return {
           action: "error",
-          message: "Usage: /config set path=value",
+          message: "用法：/config set 路径=值",
         };
       }
       const parsed = parseConfigValue(rawValue);
@@ -65,7 +65,7 @@ export function parseConfigCommand(raw: string): ConfigCommand | null {
     default:
       return {
         action: "error",
-        message: "Usage: /config show|set|unset",
+        message: "用法：/config show|set|unset",
       };
   }
 }

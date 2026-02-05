@@ -66,17 +66,17 @@ export function createGatewayTool(opts?: {
   config?: OpenClawConfig;
 }): AnyAgentTool {
   return {
-    label: "Gateway",
+    label: "网关",
     name: "gateway",
     description:
-      "Restart, apply config, or update the gateway in-place (SIGUSR1). Use config.patch for safe partial config updates (merges with existing). Use config.apply only when replacing entire config. Both trigger restart after writing.",
+      "重启、应用配置或就地更新网关（SIGUSR1）。使用 config.patch 进行安全的部分配置更新（与现有配置合并）。仅在替换整个配置时使用 config.apply。两者都会在写入后触发重启。",
     parameters: GatewayToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
       const action = readStringParam(params, "action", { required: true });
       if (action === "restart") {
         if (opts?.config?.commands?.restart !== true) {
-          throw new Error("Gateway restart is disabled. Set commands.restart=true to enable.");
+          throw new Error("网关重启已禁用。设置 commands.restart=true 以启用。");
         }
         const sessionKey =
           typeof params.sessionKey === "string" && params.sessionKey.trim()
@@ -248,7 +248,7 @@ export function createGatewayTool(opts?: {
         return jsonResult({ ok: true, result });
       }
 
-      throw new Error(`Unknown action: ${action}`);
+      throw new Error(`未知操作：${action}`);
     },
   };
 }

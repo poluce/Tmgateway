@@ -3,9 +3,9 @@ import type { ChannelAgentTool } from "../types.js";
 
 export function createWhatsAppLoginTool(): ChannelAgentTool {
   return {
-    label: "WhatsApp Login",
+    label: "WhatsApp 登录",
     name: "whatsapp_login",
-    description: "Generate a WhatsApp QR code for linking, or wait for the scan to complete.",
+    description: "生成 WhatsApp 二维码用于链接，或等待扫描完成。",
     // NOTE: Using Type.Unsafe for action enum instead of Type.Union([Type.Literal(...)]
     // because Claude API on Vertex AI rejects nested anyOf schemas as invalid JSON Schema.
     parameters: Type.Object({
@@ -58,7 +58,7 @@ export function createWhatsAppLoginTool(): ChannelAgentTool {
       const text = [
         result.message,
         "",
-        "Open WhatsApp → Linked Devices and scan:",
+        "打开 WhatsApp → 已链接的设备 并扫描：",
         "",
         `![whatsapp-qr](${result.qrDataUrl})`,
       ].join("\n");

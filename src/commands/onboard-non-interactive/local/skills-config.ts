@@ -14,7 +14,7 @@ export function applyNonInteractiveSkillsConfig(params: {
 
   const nodeManager = opts.nodeManager ?? "npm";
   if (!["npm", "pnpm", "bun"].includes(nodeManager)) {
-    runtime.error("Invalid --node-manager (use npm, pnpm, or bun)");
+    runtime.error("无效的 --node-manager（使用 npm、pnpm 或 bun）");
     runtime.exit(1);
     return nextConfig;
   }

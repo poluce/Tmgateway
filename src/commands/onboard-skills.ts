@@ -64,15 +64,15 @@ export async function setupSkills(
 
   await prompter.note(
     [
-      `Eligible: ${eligible.length}`,
-      `Missing requirements: ${missing.length}`,
-      `Blocked by allowlist: ${blocked.length}`,
+      `符合条件：${eligible.length}`,
+      `缺少要求：${missing.length}`,
+      `被允许列表阻止：${blocked.length}`,
     ].join("\n"),
-    "Skills status",
+    "技能状态",
   );
 
   const shouldConfigure = await prompter.confirm({
-    message: "Configure skills now? (recommended)",
+    message: "现在配置技能？（推荐）",
     initialValue: true,
   });
   if (!shouldConfigure) {
@@ -82,28 +82,28 @@ export async function setupSkills(
   if (needsBrewPrompt) {
     await prompter.note(
       [
-        "Many skill dependencies are shipped via Homebrew.",
-        "Without brew, you'll need to build from source or download releases manually.",
+        "许多技能依赖项通过 Homebrew 提供。",
+        "没有 brew，您需要从源代码构建或手动下载发布版本。",
       ].join("\n"),
-      "Homebrew recommended",
+      "推荐安装 Homebrew",
     );
     const showBrewInstall = await prompter.confirm({
-      message: "Show Homebrew install command?",
+      message: "显示 Homebrew 安装命令？",
       initialValue: true,
     });
     if (showBrewInstall) {
       await prompter.note(
         [
-          "Run:",
+          "运行：",
           '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
         ].join("\n"),
-        "Homebrew install",
+        "Homebrew 安装",
       );
     }
   }
 
   const nodeManager = (await prompter.select({
-    message: "Preferred node manager for skill installs",
+    message: "技能安装的首选 Node 管理器",
     options: resolveNodeManagerOptions(),
   })) as "npm" | "pnpm" | "bun";
 
@@ -123,12 +123,12 @@ export async function setupSkills(
   );
   if (installable.length > 0) {
     const toInstall = await prompter.multiselect({
-      message: "Install missing skill dependencies",
+      message: "安装缺少的技能依赖项",
       options: [
         {
           value: "__skip__",
-          label: "Skip for now",
-          hint: "Continue without installing dependencies",
+          label: "暂时跳过",
+          hint: "继续而不安装依赖项",
         },
         ...installable.map((skill) => ({
           value: skill.name,
@@ -148,7 +148,7 @@ export async function setupSkills(
       if (!installId) {
         continue;
       }
-      const spin = prompter.progress(`Installing ${name}…`);
+      const spin = prompter.progress(`正在安装 ${name}…`);
       const result = await installSkill({
         workspaceDir,
         skillName: target.name,
@@ -156,20 +156,18 @@ export async function setupSkills(
         config: next,
       });
       if (result.ok) {
-        spin.stop(`Installed ${name}`);
+        spin.stop(`已安装 ${name}`);
       } else {
-        const code = result.code == null ? "" : ` (exit ${result.code})`;
+        const code = result.code == null ? "" : ` (退出码 ${result.code})`;
         const detail = summarizeInstallFailure(result.message);
-        spin.stop(`Install failed: ${name}${code}${detail ? ` — ${detail}` : ""}`);
+        spin.stop(`安装失败：${name}${code}${detail ? ` — ${detail}` : ""}`);
         if (result.stderr) {
           runtime.log(result.stderr.trim());
         } else if (result.stdout) {
           runtime.log(result.stdout.trim());
         }
-        runtime.log(
-          `Tip: run \`${formatCliCommand("openclaw doctor")}\` to review skills + requirements.`,
-        );
-        runtime.log("Docs: https://docs.openclaw.ai/skills");
+        runtime.log(`提示：运行 \`${formatCliCommand("openclaw doctor")}\` 查看技能和要求。`);
+        runtime.log("文档：https://docs.openclaw.ai/skills");
       }
     }
   }
@@ -179,7 +177,7 @@ export async function setupSkills(
       continue;
     }
     const wantsKey = await prompter.confirm({
-      message: `Set ${skill.primaryEnv} for ${skill.name}?`,
+      message: `为 ${skill.name} 设置 ${skill.primaryEnv}？`,
       initialValue: false,
     });
     if (!wantsKey) {
@@ -187,8 +185,8 @@ export async function setupSkills(
     }
     const apiKey = String(
       await prompter.text({
-        message: `Enter ${skill.primaryEnv}`,
-        validate: (value) => (value?.trim() ? undefined : "Required"),
+        message: `输入 ${skill.primaryEnv}`,
+        validate: (value) => (value?.trim() ? undefined : "必填"),
       }),
     );
     next = upsertSkillEntry(next, skill.skillKey, { apiKey: apiKey.trim() });

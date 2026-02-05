@@ -246,10 +246,10 @@ async function runImagePrompt(params: {
     run: async (provider, modelId) => {
       const model = modelRegistry.find(provider, modelId) as Model<Api> | null;
       if (!model) {
-        throw new Error(`Unknown model: ${provider}/${modelId}`);
+        throw new Error(`未知模型：${provider}/${modelId}`);
       }
       if (!model.input?.includes("image")) {
-        throw new Error(`Model does not support images: ${provider}/${modelId}`);
+        throw new Error(`模型不支持图像：${provider}/${modelId}`);
       }
       const apiKeyInfo = await getApiKeyForModel({
         model,
@@ -322,11 +322,11 @@ export function createImageTool(options?: {
   // If model has native vision, images in the prompt are auto-injected
   // so this tool is only needed when image wasn't provided in the prompt
   const description = options?.modelHasVision
-    ? "Analyze an image with a vision model. Only use this tool when the image was NOT already provided in the user's message. Images mentioned in the prompt are automatically visible to you."
-    : "Analyze an image with the configured image model (agents.defaults.imageModel). Provide a prompt and image path or URL.";
+    ? "使用视觉模型分析图像。仅当图像未在用户消息中提供时才使用此工具。提示中提到的图像会自动对你可见。"
+    : "使用配置的图像模型（agents.defaults.imageModel）分析图像。提供提示和图像路径或 URL。";
 
   return {
-    label: "Image",
+    label: "图像",
     name: "image",
     description,
     parameters: Type.Object({
@@ -342,7 +342,7 @@ export function createImageTool(options?: {
         ? imageRawInput.slice(1).trim()
         : imageRawInput;
       if (!imageRaw) {
-        throw new Error("image required");
+        throw new Error("需要提供图像");
       }
 
       // The tool accepts file paths, file/data URLs, or http(s) URLs. In some
@@ -360,7 +360,7 @@ export function createImageTool(options?: {
           content: [
             {
               type: "text",
-              text: `Unsupported image reference: ${imageRawInput}. Use a file path, a file:// URL, a data: URL, or an http(s) URL.`,
+              text: `不支持的图像引用：${imageRawInput}。请使用文件路径、file:// URL、data: URL 或 http(s) URL。`,
             },
           ],
           details: {
@@ -381,7 +381,7 @@ export function createImageTool(options?: {
       const sandboxRoot = options?.sandboxRoot?.trim();
       const isUrl = isHttpUrl;
       if (sandboxRoot && isUrl) {
-        throw new Error("Sandboxed image tool does not allow remote URLs.");
+        throw new Error("沙盒图像工具不允许远程 URL。");
       }
 
       const resolvedImage = (() => {
@@ -411,7 +411,7 @@ export function createImageTool(options?: {
         ? decodeDataUrl(resolvedImage)
         : await loadWebMedia(resolvedPath ?? resolvedImage, maxBytes);
       if (media.kind !== "image") {
-        throw new Error(`Unsupported media type: ${media.kind}`);
+        throw new Error(`不支持的媒体类型：${media.kind}`);
       }
 
       const mimeType =

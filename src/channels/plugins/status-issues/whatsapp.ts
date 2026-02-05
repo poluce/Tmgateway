@@ -53,8 +53,8 @@ export function collectWhatsAppStatusIssues(
         channel: "whatsapp",
         accountId,
         kind: "auth",
-        message: "Not linked (no WhatsApp Web session).",
-        fix: `Run: ${formatCliCommand("openclaw channels login")} (scan QR on the gateway host).`,
+        message: "未链接（没有 WhatsApp Web 会话）。",
+        fix: `运行：${formatCliCommand("openclaw channels login")}（在网关主机上扫描二维码）。`,
       });
       continue;
     }
@@ -64,8 +64,8 @@ export function collectWhatsAppStatusIssues(
         channel: "whatsapp",
         accountId,
         kind: "runtime",
-        message: `Linked but disconnected${reconnectAttempts != null ? ` (reconnectAttempts=${reconnectAttempts})` : ""}${lastError ? `: ${lastError}` : "."}`,
-        fix: `Run: ${formatCliCommand("openclaw doctor")} (or restart the gateway). If it persists, relink via channels login and check logs.`,
+        message: `已链接但断开连接${reconnectAttempts != null ? `（reconnectAttempts=${reconnectAttempts}）` : ""}${lastError ? `：${lastError}` : "。"}`,
+        fix: `运行：${formatCliCommand("openclaw doctor")}（或重启网关）。如果问题持续，请通过 channels login 重新链接并检查日志。`,
       });
     }
   }

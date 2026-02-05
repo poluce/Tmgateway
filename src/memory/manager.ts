@@ -404,7 +404,7 @@ export class MemoryIndexManager implements MemorySearchManager {
   }): Promise<{ text: string; path: string }> {
     const rawPath = params.relPath.trim();
     if (!rawPath) {
-      throw new Error("path required");
+      throw new Error("需要提供路径");
     }
     const absPath = path.isAbsolute(rawPath)
       ? path.resolve(rawPath)
@@ -442,14 +442,14 @@ export class MemoryIndexManager implements MemorySearchManager {
       }
     }
     if (!allowedWorkspace && !allowedAdditional) {
-      throw new Error("path required");
+      throw new Error("需要提供路径");
     }
     if (!absPath.endsWith(".md")) {
-      throw new Error("path required");
+      throw new Error("需要提供路径");
     }
     const stat = await fs.lstat(absPath);
     if (stat.isSymbolicLink() || !stat.isFile()) {
-      throw new Error("path required");
+      throw new Error("需要提供路径");
     }
     const content = await fs.readFile(absPath, "utf-8");
     if (!params.from && !params.lines) {
@@ -1082,7 +1082,7 @@ export class MemoryIndexManager implements MemorySearchManager {
       params.progress.report({
         completed: params.progress.completed,
         total: params.progress.total,
-        label: this.batch.enabled ? "Indexing memory files (batch)..." : "Indexing memory files…",
+        label: this.batch.enabled ? "正在索引记忆文件（批量）..." : "正在索引记忆文件…",
       });
     }
 
@@ -1156,7 +1156,7 @@ export class MemoryIndexManager implements MemorySearchManager {
       params.progress.report({
         completed: params.progress.completed,
         total: params.progress.total,
-        label: this.batch.enabled ? "Indexing session files (batch)..." : "Indexing session files…",
+        label: this.batch.enabled ? "正在索引会话文件（批量）..." : "正在索引会话文件…",
       });
     }
 
@@ -1273,7 +1273,7 @@ export class MemoryIndexManager implements MemorySearchManager {
       progress.report({
         completed: progress.completed,
         total: progress.total,
-        label: "Loading vector extension…",
+        label: "正在加载向量扩展…",
       });
     }
     const vectorReady = await this.ensureVectorReady();

@@ -9,8 +9,8 @@ export const GATEWAY_DAEMON_RUNTIME_OPTIONS: Array<{
 }> = [
   {
     value: "node",
-    label: "Node (recommended)",
-    hint: "Required for WhatsApp + Telegram. Bun can corrupt memory on reconnect.",
+    label: "Node（推荐）",
+    hint: "WhatsApp + Telegram 必需。Bun 在重连时可能损坏内存。",
   },
 ];
 

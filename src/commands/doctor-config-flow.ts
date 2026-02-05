@@ -185,7 +185,7 @@ async function maybeMigrateLegacyConfig(): Promise<string[]> {
   await fs.mkdir(targetDir, { recursive: true });
   try {
     await fs.copyFile(legacyPath, targetPath, fs.constants.COPYFILE_EXCL);
-    changes.push(`Migrated legacy config: ${legacyPath} -> ${targetPath}`);
+    changes.push(`已迁移旧版配置: ${legacyPath} -> ${targetPath}`);
   } catch {
     // If it already exists, skip silently.
   }
@@ -203,7 +203,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     note(stateDirResult.changes.map((entry) => `- ${entry}`).join("\n"), "Doctor changes");
   }
   if (stateDirResult.warnings.length > 0) {
-    note(stateDirResult.warnings.map((entry) => `- ${entry}`).join("\n"), "Doctor warnings");
+    note(stateDirResult.warnings.map((entry) => `- ${entry}`).join("\n"), "Doctor 警告");
   }
 
   const legacyConfigChanges = await maybeMigrateLegacyConfig();
@@ -219,22 +219,22 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
   let shouldWriteConfig = false;
   const fixHints: string[] = [];
   if (snapshot.exists && !snapshot.valid && snapshot.legacyIssues.length === 0) {
-    note("Config invalid; doctor will run with best-effort config.", "Config");
+    note("配置无效；doctor 将使用尽力而为的配置运行。", "配置");
   }
   const warnings = snapshot.warnings ?? [];
   if (warnings.length > 0) {
     const lines = warnings.map((issue) => `- ${issue.path}: ${issue.message}`).join("\n");
-    note(lines, "Config warnings");
+    note(lines, "配置警告");
   }
 
   if (snapshot.legacyIssues.length > 0) {
     note(
       snapshot.legacyIssues.map((issue) => `- ${issue.path}: ${issue.message}`).join("\n"),
-      "Legacy config keys detected",
+      "检测到旧版配置键",
     );
     const { config: migrated, changes } = migrateLegacyConfig(snapshot.parsed);
     if (changes.length > 0) {
-      note(changes.join("\n"), "Doctor changes");
+      note(changes.join("\n"), "Doctor 更改");
     }
     if (migrated) {
       candidate = migrated;
@@ -246,9 +246,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
         cfg = migrated;
       }
     } else {
-      fixHints.push(
-        `Run "${formatCliCommand("openclaw doctor --fix")}" to apply legacy migrations.`,
-      );
+      fixHints.push(`运行 "${formatCliCommand("openclaw doctor --fix")}" 以应用旧版迁移。`);
     }
   }
 
@@ -260,7 +258,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     if (shouldRepair) {
       cfg = normalized.config;
     } else {
-      fixHints.push(`Run "${formatCliCommand("openclaw doctor --fix")}" to apply these changes.`);
+      fixHints.push(`运行 "${formatCliCommand("openclaw doctor --fix")}" 以应用这些更改。`);
     }
   }
 
@@ -272,7 +270,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
     if (shouldRepair) {
       cfg = autoEnable.config;
     } else {
-      fixHints.push(`Run "${formatCliCommand("openclaw doctor --fix")}" to apply these changes.`);
+      fixHints.push(`运行 "${formatCliCommand("openclaw doctor --fix")}" 以应用这些更改。`);
     }
   }
 
@@ -285,14 +283,14 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
       cfg = unknown.config;
       note(lines, "Doctor changes");
     } else {
-      note(lines, "Unknown config keys");
-      fixHints.push('Run "openclaw doctor --fix" to remove these keys.');
+      note(lines, "未知配置键");
+      fixHints.push('运行 "openclaw doctor --fix" 以移除这些键。');
     }
   }
 
   if (!shouldRepair && pendingChanges) {
     const shouldApply = await params.confirm({
-      message: "Apply recommended config repairs now?",
+      message: "立即应用推荐的配置修复？",
       initialValue: true,
     });
     if (shouldApply) {

@@ -108,7 +108,7 @@ function printScanSummary(results: ModelScanResult[], runtime: RuntimeEnv) {
   const toolImageOk = results.filter((r) => r.tool.ok && r.image.ok);
   const imageOnly = imageOk.filter((r) => !r.tool.ok);
   runtime.log(
-    `Scan results: tested ${results.length}, tool ok ${toolOk.length}, image ok ${imageOk.length}, tool+image ok ${toolImageOk.length}, image only ${imageOnly.length}`,
+    `扫描结果: 测试 ${results.length} 个, 工具正常 ${toolOk.length} 个, 图像正常 ${imageOk.length} 个, 工具+图像正常 ${toolImageOk.length} 个, 仅图像 ${imageOnly.length} 个`,
   );
 }
 
@@ -192,7 +192,7 @@ export async function modelsScanCommand(
   }
   const results = await withProgressTotals(
     {
-      label: "Scanning OpenRouter models...",
+      label: "正在扫描 OpenRouter 模型...",
       indeterminate: false,
       enabled: opts.json !== true,
     },
@@ -209,7 +209,7 @@ export async function modelsScanCommand(
           if (phase !== "probe") {
             return;
           }
-          const labelBase = probe ? "Probing models" : "Scanning models";
+          const labelBase = probe ? "正在探测模型" : "正在扫描模型";
           update({
             completed,
             total,
@@ -222,7 +222,7 @@ export async function modelsScanCommand(
   if (!probe) {
     if (!opts.json) {
       runtime.log(
-        `Found ${results.length} OpenRouter free models (metadata only; pass --probe to test tools/images).`,
+        `找到 ${results.length} 个 OpenRouter 免费模型（仅元数据；传递 --probe 以测试工具/图像）。`,
       );
       printScanTable(sortScanResults(results), runtime);
     } else {
@@ -233,7 +233,7 @@ export async function modelsScanCommand(
 
   const toolOk = results.filter((entry) => entry.tool.ok);
   if (toolOk.length === 0) {
-    throw new Error("No tool-capable OpenRouter free models found.");
+    throw new Error("未找到支持工具的 OpenRouter 免费模型。");
   }
 
   const sorted = sortScanResults(results);
@@ -261,7 +261,7 @@ export async function modelsScanCommand(
 
   if (canPrompt) {
     const selection = await multiselect({
-      message: "Select fallback models (ordered)",
+      message: "选择备用模型（按顺序）",
       options: toolSorted.map((entry) => ({
         value: entry.modelRef,
         label: entry.modelRef,
@@ -271,14 +271,14 @@ export async function modelsScanCommand(
     });
 
     if (isCancel(selection)) {
-      cancel(stylePromptTitle("Model scan cancelled.") ?? "Model scan cancelled.");
+      cancel(stylePromptTitle("模型扫描已取消。") ?? "模型扫描已取消。");
       runtime.exit(0);
     }
 
     selected = selection;
     if (imageSorted.length > 0) {
       const imageSelection = await multiselect({
-        message: "Select image fallback models (ordered)",
+        message: "选择图像备用模型（按顺序）",
         options: imageSorted.map((entry) => ({
           value: entry.modelRef,
           label: entry.modelRef,
@@ -288,21 +288,21 @@ export async function modelsScanCommand(
       });
 
       if (isCancel(imageSelection)) {
-        cancel(stylePromptTitle("Model scan cancelled.") ?? "Model scan cancelled.");
+        cancel(stylePromptTitle("模型扫描已取消。") ?? "模型扫描已取消。");
         runtime.exit(0);
       }
 
       selectedImages = imageSelection;
     }
   } else if (!process.stdin.isTTY && !opts.yes && !noInput && !opts.json) {
-    throw new Error("Non-interactive scan: pass --yes to apply defaults.");
+    throw new Error("非交互式扫描：传递 --yes 以应用默认值。");
   }
 
   if (selected.length === 0) {
-    throw new Error("No models selected for fallbacks.");
+    throw new Error("未选择任何模型作为备用。");
   }
   if (opts.setImage && selectedImages.length === 0) {
-    throw new Error("No image-capable models selected for image model.");
+    throw new Error("未选择任何支持图像的模型作为图像模型。");
   }
 
   const _updated = await updateConfig((cfg) => {
@@ -369,14 +369,14 @@ export async function modelsScanCommand(
   }
 
   logConfigUpdated(runtime);
-  runtime.log(`Fallbacks: ${selected.join(", ")}`);
+  runtime.log(`备用模型: ${selected.join(", ")}`);
   if (selectedImages.length > 0) {
-    runtime.log(`Image fallbacks: ${selectedImages.join(", ")}`);
+    runtime.log(`图像备用模型: ${selectedImages.join(", ")}`);
   }
   if (opts.setDefault) {
-    runtime.log(`Default model: ${selected[0]}`);
+    runtime.log(`默认模型: ${selected[0]}`);
   }
   if (opts.setImage && selectedImages.length > 0) {
-    runtime.log(`Image model: ${selectedImages[0]}`);
+    runtime.log(`图像模型: ${selectedImages[0]}`);
   }
 }

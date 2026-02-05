@@ -265,11 +265,11 @@ async function ensureBrowserControlService(): Promise<void> {
     const cfg = loadConfig();
     const resolved = resolveBrowserConfig(cfg.browser, cfg);
     if (!resolved.enabled) {
-      throw new Error("browser control disabled");
+      throw new Error("浏览器控制已禁用");
     }
     const started = await startBrowserControlServiceFromConfig();
     if (!started) {
-      throw new Error("browser control disabled");
+      throw new Error("浏览器控制已禁用");
     }
   })();
   return browserControlReady;
@@ -286,7 +286,7 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs?: number, label?: s
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
     timer = setTimeout(() => {
-      reject(new Error(`${label ?? "request"} timed out`));
+      reject(new Error(`${label ?? "请求"} 超时`));
     }, resolved);
   });
   try {
@@ -339,7 +339,7 @@ async function readBrowserProxyFile(filePath: string): Promise<BrowserProxyFile 
   }
   if (stat.size > BROWSER_PROXY_MAX_FILE_BYTES) {
     throw new Error(
-      `browser proxy file exceeds ${Math.round(BROWSER_PROXY_MAX_FILE_BYTES / (1024 * 1024))}MB`,
+      `浏览器代理文件超过 ${Math.round(BROWSER_PROXY_MAX_FILE_BYTES / (1024 * 1024))}MB`,
     );
   }
   const buffer = await fsPromises.readFile(filePath);
@@ -386,14 +386,14 @@ function requireExecApprovalsBaseHash(
     return;
   }
   if (!snapshot.hash) {
-    throw new Error("INVALID_REQUEST: exec approvals base hash unavailable; reload and retry");
+    throw new Error("INVALID_REQUEST: 执行审批基础哈希不可用；请重新加载后重试");
   }
   const baseHash = typeof params.baseHash === "string" ? params.baseHash.trim() : "";
   if (!baseHash) {
-    throw new Error("INVALID_REQUEST: exec approvals base hash required; reload and retry");
+    throw new Error("INVALID_REQUEST: 需要执行审批基础哈希；请重新加载后重试");
   }
   if (baseHash !== snapshot.hash) {
-    throw new Error("INVALID_REQUEST: exec approvals changed; reload and retry");
+    throw new Error("INVALID_REQUEST: 执行审批已更改；请重新加载后重试");
   }
 }
 
@@ -593,7 +593,7 @@ export async function runNodeHost(opts: NodeHostRunOptions): Promise<void> {
   const url = `${scheme}://${host}:${port}`;
   const pathEnv = ensureNodePathEnv();
   // eslint-disable-next-line no-console
-  console.log(`node host PATH: ${pathEnv}`);
+  console.log(`节点主机 PATH: ${pathEnv}`);
 
   const client = new GatewayClient({
     url,
@@ -632,11 +632,11 @@ export async function runNodeHost(opts: NodeHostRunOptions): Promise<void> {
     onConnectError: (err) => {
       // keep retrying (handled by GatewayClient)
       // eslint-disable-next-line no-console
-      console.error(`node host gateway connect failed: ${err.message}`);
+      console.error(`节点主机网关连接失败: ${err.message}`);
     },
     onClose: (code, reason) => {
       // eslint-disable-next-line no-console
-      console.error(`node host gateway closed (${code}): ${reason}`);
+      console.error(`节点主机网关已关闭 (${code}): ${reason}`);
     },
   });
 
@@ -685,7 +685,7 @@ async function handleInvoke(
     try {
       const params = decodeParams<SystemExecApprovalsSetParams>(frame.paramsJSON);
       if (!params.file || typeof params.file !== "object") {
-        throw new Error("INVALID_REQUEST: exec approvals file required");
+        throw new Error("INVALID_REQUEST: 需要执行审批文件");
       }
       ensureExecApprovals();
       const snapshot = readExecApprovalsSnapshot();
@@ -728,7 +728,7 @@ async function handleInvoke(
     try {
       const params = decodeParams<SystemWhichParams>(frame.paramsJSON);
       if (!Array.isArray(params.bins)) {
-        throw new Error("INVALID_REQUEST: bins required");
+        throw new Error("INVALID_REQUEST: 需要 bins 参数");
       }
       const env = sanitizeEnv(undefined);
       const payload = await handleSystemWhich(params, env);
@@ -750,11 +750,11 @@ async function handleInvoke(
       const params = decodeParams<BrowserProxyParams>(frame.paramsJSON);
       const pathValue = typeof params.path === "string" ? params.path.trim() : "";
       if (!pathValue) {
-        throw new Error("INVALID_REQUEST: path required");
+        throw new Error("INVALID_REQUEST: 需要 path 参数");
       }
       const proxyConfig = resolveBrowserProxyConfig();
       if (!proxyConfig.enabled) {
-        throw new Error("UNAVAILABLE: node browser proxy disabled");
+        throw new Error("UNAVAILABLE: 节点浏览器代理已禁用");
       }
       await ensureBrowserControlService();
       const cfg = loadConfig();
@@ -765,11 +765,11 @@ async function handleInvoke(
         if (pathValue !== "/profiles") {
           const profileToCheck = requestedProfile || resolved.defaultProfile;
           if (!isProfileAllowed({ allowProfiles: allowedProfiles, profile: profileToCheck })) {
-            throw new Error("INVALID_REQUEST: browser profile not allowed");
+            throw new Error("INVALID_REQUEST: 浏览器配置文件不允许");
           }
         } else if (requestedProfile) {
           if (!isProfileAllowed({ allowProfiles: allowedProfiles, profile: requestedProfile })) {
-            throw new Error("INVALID_REQUEST: browser profile not allowed");
+            throw new Error("INVALID_REQUEST: 浏览器配置文件不允许");
           }
         }
       }
@@ -797,7 +797,7 @@ async function handleInvoke(
           body,
         }),
         params.timeoutMs,
-        "browser proxy request",
+        "浏览器代理请求",
       );
       if (response.status >= 400) {
         const message =
@@ -831,7 +831,7 @@ async function handleInvoke(
               }
               return file;
             } catch (err) {
-              throw new Error(`browser proxy file read failed for ${p}: ${String(err)}`, {
+              throw new Error(`浏览器代理文件读取失败 ${p}: ${String(err)}`, {
                 cause: err,
               });
             }
@@ -858,7 +858,7 @@ async function handleInvoke(
   if (command !== "system.run") {
     await sendInvokeResult(client, frame, {
       ok: false,
-      error: { code: "UNAVAILABLE", message: "command not supported" },
+      error: { code: "UNAVAILABLE", message: "不支持的命令" },
     });
     return;
   }
@@ -877,7 +877,7 @@ async function handleInvoke(
   if (!Array.isArray(params.command) || params.command.length === 0) {
     await sendInvokeResult(client, frame, {
       ok: false,
-      error: { code: "INVALID_REQUEST", message: "command required" },
+      error: { code: "INVALID_REQUEST", message: "需要命令参数" },
     });
     return;
   }
@@ -965,7 +965,7 @@ async function handleInvoke(
       approvalDecision,
     };
     const response = await runViaMacAppExecHost({ approvals, request: execRequest });
-    if (!response) {
+    if (response === null) {
       if (execHostEnforced || !execHostFallbackAllowed) {
         await sendNodeEvent(
           client,
@@ -982,7 +982,7 @@ async function handleInvoke(
           ok: false,
           error: {
             code: "UNAVAILABLE",
-            message: "COMPANION_APP_UNAVAILABLE: macOS app exec host unreachable",
+            message: "COMPANION_APP_UNAVAILABLE: macOS 应用执行主机不可达",
           },
         });
         return;
@@ -1205,7 +1205,7 @@ async function handleInvoke(
 
 function decodeParams<T>(raw?: string | null): T {
   if (!raw) {
-    throw new Error("INVALID_REQUEST: paramsJSON required");
+    throw new Error("INVALID_REQUEST: 需要 paramsJSON 参数");
   }
   return JSON.parse(raw) as T;
 }

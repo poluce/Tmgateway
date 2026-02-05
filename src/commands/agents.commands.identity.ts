@@ -100,21 +100,21 @@ export async function agentsSetIdentityCommand(
   let agentId = agentRaw ? normalizeAgentId(agentRaw) : undefined;
   if (!agentId) {
     if (!workspaceDir) {
-      runtime.error("Select an agent with --agent or provide a workspace via --workspace.");
+      runtime.error("使用 --agent 选择代理或通过 --workspace 提供工作空间。");
       runtime.exit(1);
       return;
     }
     const matches = resolveAgentIdByWorkspace(cfg, workspaceDir);
     if (matches.length === 0) {
       runtime.error(
-        `No agent workspace matches ${shortenHomePath(workspaceDir)}. Pass --agent to target a specific agent.`,
+        `没有代理工作空间匹配 ${shortenHomePath(workspaceDir)}。使用 --agent 指定特定代理。`,
       );
       runtime.exit(1);
       return;
     }
     if (matches.length > 1) {
       runtime.error(
-        `Multiple agents match ${shortenHomePath(workspaceDir)}: ${matches.join(", ")}. Pass --agent to choose one.`,
+        `多个代理匹配 ${shortenHomePath(workspaceDir)}：${matches.join(", ")}。使用 --agent 选择一个。`,
       );
       runtime.exit(1);
       return;
@@ -133,7 +133,7 @@ export async function agentsSetIdentityCommand(
       const targetPath =
         identityFilePath ??
         (workspaceDir ? path.join(workspaceDir, DEFAULT_IDENTITY_FILENAME) : "IDENTITY.md");
-      runtime.error(`No identity data found in ${shortenHomePath(targetPath)}.`);
+      runtime.error(`在 ${shortenHomePath(targetPath)} 中未找到身份数据。`);
       runtime.exit(1);
       return;
     }
@@ -156,9 +156,7 @@ export async function agentsSetIdentityCommand(
     !incomingIdentity.theme &&
     !incomingIdentity.avatar
   ) {
-    runtime.error(
-      "No identity fields provided. Use --name/--emoji/--theme/--avatar or --from-identity.",
-    );
+    runtime.error("未提供身份字段。使用 --name/--emoji/--theme/--avatar 或 --from-identity。");
     runtime.exit(1);
     return;
   }
@@ -214,20 +212,20 @@ export async function agentsSetIdentityCommand(
   }
 
   logConfigUpdated(runtime);
-  runtime.log(`Agent: ${agentId}`);
+  runtime.log(`代理：${agentId}`);
   if (nextIdentity.name) {
-    runtime.log(`Name: ${nextIdentity.name}`);
+    runtime.log(`名称：${nextIdentity.name}`);
   }
   if (nextIdentity.theme) {
-    runtime.log(`Theme: ${nextIdentity.theme}`);
+    runtime.log(`主题：${nextIdentity.theme}`);
   }
   if (nextIdentity.emoji) {
-    runtime.log(`Emoji: ${nextIdentity.emoji}`);
+    runtime.log(`表情：${nextIdentity.emoji}`);
   }
   if (nextIdentity.avatar) {
-    runtime.log(`Avatar: ${nextIdentity.avatar}`);
+    runtime.log(`头像：${nextIdentity.avatar}`);
   }
   if (workspaceDir) {
-    runtime.log(`Workspace: ${shortenHomePath(workspaceDir)}`);
+    runtime.log(`工作空间：${shortenHomePath(workspaceDir)}`);
   }
 }

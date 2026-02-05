@@ -18,9 +18,9 @@ export async function applyAuthChoiceOAuth(
       process.env.CHUTES_CLIENT_ID?.trim() ||
       String(
         await params.prompter.text({
-          message: "Enter Chutes OAuth client id",
+          message: "输入 Chutes OAuth 客户端 ID",
           placeholder: "cid_xxx",
-          validate: (value) => (value?.trim() ? undefined : "Required"),
+          validate: (value) => (value?.trim() ? undefined : "必填"),
         }),
       ).trim();
     const clientSecret = process.env.CHUTES_CLIENT_SECRET?.trim() || undefined;
@@ -28,22 +28,22 @@ export async function applyAuthChoiceOAuth(
     await params.prompter.note(
       isRemote
         ? [
-            "You are running in a remote/VPS environment.",
-            "A URL will be shown for you to open in your LOCAL browser.",
-            "After signing in, paste the redirect URL back here.",
+            "您正在远程/VPS 环境中运行。",
+            "将显示一个 URL 供您在本地浏览器中打开。",
+            "登录后，将重定向 URL 粘贴回此处。",
             "",
-            `Redirect URI: ${redirectUri}`,
+            `重定向 URI：${redirectUri}`,
           ].join("\n")
         : [
-            "Browser will open for Chutes authentication.",
-            "If the callback doesn't auto-complete, paste the redirect URL.",
+            "浏览器将打开进行 Chutes 认证。",
+            "如果回调未自动完成，请粘贴重定向 URL。",
             "",
-            `Redirect URI: ${redirectUri}`,
+            `重定向 URI：${redirectUri}`,
           ].join("\n"),
       "Chutes OAuth",
     );
 
-    const spin = params.prompter.progress("Starting OAuth flow…");
+    const spin = params.prompter.progress("正在启动 OAuth 流程…");
     try {
       const { onAuth, onPrompt } = createVpsAwareOAuthHandlers({
         isRemote,

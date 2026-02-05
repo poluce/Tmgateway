@@ -37,7 +37,7 @@ export async function promptRemoteGatewayConfig(
   const hasBonjourTool = (await detectBinary("dns-sd")) || (await detectBinary("avahi-browse"));
   const wantsDiscover = hasBonjourTool
     ? await prompter.confirm({
-        message: "Discover gateway on LAN (Bonjour)?",
+        message: "在局域网上发现网关（Bonjour）？",
         initialValue: true,
       })
     : false;
@@ -45,10 +45,10 @@ export async function promptRemoteGatewayConfig(
   if (!hasBonjourTool) {
     await prompter.note(
       [
-        "Bonjour discovery requires dns-sd (macOS) or avahi-browse (Linux).",
-        "Docs: https://docs.openclaw.ai/gateway/discovery",
+        "Bonjour 发现需要 dns-sd（macOS）或 avahi-browse（Linux）。",
+        "文档：https://docs.openclaw.ai/gateway/discovery",
       ].join("\n"),
-      "Discovery",
+      "发现",
     );
   }
 
@@ -56,19 +56,19 @@ export async function promptRemoteGatewayConfig(
     const wideAreaDomain = resolveWideAreaDiscoveryDomain({
       configDomain: cfg.discovery?.wideArea?.domain,
     });
-    const spin = prompter.progress("Searching for gateways…");
+    const spin = prompter.progress("正在搜索网关…");
     const beacons = await discoverGatewayBeacons({ timeoutMs: 2000, wideAreaDomain });
-    spin.stop(beacons.length > 0 ? `Found ${beacons.length} gateway(s)` : "No gateways found");
+    spin.stop(beacons.length > 0 ? `找到 ${beacons.length} 个网关` : "未找到网关");
 
     if (beacons.length > 0) {
       const selection = await prompter.select({
-        message: "Select gateway",
+        message: "选择网关",
         options: [
           ...beacons.map((beacon, index) => ({
             value: String(index),
             label: buildLabel(beacon),
           })),
-          { value: "manual", label: "Enter URL manually" },
+          { value: "manual", label: "手动输入 URL" },
         ],
       });
       if (selection !== "manual") {
@@ -83,13 +83,13 @@ export async function promptRemoteGatewayConfig(
     const port = selectedBeacon.gatewayPort ?? 18789;
     if (host) {
       const mode = await prompter.select({
-        message: "Connection method",
+        message: "连接方式",
         options: [
           {
             value: "direct",
-            label: `Direct gateway WS (${host}:${port})`,
+            label: `直接网关 WS（${host}:${port}）`,
           },
-          { value: "ssh", label: "SSH tunnel (loopback)" },
+          { value: "ssh", label: "SSH 隧道（回环）" },
         ],
       });
       if (mode === "direct") {
@@ -98,33 +98,33 @@ export async function promptRemoteGatewayConfig(
         suggestedUrl = DEFAULT_GATEWAY_URL;
         await prompter.note(
           [
-            "Start a tunnel before using the CLI:",
+            "使用 CLI 前启动隧道：",
             `ssh -N -L 18789:127.0.0.1:18789 <user>@${host}${
               selectedBeacon.sshPort ? ` -p ${selectedBeacon.sshPort}` : ""
             }`,
-            "Docs: https://docs.openclaw.ai/gateway/remote",
+            "文档：https://docs.openclaw.ai/gateway/remote",
           ].join("\n"),
-          "SSH tunnel",
+          "SSH 隧道",
         );
       }
     }
   }
 
   const urlInput = await prompter.text({
-    message: "Gateway WebSocket URL",
+    message: "网关 WebSocket URL",
     initialValue: suggestedUrl,
     validate: (value) =>
       String(value).trim().startsWith("ws://") || String(value).trim().startsWith("wss://")
         ? undefined
-        : "URL must start with ws:// or wss://",
+        : "URL 必须以 ws:// 或 wss:// 开头",
   });
   const url = ensureWsUrl(String(urlInput));
 
   const authChoice = await prompter.select({
-    message: "Gateway auth",
+    message: "网关认证",
     options: [
-      { value: "token", label: "Token (recommended)" },
-      { value: "off", label: "No auth" },
+      { value: "token", label: "令牌（推荐）" },
+      { value: "off", label: "无认证" },
     ],
   });
 
@@ -132,9 +132,9 @@ export async function promptRemoteGatewayConfig(
   if (authChoice === "token") {
     token = String(
       await prompter.text({
-        message: "Gateway token",
+        message: "网关令牌",
         initialValue: token,
-        validate: (value) => (value?.trim() ? undefined : "Required"),
+        validate: (value) => (value?.trim() ? undefined : "必填"),
       }),
     ).trim();
   } else {

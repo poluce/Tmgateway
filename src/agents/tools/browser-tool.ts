@@ -62,7 +62,7 @@ async function resolveBrowserNodeTarget(params: {
   const mode = policy?.mode ?? "auto";
   if (mode === "off") {
     if (params.target === "node" || params.requestedNode) {
-      throw new Error("Node browser proxy is disabled (gateway.nodes.browser.mode=off).");
+      throw new Error("节点浏览器代理已禁用（gateway.nodes.browser.mode=off）。");
     }
     return null;
   }
@@ -80,7 +80,7 @@ async function resolveBrowserNodeTarget(params: {
   const browserNodes = nodes.filter((node) => node.connected && isBrowserNode(node));
   if (browserNodes.length === 0) {
     if (params.target === "node" || params.requestedNode) {
-      throw new Error("No connected browser-capable nodes.");
+      throw new Error("没有已连接的支持浏览器的节点。");
     }
     return null;
   }
@@ -98,7 +98,7 @@ async function resolveBrowserNodeTarget(params: {
       return { nodeId: node.nodeId, label: node.displayName ?? node.remoteIp ?? node.nodeId };
     }
     throw new Error(
-      `Multiple browser-capable nodes connected (${browserNodes.length}). Set gateway.nodes.browser.node or pass node=<id>.`,
+      `多个支持浏览器的节点已连接（${browserNodes.length}）。请设置 gateway.nodes.browser.node 或传入 node=<id>。`,
     );
   }
 
@@ -149,7 +149,7 @@ async function callBrowserProxy(params: {
       ? (JSON.parse(payload.payloadJSON) as BrowserProxyResult)
       : null);
   if (!parsed || typeof parsed !== "object" || !("result" in parsed)) {
-    throw new Error("browser proxy failed");
+    throw new Error("浏览器代理失败");
   }
   return parsed;
 }
@@ -225,7 +225,7 @@ export function createBrowserTool(opts?: {
   const hostHint =
     opts?.allowHostControl === false ? "Host target blocked by policy." : "Host target allowed.";
   return {
-    label: "Browser",
+    label: "浏览器",
     name: "browser",
     description: [
       "Control the browser via OpenClaw's browser control server (status/start/stop/profiles/tabs/open/snapshot/screenshot/actions).",
@@ -603,7 +603,7 @@ export function createBrowserTool(opts?: {
         case "upload": {
           const paths = Array.isArray(params.paths) ? params.paths.map((p) => String(p)) : [];
           if (paths.length === 0) {
-            throw new Error("paths required");
+            throw new Error("需要提供 paths");
           }
           const ref = readStringParam(params, "ref");
           const inputRef = readStringParam(params, "inputRef");
@@ -676,7 +676,7 @@ export function createBrowserTool(opts?: {
         case "act": {
           const request = params.request as Record<string, unknown> | undefined;
           if (!request || typeof request !== "object") {
-            throw new Error("request required");
+            throw new Error("需要提供 request");
           }
           try {
             const result = proxyRequest
@@ -717,7 +717,7 @@ export function createBrowserTool(opts?: {
           }
         }
         default:
-          throw new Error(`Unknown action: ${action}`);
+          throw new Error(`未知操作：${action}`);
       }
     },
   };

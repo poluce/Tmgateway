@@ -89,7 +89,7 @@ export async function processDiscordMessage(ctx: DiscordMessagePreflightContext)
   const mediaList = await resolveMediaList(message, mediaMaxBytes);
   const text = messageText;
   if (!text) {
-    logVerbose(`discord: drop message ${message.id} (empty content)`);
+    logVerbose(`discord: 丢弃消息 ${message.id} (内容为空)`);
     return;
   }
   const ackReaction = resolveAckReaction(cfg, route.agentId);
@@ -114,7 +114,7 @@ export async function processDiscordMessage(ctx: DiscordMessagePreflightContext)
       }).then(
         () => true,
         (err) => {
-          logVerbose(`discord react failed for channel ${message.channelId}: ${String(err)}`);
+          logVerbose(`discord 添加反应失败，频道 ${message.channelId}: ${String(err)}`);
           return false;
         },
       )
@@ -199,7 +199,7 @@ export async function processDiscordMessage(ctx: DiscordMessagePreflightContext)
     envelope: envelopeOptions,
   });
   if (replyContext) {
-    combinedBody = `[Replied message - for context]\n${replyContext}\n\n${combinedBody}`;
+    combinedBody = `[回复的消息 - 作为上下文]\n${replyContext}\n\n${combinedBody}`;
   }
   if (forumContextLine) {
     combinedBody = `${combinedBody}\n${forumContextLine}`;
@@ -267,7 +267,7 @@ export async function processDiscordMessage(ctx: DiscordMessagePreflightContext)
     : (autoThreadContext?.From ?? `discord:channel:${message.channelId}`);
   const effectiveTo = autoThreadContext?.To ?? replyTarget;
   if (!effectiveTo) {
-    runtime.error?.(danger("discord: missing reply target"));
+    runtime.error?.(danger("discord: 缺少回复目标"));
     return;
   }
 
@@ -319,7 +319,7 @@ export async function processDiscordMessage(ctx: DiscordMessagePreflightContext)
         }
       : undefined,
     onRecordError: (err) => {
-      logVerbose(`discord: failed updating session meta: ${String(err)}`);
+      logVerbose(`discord: 更新会话元数据失败: ${String(err)}`);
     },
   });
 
@@ -363,7 +363,7 @@ export async function processDiscordMessage(ctx: DiscordMessagePreflightContext)
       replyReference.markSent();
     },
     onError: (err, info) => {
-      runtime.error?.(danger(`discord ${info.kind} reply failed: ${String(err)}`));
+      runtime.error?.(danger(`discord ${info.kind} 回复失败: ${String(err)}`));
     },
     onReplyStart: createTypingCallbacks({
       start: () => sendTyping({ client, channelId: typingChannelId }),

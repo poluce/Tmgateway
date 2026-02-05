@@ -82,7 +82,7 @@ export async function statusCommand(
 
   const securityAudit = await withProgress(
     {
-      label: "Running security audit…",
+      label: "正在运行安全审计…",
       indeterminate: true,
       enabled: opts.json !== true,
     },
@@ -98,7 +98,7 @@ export async function statusCommand(
   const usage = opts.usage
     ? await withProgress(
         {
-          label: "Fetching usage snapshot…",
+          label: "正在获取使用情况快照…",
           indeterminate: true,
           enabled: opts.json !== true,
         },
@@ -108,7 +108,7 @@ export async function statusCommand(
   const health: HealthSummary | undefined = opts.deep
     ? await withProgress(
         {
-          label: "Checking gateway health…",
+          label: "正在检查网关健康状态…",
           indeterminate: true,
           enabled: opts.json !== true,
         },
@@ -173,7 +173,7 @@ export async function statusCommand(
 
   if (opts.verbose) {
     const details = buildGatewayConnectionDetails();
-    runtime.log(info("Gateway connection:"));
+    runtime.log(info("网关连接:"));
     for (const line of details.message.split("\n")) {
       runtime.log(`  ${line}`);
     }
@@ -185,7 +185,7 @@ export async function statusCommand(
   const dashboard = (() => {
     const controlUiEnabled = cfg.gateway?.controlUi?.enabled ?? true;
     if (!controlUiEnabled) {
-      return "disabled";
+      return "已禁用";
     }
     const links = resolveControlUiLinks({
       port: resolveGatewayPort(cfg),
@@ -198,23 +198,23 @@ export async function statusCommand(
 
   const gatewayValue = (() => {
     const target = remoteUrlMissing
-      ? `fallback ${gatewayConnection.url}`
+      ? `回退 ${gatewayConnection.url}`
       : `${gatewayConnection.url}${gatewayConnection.urlSource ? ` (${gatewayConnection.urlSource})` : ""}`;
     const reach = remoteUrlMissing
-      ? warn("misconfigured (remote.url missing)")
+      ? warn("配置错误（缺少 remote.url）")
       : gatewayReachable
-        ? ok(`reachable ${formatDuration(gatewayProbe?.connectLatencyMs)}`)
-        : warn(gatewayProbe?.error ? `unreachable (${gatewayProbe.error})` : "unreachable");
+        ? ok(`可达 ${formatDuration(gatewayProbe?.connectLatencyMs)}`)
+        : warn(gatewayProbe?.error ? `不可达 (${gatewayProbe.error})` : "不可达");
     const auth =
       gatewayReachable && !remoteUrlMissing
-        ? ` · auth ${formatGatewayAuthUsed(resolveGatewayProbeAuth(cfg))}`
+        ? ` · 认证 ${formatGatewayAuthUsed(resolveGatewayProbeAuth(cfg))}`
         : "";
     const self =
       gatewaySelf?.host || gatewaySelf?.version || gatewaySelf?.platform
         ? [
             gatewaySelf?.host ? gatewaySelf.host : null,
             gatewaySelf?.ip ? `(${gatewaySelf.ip})` : null,
-            gatewaySelf?.version ? `app ${gatewaySelf.version}` : null,
+            gatewaySelf?.version ? `应用 ${gatewaySelf.version}` : null,
             gatewaySelf?.platform ? gatewaySelf.platform : null,
           ]
             .filter(Boolean)
@@ -227,12 +227,12 @@ export async function statusCommand(
   const agentsValue = (() => {
     const pending =
       agentStatus.bootstrapPendingCount > 0
-        ? `${agentStatus.bootstrapPendingCount} bootstrapping`
-        : "no bootstraps";
+        ? `${agentStatus.bootstrapPendingCount} 正在引导`
+        : "无引导";
     const def = agentStatus.agents.find((a) => a.id === agentStatus.defaultId);
-    const defActive = def?.lastActiveAgeMs != null ? formatAge(def.lastActiveAgeMs) : "unknown";
-    const defSuffix = def ? ` · default ${def.id} active ${defActive}` : "";
-    return `${agentStatus.agents.length} · ${pending} · sessions ${agentStatus.totalSessions}${defSuffix}`;
+    const defActive = def?.lastActiveAgeMs != null ? formatAge(def.lastActiveAgeMs) : "未知";
+    const defSuffix = def ? ` · 默认 ${def.id} 活跃 ${defActive}` : "";
+    return `${agentStatus.agents.length} · ${pending} · 会话 ${agentStatus.totalSessions}${defSuffix}`;
   })();
 
   const [daemon, nodeDaemon] = await Promise.all([
@@ -241,16 +241,16 @@ export async function statusCommand(
   ]);
   const daemonValue = (() => {
     if (daemon.installed === false) {
-      return `${daemon.label} not installed`;
+      return `${daemon.label} 未安装`;
     }
-    const installedPrefix = daemon.installed === true ? "installed · " : "";
+    const installedPrefix = daemon.installed === true ? "已安装 · " : "";
     return `${daemon.label} ${installedPrefix}${daemon.loadedText}${daemon.runtimeShort ? ` · ${daemon.runtimeShort}` : ""}`;
   })();
   const nodeDaemonValue = (() => {
     if (nodeDaemon.installed === false) {
-      return `${nodeDaemon.label} not installed`;
+      return `${nodeDaemon.label} 未安装`;
     }
-    const installedPrefix = nodeDaemon.installed === true ? "installed · " : "";
+    const installedPrefix = nodeDaemon.installed === true ? "已安装 · " : "";
     return `${nodeDaemon.label} ${installedPrefix}${nodeDaemon.loadedText}${nodeDaemon.runtimeShort ? ` · ${nodeDaemon.runtimeShort}` : ""}`;
   })();
 
@@ -259,45 +259,45 @@ export async function statusCommand(
     ? ` (${formatKTokens(defaults.contextTokens)} ctx)`
     : "";
   const eventsValue =
-    summary.queuedSystemEvents.length > 0 ? `${summary.queuedSystemEvents.length} queued` : "none";
+    summary.queuedSystemEvents.length > 0 ? `${summary.queuedSystemEvents.length} 排队中` : "无";
 
-  const probesValue = health ? ok("enabled") : muted("skipped (use --deep)");
+  const probesValue = health ? ok("已启用") : muted("已跳过（使用 --deep）");
 
   const heartbeatValue = (() => {
     const parts = summary.heartbeat.agents
       .map((agent) => {
         if (!agent.enabled || !agent.everyMs) {
-          return `disabled (${agent.agentId})`;
+          return `已禁用 (${agent.agentId})`;
         }
         const everyLabel = agent.every;
         return `${everyLabel} (${agent.agentId})`;
       })
       .filter(Boolean);
-    return parts.length > 0 ? parts.join(", ") : "disabled";
+    return parts.length > 0 ? parts.join(", ") : "已禁用";
   })();
 
   const storeLabel =
     summary.sessions.paths.length > 1
-      ? `${summary.sessions.paths.length} stores`
-      : (summary.sessions.paths[0] ?? "unknown");
+      ? `${summary.sessions.paths.length} 个存储`
+      : (summary.sessions.paths[0] ?? "未知");
 
   const memoryValue = (() => {
     if (!memoryPlugin.enabled) {
       const suffix = memoryPlugin.reason ? ` (${memoryPlugin.reason})` : "";
-      return muted(`disabled${suffix}`);
+      return muted(`已禁用${suffix}`);
     }
     if (!memory) {
-      const slot = memoryPlugin.slot ? `plugin ${memoryPlugin.slot}` : "plugin";
-      return muted(`enabled (${slot}) · unavailable`);
+      const slot = memoryPlugin.slot ? `插件 ${memoryPlugin.slot}` : "插件";
+      return muted(`已启用 (${slot}) · 不可用`);
     }
     const parts: string[] = [];
-    const dirtySuffix = memory.dirty ? ` · ${warn("dirty")}` : "";
-    parts.push(`${memory.files} files · ${memory.chunks} chunks${dirtySuffix}`);
+    const dirtySuffix = memory.dirty ? ` · ${warn("脏数据")}` : "";
+    parts.push(`${memory.files} 个文件 · ${memory.chunks} 个块${dirtySuffix}`);
     if (memory.sources?.length) {
-      parts.push(`sources ${memory.sources.join(", ")}`);
+      parts.push(`来源 ${memory.sources.join(", ")}`);
     }
     if (memoryPlugin.slot) {
-      parts.push(`plugin ${memoryPlugin.slot}`);
+      parts.push(`插件 ${memoryPlugin.slot}`);
     }
     const colorByTone = (tone: Tone, text: string) =>
       tone === "ok" ? ok(text) : tone === "warn" ? warn(text) : muted(text);
@@ -346,40 +346,40 @@ export async function statusCommand(
       : null;
 
   const overviewRows = [
-    { Item: "Dashboard", Value: dashboard },
-    { Item: "OS", Value: `${osSummary.label} · node ${process.versions.node}` },
+    { Item: "控制面板", Value: dashboard },
+    { Item: "操作系统", Value: `${osSummary.label} · node ${process.versions.node}` },
     {
       Item: "Tailscale",
       Value:
         tailscaleMode === "off"
-          ? muted("off")
+          ? muted("关闭")
           : tailscaleDns && tailscaleHttpsUrl
             ? `${tailscaleMode} · ${tailscaleDns} · ${tailscaleHttpsUrl}`
-            : warn(`${tailscaleMode} · magicdns unknown`),
+            : warn(`${tailscaleMode} · magicdns 未知`),
     },
-    { Item: "Channel", Value: channelLabel },
+    { Item: "更新渠道", Value: channelLabel },
     ...(gitLabel ? [{ Item: "Git", Value: gitLabel }] : []),
     {
-      Item: "Update",
-      Value: updateAvailability.available ? warn(`available · ${updateLine}`) : updateLine,
+      Item: "更新",
+      Value: updateAvailability.available ? warn(`可用 · ${updateLine}`) : updateLine,
     },
-    { Item: "Gateway", Value: gatewayValue },
-    { Item: "Gateway service", Value: daemonValue },
-    { Item: "Node service", Value: nodeDaemonValue },
-    { Item: "Agents", Value: agentsValue },
-    { Item: "Memory", Value: memoryValue },
-    { Item: "Probes", Value: probesValue },
-    { Item: "Events", Value: eventsValue },
-    { Item: "Heartbeat", Value: heartbeatValue },
+    { Item: "网关", Value: gatewayValue },
+    { Item: "网关服务", Value: daemonValue },
+    { Item: "Node 服务", Value: nodeDaemonValue },
+    { Item: "代理", Value: agentsValue },
+    { Item: "记忆", Value: memoryValue },
+    { Item: "探测", Value: probesValue },
+    { Item: "事件", Value: eventsValue },
+    { Item: "心跳", Value: heartbeatValue },
     {
-      Item: "Sessions",
-      Value: `${summary.sessions.count} active · default ${defaults.model ?? "unknown"}${defaultCtx} · ${storeLabel}`,
+      Item: "会话",
+      Value: `${summary.sessions.count} 活跃 · 默认 ${defaults.model ?? "未知"}${defaultCtx} · ${storeLabel}`,
     },
   ];
 
-  runtime.log(theme.heading("OpenClaw status"));
+  runtime.log(theme.heading("OpenClaw 状态"));
   runtime.log("");
-  runtime.log(theme.heading("Overview"));
+  runtime.log(theme.heading("概览"));
   runtime.log(
     renderTable({
       width: tableWidth,
@@ -392,21 +392,21 @@ export async function statusCommand(
   );
 
   runtime.log("");
-  runtime.log(theme.heading("Security audit"));
+  runtime.log(theme.heading("安全审计"));
   const fmtSummary = (value: { critical: number; warn: number; info: number }) => {
     const parts = [
-      theme.error(`${value.critical} critical`),
-      theme.warn(`${value.warn} warn`),
-      theme.muted(`${value.info} info`),
+      theme.error(`${value.critical} 严重`),
+      theme.warn(`${value.warn} 警告`),
+      theme.muted(`${value.info} 信息`),
     ];
     return parts.join(" · ");
   };
-  runtime.log(theme.muted(`Summary: ${fmtSummary(securityAudit.summary)}`));
+  runtime.log(theme.muted(`摘要: ${fmtSummary(securityAudit.summary)}`));
   const importantFindings = securityAudit.findings.filter(
     (f) => f.severity === "critical" || f.severity === "warn",
   );
   if (importantFindings.length === 0) {
-    runtime.log(theme.muted("No critical or warn findings detected."));
+    runtime.log(theme.muted("未检测到严重或警告级别的问题。"));
   } else {
     const severityLabel = (sev: "critical" | "warn" | "info") => {
       if (sev === "critical") {
@@ -427,18 +427,18 @@ export async function statusCommand(
       runtime.log(`  ${severityLabel(f.severity)} ${f.title}`);
       runtime.log(`    ${shortenText(f.detail.replaceAll("\n", " "), 160)}`);
       if (f.remediation?.trim()) {
-        runtime.log(`    ${theme.muted(`Fix: ${f.remediation.trim()}`)}`);
+        runtime.log(`    ${theme.muted(`修复: ${f.remediation.trim()}`)}`);
       }
     }
     if (sorted.length > shown.length) {
-      runtime.log(theme.muted(`… +${sorted.length - shown.length} more`));
+      runtime.log(theme.muted(`… 还有 ${sorted.length - shown.length} 项`));
     }
   }
-  runtime.log(theme.muted(`Full report: ${formatCliCommand("openclaw security audit")}`));
-  runtime.log(theme.muted(`Deep probe: ${formatCliCommand("openclaw security audit --deep")}`));
+  runtime.log(theme.muted(`完整报告: ${formatCliCommand("openclaw security audit")}`));
+  runtime.log(theme.muted(`深度探测: ${formatCliCommand("openclaw security audit --deep")}`));
 
   runtime.log("");
-  runtime.log(theme.heading("Channels"));
+  runtime.log(theme.heading("渠道"));
   const channelIssuesByChannel = (() => {
     const map = new Map<string, typeof channelIssues>();
     for (const issue of channelIssues) {
@@ -486,7 +486,7 @@ export async function statusCommand(
   );
 
   runtime.log("");
-  runtime.log(theme.heading("Sessions"));
+  runtime.log(theme.heading("会话"));
   runtime.log(
     renderTable({
       width: tableWidth,
@@ -502,13 +502,13 @@ export async function statusCommand(
           ? summary.sessions.recent.map((sess) => ({
               Key: shortenText(sess.key, 32),
               Kind: sess.kind,
-              Age: sess.updatedAt ? formatAge(sess.age) : "no activity",
-              Model: sess.model ?? "unknown",
+              Age: sess.updatedAt ? formatAge(sess.age) : "无活动",
+              Model: sess.model ?? "未知",
               Tokens: formatTokensCompact(sess),
             }))
           : [
               {
-                Key: muted("no sessions yet"),
+                Key: muted("暂无会话"),
                 Kind: "",
                 Age: "",
                 Model: "",
@@ -520,7 +520,7 @@ export async function statusCommand(
 
   if (summary.queuedSystemEvents.length > 0) {
     runtime.log("");
-    runtime.log(theme.heading("System events"));
+    runtime.log(theme.heading("系统事件"));
     runtime.log(
       renderTable({
         width: tableWidth,
@@ -531,17 +531,17 @@ export async function statusCommand(
       }).trimEnd(),
     );
     if (summary.queuedSystemEvents.length > 5) {
-      runtime.log(muted(`… +${summary.queuedSystemEvents.length - 5} more`));
+      runtime.log(muted(`… 还有 ${summary.queuedSystemEvents.length - 5} 项`));
     }
   }
 
   if (health) {
     runtime.log("");
-    runtime.log(theme.heading("Health"));
+    runtime.log(theme.heading("健康状态"));
     const rows: Array<Record<string, string>> = [];
     rows.push({
-      Item: "Gateway",
-      Status: ok("reachable"),
+      Item: "网关",
+      Status: ok("可达"),
       Detail: `${health.durationMs}ms`,
     });
 
@@ -592,27 +592,27 @@ export async function statusCommand(
 
   if (usage) {
     runtime.log("");
-    runtime.log(theme.heading("Usage"));
+    runtime.log(theme.heading("使用情况"));
     for (const line of formatUsageReportLines(usage)) {
       runtime.log(line);
     }
   }
 
   runtime.log("");
-  runtime.log("FAQ: https://docs.openclaw.ai/faq");
-  runtime.log("Troubleshooting: https://docs.openclaw.ai/troubleshooting");
+  runtime.log("常见问题: https://docs.openclaw.ai/faq");
+  runtime.log("故障排除: https://docs.openclaw.ai/troubleshooting");
   runtime.log("");
   const updateHint = formatUpdateAvailableHint(update);
   if (updateHint) {
     runtime.log(theme.warn(updateHint));
     runtime.log("");
   }
-  runtime.log("Next steps:");
-  runtime.log(`  Need to share?      ${formatCliCommand("openclaw status --all")}`);
-  runtime.log(`  Need to debug live? ${formatCliCommand("openclaw logs --follow")}`);
+  runtime.log("下一步:");
+  runtime.log(`  需要分享?          ${formatCliCommand("openclaw status --all")}`);
+  runtime.log(`  需要实时调试?      ${formatCliCommand("openclaw logs --follow")}`);
   if (gatewayReachable) {
-    runtime.log(`  Need to test channels? ${formatCliCommand("openclaw status --deep")}`);
+    runtime.log(`  需要测试渠道?      ${formatCliCommand("openclaw status --deep")}`);
   } else {
-    runtime.log(`  Fix reachability first: ${formatCliCommand("openclaw gateway probe")}`);
+    runtime.log(`  先修复连接问题:    ${formatCliCommand("openclaw gateway probe")}`);
   }
 }

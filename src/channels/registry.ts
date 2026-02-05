@@ -32,7 +32,7 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     detailLabel: "Telegram Bot",
     docsPath: "/channels/telegram",
     docsLabel: "telegram",
-    blurb: "simplest way to get started — register a bot with @BotFather and get going.",
+    blurb: "最简单的入门方式 - 在 @BotFather 注册机器人即可开始。",
     systemImage: "paperplane",
     selectionDocsPrefix: "",
     selectionDocsOmitLabel: true,
@@ -45,7 +45,7 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     detailLabel: "WhatsApp Web",
     docsPath: "/channels/whatsapp",
     docsLabel: "whatsapp",
-    blurb: "works with your own number; recommend a separate phone + eSIM.",
+    blurb: "使用你自己的号码；建议使用独立手机 + eSIM。",
     systemImage: "message",
   },
   discord: {
@@ -55,7 +55,7 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     detailLabel: "Discord Bot",
     docsPath: "/channels/discord",
     docsLabel: "discord",
-    blurb: "very well supported right now.",
+    blurb: "目前支持非常完善。",
     systemImage: "bubble.left.and.bubble.right",
   },
   googlechat: {
@@ -65,7 +65,7 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     detailLabel: "Google Chat",
     docsPath: "/channels/googlechat",
     docsLabel: "googlechat",
-    blurb: "Google Workspace Chat app with HTTP webhook.",
+    blurb: "Google Workspace 聊天应用，使用 HTTP webhook。",
     systemImage: "message.badge",
   },
   slack: {
@@ -75,7 +75,7 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     detailLabel: "Slack Bot",
     docsPath: "/channels/slack",
     docsLabel: "slack",
-    blurb: "supported (Socket Mode).",
+    blurb: "已支持（Socket 模式）。",
     systemImage: "number",
   },
   signal: {
@@ -85,7 +85,7 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     detailLabel: "Signal REST",
     docsPath: "/channels/signal",
     docsLabel: "signal",
-    blurb: 'signal-cli linked device; more setup (David Reagans: "Hop on Discord.").',
+    blurb: "signal-cli 链接设备；需要更多设置（如有问题请加入 Discord）。",
     systemImage: "antenna.radiowaves.left.and.right",
   },
   imessage: {
@@ -95,7 +95,7 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     detailLabel: "iMessage",
     docsPath: "/channels/imessage",
     docsLabel: "imessage",
-    blurb: "this is still a work in progress.",
+    blurb: "仍在开发中。",
     systemImage: "message.fill",
   },
 };
@@ -169,7 +169,7 @@ export function formatChannelSelectionLine(
   meta: ChatChannelMeta,
   docsLink: (path: string, label?: string) => string,
 ): string {
-  const docsPrefix = meta.selectionDocsPrefix ?? "Docs:";
+  const docsPrefix = meta.selectionDocsPrefix ?? "文档：";
   const docsLabel = meta.docsLabel ?? meta.id;
   const docs = meta.selectionDocsOmitLabel
     ? docsLink(meta.docsPath)

@@ -27,40 +27,40 @@ export async function agentsDeleteCommand(
 
   const input = opts.id?.trim();
   if (!input) {
-    runtime.error("Agent id is required.");
+    runtime.error("需要代理 ID。");
     runtime.exit(1);
     return;
   }
 
   const agentId = normalizeAgentId(input);
   if (agentId !== input) {
-    runtime.log(`Normalized agent id to "${agentId}".`);
+    runtime.log(`已将代理 ID 规范化为 "${agentId}"。`);
   }
   if (agentId === DEFAULT_AGENT_ID) {
-    runtime.error(`"${DEFAULT_AGENT_ID}" cannot be deleted.`);
+    runtime.error(`"${DEFAULT_AGENT_ID}" 不能被删除。`);
     runtime.exit(1);
     return;
   }
 
   if (findAgentEntryIndex(listAgentEntries(cfg), agentId) < 0) {
-    runtime.error(`Agent "${agentId}" not found.`);
+    runtime.error(`未找到代理 "${agentId}"。`);
     runtime.exit(1);
     return;
   }
 
   if (!opts.force) {
     if (!process.stdin.isTTY) {
-      runtime.error("Non-interactive session. Re-run with --force.");
+      runtime.error("非交互式会话。使用 --force 重新运行。");
       runtime.exit(1);
       return;
     }
     const prompter = createClackPrompter();
     const confirmed = await prompter.confirm({
-      message: `Delete agent "${agentId}" and prune workspace/state?`,
+      message: `删除代理 "${agentId}" 并清理工作空间/状态？`,
       initialValue: false,
     });
     if (!confirmed) {
-      runtime.log("Cancelled.");
+      runtime.log("已取消。");
       return;
     }
   }
@@ -96,6 +96,6 @@ export async function agentsDeleteCommand(
       ),
     );
   } else {
-    runtime.log(`Deleted agent: ${agentId}`);
+    runtime.log(`已删除代理：${agentId}`);
   }
 }

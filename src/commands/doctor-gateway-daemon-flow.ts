@@ -56,32 +56,30 @@ async function maybeRepairLaunchAgentBootstrap(params: {
     return false;
   }
 
-  note("LaunchAgent is listed but not loaded in launchd.", `${params.title} LaunchAgent`);
+  note("LaunchAgent 已列出但未在 launchd 中加载。", `${params.title} LaunchAgent`);
 
   const shouldFix = await params.prompter.confirmSkipInNonInteractive({
-    message: `Repair ${params.title} LaunchAgent bootstrap now?`,
+    message: `现在修复 ${params.title} LaunchAgent 引导？`,
     initialValue: true,
   });
   if (!shouldFix) {
     return false;
   }
 
-  params.runtime.log(`Bootstrapping ${params.title} LaunchAgent...`);
+  params.runtime.log(`正在引导 ${params.title} LaunchAgent...`);
   const repair = await repairLaunchAgentBootstrap({ env: params.env });
   if (!repair.ok) {
-    params.runtime.error(
-      `${params.title} LaunchAgent bootstrap failed: ${repair.detail ?? "unknown error"}`,
-    );
+    params.runtime.error(`${params.title} LaunchAgent 引导失败：${repair.detail ?? "未知错误"}`);
     return false;
   }
 
   const verified = await isLaunchAgentLoaded({ env: params.env });
   if (!verified) {
-    params.runtime.error(`${params.title} LaunchAgent still not loaded after repair.`);
+    params.runtime.error(`修复后 ${params.title} LaunchAgent 仍未加载。`);
     return false;
   }
 
-  note(`${params.title} LaunchAgent repaired.`, `${params.title} LaunchAgent`);
+  note(`${params.title} LaunchAgent 已修复。`, `${params.title} LaunchAgent`);
   return true;
 }
 
@@ -138,11 +136,11 @@ export async function maybeRepairGatewayDaemon(params: {
     const port = resolveGatewayPort(params.cfg, process.env);
     const diagnostics = await inspectPortUsage(port);
     if (diagnostics.status === "busy") {
-      note(formatPortDiagnostics(diagnostics).join("\n"), "Gateway port");
+      note(formatPortDiagnostics(diagnostics).join("\n"), "网关端口");
     } else if (loaded && serviceRuntime?.status === "running") {
       const lastError = await readLastGatewayErrorLine(process.env);
       if (lastError) {
-        note(`Last gateway error: ${lastError}`, "Gateway");
+        note(`最近的网关错误：${lastError}`, "网关");
       }
     }
   }
@@ -156,16 +154,16 @@ export async function maybeRepairGatewayDaemon(params: {
         return;
       }
     }
-    note("Gateway service not installed.", "Gateway");
+    note("网关服务未安装。", "网关");
     if (params.cfg.gateway?.mode !== "remote") {
       const install = await params.prompter.confirmSkipInNonInteractive({
-        message: "Install gateway service now?",
+        message: "现在安装网关服务？",
         initialValue: true,
       });
       if (install) {
         const daemonRuntime = await params.prompter.select<GatewayDaemonRuntime>(
           {
-            message: "Gateway service runtime",
+            message: "网关服务运行时",
             options: GATEWAY_DAEMON_RUNTIME_OPTIONS,
             initialValue: DEFAULT_GATEWAY_DAEMON_RUNTIME,
           },
@@ -189,8 +187,8 @@ export async function maybeRepairGatewayDaemon(params: {
             environment,
           });
         } catch (err) {
-          note(`Gateway service install failed: ${String(err)}`, "Gateway");
-          note(gatewayInstallErrorHint(), "Gateway");
+          note(`网关服务安装失败：${String(err)}`, "网关");
+          note(gatewayInstallErrorHint(), "网关");
         }
       }
     }
@@ -205,15 +203,15 @@ export async function maybeRepairGatewayDaemon(params: {
   if (summary || hints.length > 0) {
     const lines: string[] = [];
     if (summary) {
-      lines.push(`Runtime: ${summary}`);
+      lines.push(`运行时：${summary}`);
     }
     lines.push(...hints);
-    note(lines.join("\n"), "Gateway");
+    note(lines.join("\n"), "网关");
   }
 
   if (serviceRuntime?.status !== "running") {
     const start = await params.prompter.confirmSkipInNonInteractive({
-      message: "Start gateway service now?",
+      message: "现在启动网关服务？",
       initialValue: true,
     });
     if (start) {
@@ -228,14 +226,14 @@ export async function maybeRepairGatewayDaemon(params: {
   if (process.platform === "darwin") {
     const label = resolveGatewayLaunchAgentLabel(process.env.OPENCLAW_PROFILE);
     note(
-      `LaunchAgent loaded; stopping requires "${formatCliCommand("openclaw gateway stop")}" or launchctl bootout gui/$UID/${label}.`,
-      "Gateway",
+      `LaunchAgent 已加载；停止需要 "${formatCliCommand("openclaw gateway stop")}" 或 launchctl bootout gui/$UID/${label}。`,
+      "网关",
     );
   }
 
   if (serviceRuntime?.status === "running") {
     const restart = await params.prompter.confirmSkipInNonInteractive({
-      message: "Restart gateway service now?",
+      message: "现在重启网关服务？",
       initialValue: true,
     });
     if (restart) {
@@ -249,8 +247,8 @@ export async function maybeRepairGatewayDaemon(params: {
       } catch (err) {
         const message = String(err);
         if (message.includes("gateway closed")) {
-          note("Gateway not running.", "Gateway");
-          note(params.gatewayDetailsMessage, "Gateway connection");
+          note("网关未运行。", "网关");
+          note(params.gatewayDetailsMessage, "网关连接");
         } else {
           params.runtime.error(formatHealthCheckFailure(err));
         }

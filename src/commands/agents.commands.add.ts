@@ -64,37 +64,33 @@ export async function agentsAddCommand(
   const nonInteractive = Boolean(opts.nonInteractive || hasFlags);
 
   if (nonInteractive && !workspaceFlag) {
-    runtime.error(
-      "Non-interactive mode requires --workspace. Re-run without flags to use the wizard.",
-    );
+    runtime.error("非交互模式需要 --workspace 参数。不带参数重新运行以使用向导。");
     runtime.exit(1);
     return;
   }
 
   if (nonInteractive) {
     if (!nameInput) {
-      runtime.error("Agent name is required in non-interactive mode.");
+      runtime.error("非交互模式需要代理名称。");
       runtime.exit(1);
       return;
     }
     if (!workspaceFlag) {
-      runtime.error(
-        "Non-interactive mode requires --workspace. Re-run without flags to use the wizard.",
-      );
+      runtime.error("非交互模式需要 --workspace 参数。不带参数重新运行以使用向导。");
       runtime.exit(1);
       return;
     }
     const agentId = normalizeAgentId(nameInput);
     if (agentId === DEFAULT_AGENT_ID) {
-      runtime.error(`"${DEFAULT_AGENT_ID}" is reserved. Choose another name.`);
+      runtime.error(`"${DEFAULT_AGENT_ID}" 是保留名称。请选择其他名称。`);
       runtime.exit(1);
       return;
     }
     if (agentId !== nameInput) {
-      runtime.log(`Normalized agent id to "${agentId}".`);
+      runtime.log(`已将代理 ID 规范化为 "${agentId}"。`);
     }
     if (findAgentEntryIndex(listAgentEntries(cfg), agentId) >= 0) {
-      runtime.error(`Agent "${agentId}" already exists.`);
+      runtime.error(`代理 "${agentId}" 已存在。`);
       runtime.exit(1);
       return;
     }
@@ -154,19 +150,19 @@ export async function agentsAddCommand(
     if (opts.json) {
       runtime.log(JSON.stringify(payload, null, 2));
     } else {
-      runtime.log(`Agent: ${agentId}`);
-      runtime.log(`Workspace: ${shortenHomePath(workspaceDir)}`);
-      runtime.log(`Agent dir: ${shortenHomePath(agentDir)}`);
+      runtime.log(`代理：${agentId}`);
+      runtime.log(`工作空间：${shortenHomePath(workspaceDir)}`);
+      runtime.log(`代理目录：${shortenHomePath(agentDir)}`);
       if (model) {
-        runtime.log(`Model: ${model}`);
+        runtime.log(`模型：${model}`);
       }
       if (bindingResult.conflicts.length > 0) {
         runtime.error(
           [
-            "Skipped bindings already claimed by another agent:",
+            "跳过已被其他代理占用的绑定：",
             ...bindingResult.conflicts.map(
               (conflict) =>
-                `- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`,
+                `- ${describeBinding(conflict.binding)} (代理=${conflict.existingAgentId})`,
             ),
           ].join("\n"),
         );
@@ -177,18 +173,18 @@ export async function agentsAddCommand(
 
   const prompter = createClackPrompter();
   try {
-    await prompter.intro("Add OpenClaw agent");
+    await prompter.intro("添加 OpenClaw 代理");
     const name =
       nameInput ??
       (await prompter.text({
-        message: "Agent name",
+        message: "代理名称",
         validate: (value) => {
           if (!value?.trim()) {
-            return "Required";
+            return "必填";
           }
           const normalized = normalizeAgentId(value);
           if (normalized === DEFAULT_AGENT_ID) {
-            return `"${DEFAULT_AGENT_ID}" is reserved. Choose another name.`;
+            return `"${DEFAULT_AGENT_ID}" 是保留名称。请选择其他名称。`;
           }
           return undefined;
         },
@@ -197,7 +193,7 @@ export async function agentsAddCommand(
     const agentName = String(name).trim();
     const agentId = normalizeAgentId(agentName);
     if (agentName !== agentId) {
-      await prompter.note(`Normalized id to "${agentId}".`, "Agent id");
+      await prompter.note(`已将 ID 规范化为 "${agentId}"。`, "代理 ID");
     }
 
     const existingAgent = listAgentEntries(cfg).find(
@@ -205,20 +201,20 @@ export async function agentsAddCommand(
     );
     if (existingAgent) {
       const shouldUpdate = await prompter.confirm({
-        message: `Agent "${agentId}" already exists. Update it?`,
+        message: `代理 "${agentId}" 已存在。是否更新？`,
         initialValue: false,
       });
       if (!shouldUpdate) {
-        await prompter.outro("No changes made.");
+        await prompter.outro("未做任何更改。");
         return;
       }
     }
 
     const workspaceDefault = resolveAgentWorkspaceDir(cfg, agentId);
     const workspaceInput = await prompter.text({
-      message: "Workspace directory",
+      message: "工作空间目录",
       initialValue: workspaceDefault,
-      validate: (value) => (value?.trim() ? undefined : "Required"),
+      validate: (value) => (value?.trim() ? undefined : "必填"),
     });
     const workspaceDir = resolveUserPath(String(workspaceInput).trim() || workspaceDefault);
     const agentDir = resolveAgentDir(cfg, agentId);
@@ -242,19 +238,19 @@ export async function agentsAddCommand(
         !(await fileExists(destAuthPath))
       ) {
         const shouldCopy = await prompter.confirm({
-          message: `Copy auth profiles from "${defaultAgentId}"?`,
+          message: `从 "${defaultAgentId}" 复制认证配置？`,
           initialValue: false,
         });
         if (shouldCopy) {
           await fs.mkdir(path.dirname(destAuthPath), { recursive: true });
           await fs.copyFile(sourceAuthPath, destAuthPath);
-          await prompter.note(`Copied auth profiles from "${defaultAgentId}".`, "Auth profiles");
+          await prompter.note(`已从 "${defaultAgentId}" 复制认证配置。`, "认证配置");
         }
       }
     }
 
     const wantsAuth = await prompter.confirm({
-      message: "Configure model/auth for this agent now?",
+      message: "现在为此代理配置模型/认证？",
       initialValue: false,
     });
     if (wantsAuth) {
@@ -305,7 +301,7 @@ export async function agentsAddCommand(
 
     if (selection.length > 0) {
       const wantsBindings = await prompter.confirm({
-        message: "Route selected channels to this agent now? (bindings)",
+        message: "现在将选定的频道路由到此代理？（绑定）",
         initialValue: false,
       });
       if (wantsBindings) {
@@ -320,22 +316,22 @@ export async function agentsAddCommand(
         if (result.conflicts.length > 0) {
           await prompter.note(
             [
-              "Skipped bindings already claimed by another agent:",
+              "跳过已被其他代理占用的绑定：",
               ...result.conflicts.map(
                 (conflict) =>
-                  `- ${describeBinding(conflict.binding)} (agent=${conflict.existingAgentId})`,
+                  `- ${describeBinding(conflict.binding)} (代理=${conflict.existingAgentId})`,
               ),
             ].join("\n"),
-            "Routing bindings",
+            "路由绑定",
           );
         }
       } else {
         await prompter.note(
           [
-            "Routing unchanged. Add bindings when you're ready.",
-            "Docs: https://docs.openclaw.ai/concepts/multi-agent",
+            "路由未更改。准备好后再添加绑定。",
+            "文档：https://docs.openclaw.ai/concepts/multi-agent",
           ].join("\n"),
-          "Routing",
+          "路由",
         );
       }
     }
@@ -356,7 +352,7 @@ export async function agentsAddCommand(
     if (opts.json) {
       runtime.log(JSON.stringify(payload, null, 2));
     }
-    await prompter.outro(`Agent "${agentId}" ready.`);
+    await prompter.outro(`代理 "${agentId}" 已就绪。`);
   } catch (err) {
     if (err instanceof WizardCancelledError) {
       runtime.exit(0);

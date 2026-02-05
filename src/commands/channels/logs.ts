@@ -97,12 +97,12 @@ export async function channelsLogsCommand(
     return;
   }
 
-  runtime.log(theme.info(`Log file: ${file}`));
+  runtime.log(theme.info(`日志文件：${file}`));
   if (channel !== "all") {
-    runtime.log(theme.info(`Channel: ${channel}`));
+    runtime.log(theme.info(`频道：${channel}`));
   }
   if (lines.length === 0) {
-    runtime.log(theme.muted("No matching log lines."));
+    runtime.log(theme.muted("没有匹配的日志行。"));
     return;
   }
   for (const line of lines) {

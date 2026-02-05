@@ -37,9 +37,9 @@ export async function modelsAliasesListCommand(
     return;
   }
 
-  runtime.log(`Aliases (${Object.keys(aliases).length}):`);
+  runtime.log(`别名（${Object.keys(aliases).length}）：`);
   if (Object.keys(aliases).length === 0) {
-    runtime.log("- none");
+    runtime.log("- 无");
     return;
   }
   for (const [alias, target] of Object.entries(aliases)) {
@@ -60,7 +60,7 @@ export async function modelsAliasesAddCommand(
     for (const [key, entry] of Object.entries(nextModels)) {
       const existing = entry?.alias?.trim();
       if (existing && existing === alias && key !== modelKey) {
-        throw new Error(`Alias ${alias} already points to ${key}.`);
+        throw new Error(`别名 ${alias} 已指向 ${key}。`);
       }
     }
     const existing = nextModels[modelKey] ?? {};
@@ -78,7 +78,7 @@ export async function modelsAliasesAddCommand(
   });
 
   logConfigUpdated(runtime);
-  runtime.log(`Alias ${alias} -> ${resolved.provider}/${resolved.model}`);
+  runtime.log(`别名 ${alias} -> ${resolved.provider}/${resolved.model}`);
 }
 
 export async function modelsAliasesRemoveCommand(aliasRaw: string, runtime: RuntimeEnv) {
@@ -94,7 +94,7 @@ export async function modelsAliasesRemoveCommand(aliasRaw: string, runtime: Runt
       }
     }
     if (!found) {
-      throw new Error(`Alias not found: ${alias}`);
+      throw new Error(`未找到别名：${alias}`);
     }
     return {
       ...cfg,
@@ -113,6 +113,6 @@ export async function modelsAliasesRemoveCommand(aliasRaw: string, runtime: Runt
     !updated.agents?.defaults?.models ||
     Object.values(updated.agents.defaults.models).every((entry) => !entry?.alias?.trim())
   ) {
-    runtime.log("No aliases configured.");
+    runtime.log("未配置别名。");
   }
 }

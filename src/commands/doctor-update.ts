@@ -45,30 +45,30 @@ export async function maybeOfferUpdateBeforeDoctor(params: {
   const git = await detectOpenClawGitCheckout(params.root);
   if (git === "git") {
     const shouldUpdate = await params.confirm({
-      message: "Update OpenClaw from git before running doctor?",
+      message: "运行 doctor 前从 git 更新 OpenClaw？",
       initialValue: true,
     });
     if (!shouldUpdate) {
       return { updated: false };
     }
-    note("Running update (fetch/rebase/build/ui:build/doctor)…", "Update");
+    note("正在运行更新（fetch/rebase/build/ui:build/doctor）…", "更新");
     const result = await runGatewayUpdate({
       cwd: params.root,
       argv1: process.argv[1],
     });
     note(
       [
-        `Status: ${result.status}`,
-        `Mode: ${result.mode}`,
-        result.root ? `Root: ${result.root}` : null,
-        result.reason ? `Reason: ${result.reason}` : null,
+        `状态：${result.status}`,
+        `模式：${result.mode}`,
+        result.root ? `根目录：${result.root}` : null,
+        result.reason ? `原因：${result.reason}` : null,
       ]
         .filter(Boolean)
         .join("\n"),
-      "Update result",
+      "更新结果",
     );
     if (result.status === "ok") {
-      params.outro("Update completed (doctor already ran as part of the update).");
+      params.outro("更新完成（doctor 已作为更新的一部分运行）。");
       return { updated: true, handled: true };
     }
     return { updated: true, handled: false };
@@ -77,10 +77,10 @@ export async function maybeOfferUpdateBeforeDoctor(params: {
   if (git === "not-git") {
     note(
       [
-        "This install is not a git checkout.",
-        `Run \`${formatCliCommand("openclaw update")}\` to update via your package manager (npm/pnpm), then rerun doctor.`,
+        "此安装不是 git 检出。",
+        `运行 \`${formatCliCommand("openclaw update")}\` 通过包管理器（npm/pnpm）更新，然后重新运行 doctor。`,
       ].join("\n"),
-      "Update",
+      "更新",
     );
   }
 

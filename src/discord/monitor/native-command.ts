@@ -203,7 +203,7 @@ async function safeDiscordInteractionCall<T>(
     return await fn();
   } catch (error) {
     if (isDiscordUnknownInteraction(error)) {
-      console.warn(`discord: ${label} skipped (interaction expired)`);
+      console.warn(`discord: ${label} 已跳过 (交互已过期)`);
       return null;
     }
     throw error;
@@ -263,7 +263,7 @@ async function handleDiscordCommandArgInteraction(
   if (!parsed) {
     await safeDiscordInteractionCall("command arg update", () =>
       interaction.update({
-        content: "Sorry, that selection is no longer available.",
+        content: "抱歉，该选项已不再可用。",
         components: [],
       }),
     );
@@ -279,7 +279,7 @@ async function handleDiscordCommandArgInteraction(
   if (!commandDefinition) {
     await safeDiscordInteractionCall("command arg update", () =>
       interaction.update({
-        content: "Sorry, that command is no longer available.",
+        content: "抱歉，该命令已不再可用。",
         components: [],
       }),
     );
@@ -287,7 +287,7 @@ async function handleDiscordCommandArgInteraction(
   }
   const updated = await safeDiscordInteractionCall("command arg update", () =>
     interaction.update({
-      content: `✅ Selected ${parsed.value}.`,
+      content: `已选择 ${parsed.value}。`,
       components: [],
     }),
   );
@@ -407,7 +407,7 @@ function buildDiscordCommandArgMenu(params: {
     return new Row(buttons);
   });
   const content =
-    menu.title ?? `Choose ${menu.arg.description || menu.arg.name} for /${commandLabel}.`;
+    menu.title ?? `请为 /${commandLabel} 选择 ${menu.arg.description || menu.arg.name}。`;
   return { content, components: rows };
 }
 
@@ -588,11 +588,11 @@ async function dispatchDiscordCommandInteraction(params: {
       })
     : null;
   if (channelConfig?.enabled === false) {
-    await respond("This channel is disabled.");
+    await respond("此频道已禁用。");
     return;
   }
   if (interaction.guild && channelConfig?.allowed === false) {
-    await respond("This channel is not allowed.");
+    await respond("此频道不被允许。");
     return;
   }
   if (useAccessGroups && interaction.guild) {
@@ -606,7 +606,7 @@ async function dispatchDiscordCommandInteraction(params: {
       channelAllowed,
     });
     if (!allowByPolicy) {
-      await respond("This channel is not allowed.");
+      await respond("此频道不被允许。");
       return;
     }
   }
@@ -615,7 +615,7 @@ async function dispatchDiscordCommandInteraction(params: {
   let commandAuthorized = true;
   if (isDirectMessage) {
     if (!dmEnabled || dmPolicy === "disabled") {
-      await respond("Discord DMs are disabled.");
+      await respond("Discord 私信已禁用。");
       return;
     }
     if (dmPolicy !== "open") {
@@ -651,7 +651,7 @@ async function dispatchDiscordCommandInteraction(params: {
             );
           }
         } else {
-          await respond("You are not authorized to use this command.", { ephemeral: true });
+          await respond("你没有权限使用此命令。", { ephemeral: true });
         }
         return;
       }
@@ -681,12 +681,12 @@ async function dispatchDiscordCommandInteraction(params: {
       modeWhenAccessGroupsOff: "configured",
     });
     if (!commandAuthorized) {
-      await respond("You are not authorized to use this command.", { ephemeral: true });
+      await respond("你没有权限使用此命令。", { ephemeral: true });
       return;
     }
   }
   if (isGroupDm && discordConfig?.dm?.groupEnabled === false) {
-    await respond("Discord group DMs are disabled.");
+    await respond("Discord 群组私信已禁用。");
     return;
   }
 
@@ -811,7 +811,7 @@ async function dispatchDiscordCommandInteraction(params: {
           });
         } catch (error) {
           if (isDiscordUnknownInteraction(error)) {
-            console.warn("discord: interaction reply skipped (interaction expired)");
+            console.warn("discord: 交互回复已跳过 (交互已过期)");
             return;
           }
           throw error;
@@ -819,7 +819,7 @@ async function dispatchDiscordCommandInteraction(params: {
         didReply = true;
       },
       onError: (err, info) => {
-        console.error(`discord slash ${info.kind} reply failed`, err);
+        console.error(`discord 斜杠命令 ${info.kind} 回复失败`, err);
       },
     },
     replyOptions: {

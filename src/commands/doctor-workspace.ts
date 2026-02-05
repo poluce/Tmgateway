@@ -4,10 +4,10 @@ import { DEFAULT_AGENTS_FILENAME } from "../agents/workspace.js";
 import { shortenHomePath } from "../utils.js";
 
 export const MEMORY_SYSTEM_PROMPT = [
-  "Memory system not found in workspace.",
-  "Paste this into your agent:",
+  "工作空间中未找到记忆系统。",
+  "将以下内容粘贴到您的代理中：",
   "",
-  "Install the memory system by applying:",
+  "通过应用以下提交安装记忆系统：",
   "https://github.com/openclaw/openclaw/commit/9ffea23f31ca1df5183b25668f8f814bee0fb34e",
   "https://github.com/openclaw/openclaw/commit/7d1fee70e76f2f634f1b41fca927ee663914183a",
 ].join("\n");
@@ -52,9 +52,9 @@ export function detectLegacyWorkspaceDirs(params: {
 
 export function formatLegacyWorkspaceWarning(detection: LegacyWorkspaceDetection): string {
   return [
-    "Extra workspace directories detected (may contain old agent files):",
+    "检测到额外的工作空间目录（可能包含旧的代理文件）：",
     ...detection.legacyDirs.map((dir) => `- ${shortenHomePath(dir)}`),
-    `Active workspace: ${shortenHomePath(detection.activeWorkspace)}`,
-    "If unused, archive or move to Trash.",
+    `活动工作空间：${shortenHomePath(detection.activeWorkspace)}`,
+    "如果未使用，请归档或移至废纸篓。",
   ].join("\n");
 }

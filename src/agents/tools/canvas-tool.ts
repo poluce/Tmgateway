@@ -50,10 +50,9 @@ const CanvasToolSchema = Type.Object({
 
 export function createCanvasTool(): AnyAgentTool {
   return {
-    label: "Canvas",
+    label: "画布",
     name: "canvas",
-    description:
-      "Control node canvases (present/hide/navigate/eval/snapshot/A2UI). Use snapshot to capture the rendered UI.",
+    description: "控制节点画布（展示/隐藏/导航/执行/截图/A2UI）。使用 snapshot 捕获渲染的 UI。",
     parameters: CanvasToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -164,7 +163,7 @@ export function createCanvasTool(): AnyAgentTool {
                 ? await fs.readFile(params.jsonlPath.trim(), "utf8")
                 : "";
           if (!jsonl.trim()) {
-            throw new Error("jsonl or jsonlPath required");
+            throw new Error("需要提供 jsonl 或 jsonlPath");
           }
           await invoke("canvas.a2ui.pushJSONL", { jsonl });
           return jsonResult({ ok: true });
@@ -173,7 +172,7 @@ export function createCanvasTool(): AnyAgentTool {
           await invoke("canvas.a2ui.reset", undefined);
           return jsonResult({ ok: true });
         default:
-          throw new Error(`Unknown action: ${action}`);
+          throw new Error(`未知操作：${action}`);
       }
     },
   };

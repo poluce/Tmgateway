@@ -26,17 +26,17 @@ export async function applyAuthChoiceMiniMax(
       return;
     }
     await params.prompter.note(
-      `Default model set to ${model} for agent "${params.agentId}".`,
-      "Model configured",
+      `默认模型已设置为 ${model}，代理 "${params.agentId}"。`,
+      "模型已配置",
     );
   };
   if (params.authChoice === "minimax-portal") {
     // Let user choose between Global/CN endpoints
     const endpoint = await params.prompter.select({
-      message: "Select MiniMax endpoint",
+      message: "选择 MiniMax 端点",
       options: [
-        { value: "oauth", label: "Global", hint: "OAuth for international users" },
-        { value: "oauth-cn", label: "CN", hint: "OAuth for users in China" },
+        { value: "oauth", label: "全球", hint: "国际用户使用 OAuth" },
+        { value: "oauth-cn", label: "中国", hint: "中国用户使用 OAuth" },
       ],
     });
 
@@ -60,7 +60,7 @@ export async function applyAuthChoiceMiniMax(
     const envKey = resolveEnvApiKey("minimax");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing MINIMAX_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 MINIMAX_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -70,7 +70,7 @@ export async function applyAuthChoiceMiniMax(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter MiniMax API key",
+        message: "输入 MiniMax API 密钥",
         validate: validateApiKeyInput,
       });
       await setMinimaxApiKey(normalizeApiKeyInput(String(key)), params.agentDir);

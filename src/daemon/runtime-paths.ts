@@ -142,9 +142,9 @@ export function renderSystemNodeWarning(
   if (!systemNode || systemNode.supported) {
     return null;
   }
-  const versionLabel = systemNode.version ?? "unknown";
-  const selectedLabel = selectedNodePath ? ` Using ${selectedNodePath} for the daemon.` : "";
-  return `System Node ${versionLabel} at ${systemNode.path} is below the required Node 22+.${selectedLabel} Install Node 22+ from nodejs.org or Homebrew.`;
+  const versionLabel = systemNode.version ?? "未知";
+  const selectedLabel = selectedNodePath ? ` 守护进程使用 ${selectedNodePath}。` : "";
+  return `系统 Node ${versionLabel}（位于 ${systemNode.path}）低于所需的 Node 22+。${selectedLabel}请从 nodejs.org 或 Homebrew 安装 Node 22+。`;
 }
 
 export async function resolvePreferredNodePath(params: {

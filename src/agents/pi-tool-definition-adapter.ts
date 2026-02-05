@@ -157,7 +157,7 @@ export function toClientToolDefinitions(
         return jsonResult({
           status: "pending",
           tool: func.name,
-          message: "Tool execution delegated to client",
+          message: "工具执行已委托给客户端",
         });
       },
     } satisfies ToolDefinition;

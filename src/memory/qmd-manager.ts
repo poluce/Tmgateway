@@ -282,11 +282,11 @@ export class QmdMemoryManager implements MemorySearchManager {
     progress?: (update: MemorySyncProgressUpdate) => void;
   }): Promise<void> {
     if (params?.progress) {
-      params.progress({ completed: 0, total: 1, label: "Updating QMD index…" });
+      params.progress({ completed: 0, total: 1, label: "正在更新 QMD 索引…" });
     }
     await this.runUpdate(params?.reason ?? "manual", params?.force);
     if (params?.progress) {
-      params.progress({ completed: 1, total: 1, label: "QMD index updated" });
+      params.progress({ completed: 1, total: 1, label: "QMD 索引已更新" });
     }
   }
 
@@ -297,15 +297,15 @@ export class QmdMemoryManager implements MemorySearchManager {
   }): Promise<{ text: string; path: string }> {
     const relPath = params.relPath?.trim();
     if (!relPath) {
-      throw new Error("path required");
+      throw new Error("需要提供路径");
     }
     const absPath = this.resolveReadPath(relPath);
     if (!absPath.endsWith(".md")) {
-      throw new Error("path required");
+      throw new Error("需要提供路径");
     }
     const stat = await fs.lstat(absPath);
     if (stat.isSymbolicLink() || !stat.isFile()) {
-      throw new Error("path required");
+      throw new Error("需要提供路径");
     }
     const content = await fs.readFile(absPath, "utf-8");
     if (!params.from && !params.lines) {
@@ -730,22 +730,22 @@ export class QmdMemoryManager implements MemorySearchManager {
     if (relPath.startsWith("qmd/")) {
       const [, collection, ...rest] = relPath.split("/");
       if (!collection || rest.length === 0) {
-        throw new Error("invalid qmd path");
+        throw new Error("无效的 qmd 路径");
       }
       const root = this.collectionRoots.get(collection);
       if (!root) {
-        throw new Error(`unknown qmd collection: ${collection}`);
+        throw new Error(`未知的 qmd 集合：${collection}`);
       }
       const joined = rest.join("/");
       const resolved = path.resolve(root.path, joined);
       if (!this.isWithinRoot(root.path, resolved)) {
-        throw new Error("qmd path escapes collection");
+        throw new Error("qmd 路径超出集合范围");
       }
       return resolved;
     }
     const absPath = path.resolve(this.workspaceDir, relPath);
     if (!this.isWithinWorkspace(absPath)) {
-      throw new Error("path escapes workspace");
+      throw new Error("路径超出工作区范围");
     }
     return absPath;
   }

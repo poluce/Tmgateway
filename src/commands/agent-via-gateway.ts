@@ -58,7 +58,7 @@ function parseTimeoutSeconds(opts: { cfg: ReturnType<typeof loadConfig>; timeout
       ? Number.parseInt(String(opts.timeout), 10)
       : (opts.cfg.agents?.defaults?.timeoutSeconds ?? 600);
   if (Number.isNaN(raw) || raw <= 0) {
-    throw new Error("--timeout must be a positive integer (seconds)");
+    throw new Error("--timeout 必须是正整数（秒）");
   }
   return raw;
 }
@@ -86,10 +86,10 @@ function formatPayloadForLog(payload: {
 export async function agentViaGatewayCommand(opts: AgentCliOpts, runtime: RuntimeEnv) {
   const body = (opts.message ?? "").trim();
   if (!body) {
-    throw new Error("Message (--message) is required");
+    throw new Error("消息 (--message) 是必需的");
   }
   if (!opts.to && !opts.sessionId && !opts.agent) {
-    throw new Error("Pass --to <E.164>, --session-id, or --agent to choose a session");
+    throw new Error("传递 --to <E.164>、--session-id 或 --agent 以选择会话");
   }
 
   const cfg = loadConfig();
@@ -99,7 +99,7 @@ export async function agentViaGatewayCommand(opts: AgentCliOpts, runtime: Runtim
     const knownAgents = listAgentIds(cfg);
     if (!knownAgents.includes(agentId)) {
       throw new Error(
-        `Unknown agent id "${agentIdRaw}". Use "${formatCliCommand("openclaw agents list")}" to see configured agents.`,
+        `未知代理 ID "${agentIdRaw}"。使用 "${formatCliCommand("openclaw agents list")}" 查看已配置的代理。`,
       );
     }
   }
@@ -118,7 +118,7 @@ export async function agentViaGatewayCommand(opts: AgentCliOpts, runtime: Runtim
 
   const response = await withProgress(
     {
-      label: "Waiting for agent reply…",
+      label: "正在等待代理回复…",
       indeterminate: true,
       enabled: opts.json !== true,
     },
@@ -158,7 +158,7 @@ export async function agentViaGatewayCommand(opts: AgentCliOpts, runtime: Runtim
   const payloads = result?.payloads ?? [];
 
   if (payloads.length === 0) {
-    runtime.log(response?.summary ? String(response.summary) : "No reply from agent.");
+    runtime.log(response?.summary ? String(response.summary) : "代理无回复。");
     return response;
   }
 
@@ -185,7 +185,7 @@ export async function agentCliCommand(opts: AgentCliOpts, runtime: RuntimeEnv, d
   try {
     return await agentViaGatewayCommand(opts, runtime);
   } catch (err) {
-    runtime.error?.(`Gateway agent failed; falling back to embedded: ${String(err)}`);
+    runtime.error?.(`网关代理失败；回退到嵌入式: ${String(err)}`);
     return await agentCommand(localOpts, runtime, deps);
   }
 }

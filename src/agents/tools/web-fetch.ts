@@ -391,10 +391,10 @@ async function runWebFetch(params: {
   try {
     parsedUrl = new URL(params.url);
   } catch {
-    throw new Error("Invalid URL: must be http or https");
+    throw new Error("无效的 URL：必须是 http 或 https");
   }
   if (!["http:", "https:"].includes(parsedUrl.protocol)) {
-    throw new Error("Invalid URL: must be http or https");
+    throw new Error("无效的 URL：必须是 http 或 https");
   }
 
   const start = Date.now();
@@ -535,9 +535,7 @@ async function runWebFetch(params: {
           }
         }
       } else {
-        throw new Error(
-          "Web fetch extraction failed: Readability disabled and Firecrawl unavailable.",
-        );
+        throw new Error("网页获取提取失败：Readability 已禁用且 Firecrawl 不可用。");
       }
     } else if (contentType.includes("application/json")) {
       try {
@@ -649,10 +647,10 @@ export function createWebFetchTool(options?: {
     (fetch && "userAgent" in fetch && typeof fetch.userAgent === "string" && fetch.userAgent) ||
     DEFAULT_FETCH_USER_AGENT;
   return {
-    label: "Web Fetch",
+    label: "网页获取",
     name: "web_fetch",
     description:
-      "Fetch and extract readable content from a URL (HTML → markdown/text). Use for lightweight page access without browser automation.",
+      "从 URL 获取并提取可读内容（HTML → markdown/文本）。用于无需浏览器自动化的轻量级页面访问。",
     parameters: WebFetchSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;

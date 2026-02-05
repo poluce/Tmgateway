@@ -269,11 +269,11 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
         let indexError: string | undefined;
         const syncFn = manager.sync ? manager.sync.bind(manager) : undefined;
         if (deep) {
-          await withProgress({ label: "Checking memory…", total: 2 }, async (progress) => {
-            progress.setLabel("Probing vector…");
+          await withProgress({ label: "正在检查记忆…", total: 2 }, async (progress) => {
+            progress.setLabel("正在探测向量…");
             await manager.probeVectorAvailability();
             progress.tick();
-            progress.setLabel("Probing embeddings…");
+            progress.setLabel("正在探测嵌入…");
             embeddingProbe = await manager.probeEmbeddingAvailability();
             progress.tick();
           });
@@ -302,13 +302,13 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
                   });
                 } catch (err) {
                   indexError = formatErrorMessage(err);
-                  defaultRuntime.error(`Memory index failed: ${indexError}`);
+                  defaultRuntime.error(`记忆索引失败：${indexError}`);
                   process.exitCode = 1;
                 }
               },
             );
           } else if (opts.index && !syncFn) {
-            defaultRuntime.log("Memory backend does not support manual reindex.");
+            defaultRuntime.log("记忆后端不支持手动重建索引。");
           }
         } else {
           await manager.probeVectorAvailability();
@@ -355,7 +355,7 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
         ? `${filesIndexed}/? files · ${chunksIndexed} chunks`
         : `${filesIndexed}/${totalFiles} files · ${chunksIndexed} chunks`;
     if (opts.index) {
-      const line = indexError ? `Memory index failed: ${indexError}` : "Memory index complete.";
+      const line = indexError ? `记忆索引失败：${indexError}` : "记忆索引完成。";
       defaultRuntime.log(line);
     }
     const requestedProvider = status.requestedProvider ?? status.provider;
@@ -486,7 +486,7 @@ export async function runMemoryStatus(opts: MemoryCommandOptions) {
 export function registerMemoryCli(program: Command) {
   const memory = program
     .command("memory")
-    .description("Memory search tools")
+    .description("记忆搜索工具")
     .addHelpText(
       "after",
       () =>
@@ -495,22 +495,22 @@ export function registerMemoryCli(program: Command) {
 
   memory
     .command("status")
-    .description("Show memory search index status")
-    .option("--agent <id>", "Agent id (default: default agent)")
-    .option("--json", "Print JSON")
-    .option("--deep", "Probe embedding provider availability")
-    .option("--index", "Reindex if dirty (implies --deep)")
-    .option("--verbose", "Verbose logging", false)
+    .description("显示记忆搜索索引状态")
+    .option("--agent <id>", "智能体 ID（默认：默认智能体）")
+    .option("--json", "输出 JSON")
+    .option("--deep", "探测嵌入提供者可用性")
+    .option("--index", "如果有变更则重建索引（隐含 --deep）")
+    .option("--verbose", "详细日志", false)
     .action(async (opts: MemoryCommandOptions & { force?: boolean }) => {
       await runMemoryStatus(opts);
     });
 
   memory
     .command("index")
-    .description("Reindex memory files")
-    .option("--agent <id>", "Agent id (default: default agent)")
-    .option("--force", "Force full reindex", false)
-    .option("--verbose", "Verbose logging", false)
+    .description("重建记忆文件索引")
+    .option("--agent <id>", "智能体 ID（默认：默认智能体）")
+    .option("--force", "强制完全重建索引", false)
+    .option("--verbose", "详细日志", false)
     .action(async (opts: MemoryCommandOptions) => {
       setVerbose(Boolean(opts.verbose));
       const cfg = loadConfig();
@@ -518,9 +518,9 @@ export function registerMemoryCli(program: Command) {
       for (const agentId of agentIds) {
         await withManager<MemoryManager>({
           getManager: () => getMemorySearchManager({ cfg, agentId }),
-          onMissing: (error) => defaultRuntime.log(error ?? "Memory search disabled."),
+          onMissing: (error) => defaultRuntime.log(error ?? "记忆搜索已禁用。"),
           onCloseError: (err) =>
-            defaultRuntime.error(`Memory manager close failed: ${formatErrorMessage(err)}`),
+            defaultRuntime.error(`记忆管理器关闭失败：${formatErrorMessage(err)}`),
           close: async (manager) => {
             await manager.close?.();
           },
@@ -563,7 +563,7 @@ export function registerMemoryCli(program: Command) {
                 defaultRuntime.log("");
               }
               const startedAt = Date.now();
-              let lastLabel = "Indexing memory…";
+              let lastLabel = "正在索引记忆…";
               let lastCompleted = 0;
               let lastTotal = 0;
               const formatElapsed = () => {
@@ -596,12 +596,12 @@ export function registerMemoryCli(program: Command) {
                   : `${lastLabel} · elapsed ${elapsed}`;
               };
               if (!syncFn) {
-                defaultRuntime.log("Memory backend does not support manual reindex.");
+                defaultRuntime.log("记忆后端不支持手动重建索引。");
                 return;
               }
               await withProgressTotals(
                 {
-                  label: "Indexing memory…",
+                  label: "正在索引记忆…",
                   total: 0,
                   fallback: opts.verbose ? "line" : undefined,
                 },
@@ -632,10 +632,10 @@ export function registerMemoryCli(program: Command) {
                   }
                 },
               );
-              defaultRuntime.log(`Memory index updated (${agentId}).`);
+              defaultRuntime.log(`记忆索引已更新（${agentId}）。`);
             } catch (err) {
               const message = formatErrorMessage(err);
-              defaultRuntime.error(`Memory index failed (${agentId}): ${message}`);
+              defaultRuntime.error(`记忆索引失败（${agentId}）：${message}`);
               process.exitCode = 1;
             }
           },
@@ -645,12 +645,12 @@ export function registerMemoryCli(program: Command) {
 
   memory
     .command("search")
-    .description("Search memory files")
-    .argument("<query>", "Search query")
-    .option("--agent <id>", "Agent id (default: default agent)")
-    .option("--max-results <n>", "Max results", (value: string) => Number(value))
-    .option("--min-score <n>", "Minimum score", (value: string) => Number(value))
-    .option("--json", "Print JSON")
+    .description("搜索记忆文件")
+    .argument("<query>", "搜索查询")
+    .option("--agent <id>", "智能体 ID（默认：默认智能体）")
+    .option("--max-results <n>", "最大结果数", (value: string) => Number(value))
+    .option("--min-score <n>", "最低分数", (value: string) => Number(value))
+    .option("--json", "输出 JSON")
     .action(
       async (
         query: string,
@@ -663,9 +663,9 @@ export function registerMemoryCli(program: Command) {
         const agentId = resolveAgent(cfg, opts.agent);
         await withManager<MemoryManager>({
           getManager: () => getMemorySearchManager({ cfg, agentId }),
-          onMissing: (error) => defaultRuntime.log(error ?? "Memory search disabled."),
+          onMissing: (error) => defaultRuntime.log(error ?? "记忆搜索已禁用。"),
           onCloseError: (err) =>
-            defaultRuntime.error(`Memory manager close failed: ${formatErrorMessage(err)}`),
+            defaultRuntime.error(`记忆管理器关闭失败：${formatErrorMessage(err)}`),
           close: async (manager) => {
             await manager.close?.();
           },
@@ -678,7 +678,7 @@ export function registerMemoryCli(program: Command) {
               });
             } catch (err) {
               const message = formatErrorMessage(err);
-              defaultRuntime.error(`Memory search failed: ${message}`);
+              defaultRuntime.error(`记忆搜索失败：${message}`);
               process.exitCode = 1;
               return;
             }
@@ -687,7 +687,7 @@ export function registerMemoryCli(program: Command) {
               return;
             }
             if (results.length === 0) {
-              defaultRuntime.log("No matches.");
+              defaultRuntime.log("无匹配结果。");
               return;
             }
             const rich = isRich();

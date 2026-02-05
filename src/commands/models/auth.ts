@@ -71,16 +71,16 @@ export async function modelsAuthSetupTokenCommand(
 ) {
   const provider = resolveTokenProvider(opts.provider ?? "anthropic");
   if (provider !== "anthropic") {
-    throw new Error("Only --provider anthropic is supported for setup-token.");
+    throw new Error("setup-token 仅支持 --provider anthropic。");
   }
 
   if (!process.stdin.isTTY) {
-    throw new Error("setup-token requires an interactive TTY.");
+    throw new Error("setup-token 需要交互式 TTY。");
   }
 
   if (!opts.yes) {
     const proceed = await confirm({
-      message: "Have you run `claude setup-token` and copied the token?",
+      message: "您是否已运行 `claude setup-token` 并复制了令牌？",
       initialValue: true,
     });
     if (!proceed) {
@@ -89,7 +89,7 @@ export async function modelsAuthSetupTokenCommand(
   }
 
   const tokenInput = await text({
-    message: "Paste Anthropic setup-token",
+    message: "粘贴 Anthropic setup-token",
     validate: (value) => validateAnthropicSetupToken(String(value ?? "")),
   });
   const token = String(tokenInput).trim();
@@ -126,14 +126,14 @@ export async function modelsAuthPasteTokenCommand(
 ) {
   const rawProvider = opts.provider?.trim();
   if (!rawProvider) {
-    throw new Error("Missing --provider.");
+    throw new Error("缺少 --provider。");
   }
   const provider = normalizeProviderId(rawProvider);
   const profileId = opts.profileId?.trim() || resolveDefaultTokenProfileId(provider);
 
   const tokenInput = await text({
-    message: `Paste token for ${provider}`,
-    validate: (value) => (value?.trim() ? undefined : "Required"),
+    message: `粘贴 ${provider} 的令牌`,
+    validate: (value) => (value?.trim() ? undefined : "必填"),
   });
   const token = String(tokenInput).trim();
 
@@ -160,10 +160,10 @@ export async function modelsAuthPasteTokenCommand(
 
 export async function modelsAuthAddCommand(_opts: Record<string, never>, runtime: RuntimeEnv) {
   const provider = (await select({
-    message: "Token provider",
+    message: "令牌提供商",
     options: [
       { value: "anthropic", label: "anthropic" },
-      { value: "custom", label: "custom (type provider id)" },
+      { value: "custom", label: "自定义（输入提供商 ID）" },
     ],
   })) as TokenProvider | "custom";
 
@@ -172,26 +172,26 @@ export async function modelsAuthAddCommand(_opts: Record<string, never>, runtime
       ? normalizeProviderId(
           String(
             await text({
-              message: "Provider id",
-              validate: (value) => (value?.trim() ? undefined : "Required"),
+              message: "提供商 ID",
+              validate: (value) => (value?.trim() ? undefined : "必填"),
             }),
           ),
         )
       : provider;
 
   const method = (await select({
-    message: "Token method",
+    message: "令牌方式",
     options: [
       ...(providerId === "anthropic"
         ? [
             {
               value: "setup-token",
               label: "setup-token (claude)",
-              hint: "Paste a setup-token from `claude setup-token`",
+              hint: "粘贴来自 `claude setup-token` 的 setup-token",
             },
           ]
         : []),
-      { value: "paste", label: "paste token" },
+      { value: "paste", label: "粘贴令牌" },
     ],
   })) as "setup-token" | "paste";
 
@@ -203,27 +203,27 @@ export async function modelsAuthAddCommand(_opts: Record<string, never>, runtime
   const profileIdDefault = resolveDefaultTokenProfileId(providerId);
   const profileId = String(
     await text({
-      message: "Profile id",
+      message: "配置 ID",
       initialValue: profileIdDefault,
-      validate: (value) => (value?.trim() ? undefined : "Required"),
+      validate: (value) => (value?.trim() ? undefined : "必填"),
     }),
   ).trim();
 
   const wantsExpiry = await confirm({
-    message: "Does this token expire?",
+    message: "此令牌是否会过期？",
     initialValue: false,
   });
   const expiresIn = wantsExpiry
     ? String(
         await text({
-          message: "Expires in (duration)",
+          message: "过期时间（时长）",
           initialValue: "365d",
           validate: (value) => {
             try {
               parseDurationMs(String(value ?? ""), { defaultUnit: "d" });
               return undefined;
             } catch {
-              return "Invalid duration (e.g. 365d, 12h, 30m)";
+              return "无效的时长（例如 365d、12h、30m）";
             }
           },
         }),
@@ -327,13 +327,13 @@ function credentialMode(credential: AuthProfileCredential): "api_key" | "oauth" 
 
 export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: RuntimeEnv) {
   if (!process.stdin.isTTY) {
-    throw new Error("models auth login requires an interactive TTY.");
+    throw new Error("models auth login 需要交互式 TTY。");
   }
 
   const snapshot = await readConfigFileSnapshot();
   if (!snapshot.valid) {
     const issues = snapshot.issues.map((issue) => `- ${issue.path}: ${issue.message}`).join("\n");
-    throw new Error(`Invalid config at ${snapshot.path}\n${issues}`);
+    throw new Error(`配置无效：${snapshot.path}\n${issues}`);
   }
 
   const config = snapshot.config;
@@ -345,7 +345,7 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
   const providers = resolvePluginProviders({ config, workspaceDir });
   if (providers.length === 0) {
     throw new Error(
-      `No provider plugins found. Install one via \`${formatCliCommand("openclaw plugins install")}\`.`,
+      `未找到提供商插件。通过 \`${formatCliCommand("openclaw plugins install")}\` 安装一个。`,
     );
   }
 
@@ -354,17 +354,17 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
     resolveProviderMatch(providers, opts.provider) ??
     (await prompter
       .select({
-        message: "Select a provider",
+        message: "选择提供商",
         options: providers.map((provider) => ({
           value: provider.id,
           label: provider.label,
-          hint: provider.docsPath ? `Docs: ${provider.docsPath}` : undefined,
+          hint: provider.docsPath ? `文档：${provider.docsPath}` : undefined,
         })),
       })
       .then((id) => resolveProviderMatch(providers, String(id))));
 
   if (!selectedProvider) {
-    throw new Error("Unknown provider. Use --provider <id> to pick a provider plugin.");
+    throw new Error("未知提供商。使用 --provider <id> 选择提供商插件。");
   }
 
   const chosenMethod =
@@ -373,7 +373,7 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
       ? selectedProvider.auth[0]
       : await prompter
           .select({
-            message: `Auth method for ${selectedProvider.label}`,
+            message: `${selectedProvider.label} 的认证方式`,
             options: selectedProvider.auth.map((method) => ({
               value: method.id,
               label: method.label,
@@ -383,7 +383,7 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
           .then((id) => selectedProvider.auth.find((method) => method.id === String(id))));
 
   if (!chosenMethod) {
-    throw new Error("Unknown auth method. Use --method <id> to select one.");
+    throw new Error("未知认证方式。使用 --method <id> 选择一个。");
   }
 
   const isRemote = isRemoteEnvironment();
@@ -437,11 +437,11 @@ export async function modelsAuthLoginCommand(opts: LoginOptions, runtime: Runtim
   if (result.defaultModel) {
     runtime.log(
       opts.setDefault
-        ? `Default model set to ${result.defaultModel}`
-        : `Default model available: ${result.defaultModel} (use --set-default to apply)`,
+        ? `默认模型已设置为 ${result.defaultModel}`
+        : `可用默认模型：${result.defaultModel}（使用 --set-default 应用）`,
     );
   }
   if (result.notes && result.notes.length > 0) {
-    await prompter.note(result.notes.join("\n"), "Provider notes");
+    await prompter.note(result.notes.join("\n"), "提供商说明");
   }
 }

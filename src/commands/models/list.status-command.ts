@@ -70,7 +70,7 @@ export async function modelsStatusCommand(
 ) {
   ensureFlagCompatibility(opts);
   if (opts.plain && opts.probe) {
-    throw new Error("--probe cannot be used with --plain output.");
+    throw new Error("--probe 不能与 --plain 输出一起使用。");
   }
   const cfg = loadConfig();
   const agentId = resolveKnownAgentId({ cfg, rawAgentId: opts.agent });
@@ -207,15 +207,15 @@ export async function modelsStatusCommand(
   })();
   const probeTimeoutMs = opts.probeTimeout ? Number(opts.probeTimeout) : 8000;
   if (!Number.isFinite(probeTimeoutMs) || probeTimeoutMs <= 0) {
-    throw new Error("--probe-timeout must be a positive number (ms).");
+    throw new Error("--probe-timeout 必须是正数（毫秒）。");
   }
   const probeConcurrency = opts.probeConcurrency ? Number(opts.probeConcurrency) : 2;
   if (!Number.isFinite(probeConcurrency) || probeConcurrency <= 0) {
-    throw new Error("--probe-concurrency must be > 0.");
+    throw new Error("--probe-concurrency 必须 > 0。");
   }
   const probeMaxTokens = opts.probeMaxTokens ? Number(opts.probeMaxTokens) : 8;
   if (!Number.isFinite(probeMaxTokens) || probeMaxTokens <= 0) {
-    throw new Error("--probe-max-tokens must be > 0.");
+    throw new Error("--probe-max-tokens 必须 > 0。");
   }
 
   const aliasIndex = buildModelAliasIndex({ cfg, defaultProvider: DEFAULT_PROVIDER });
@@ -241,7 +241,7 @@ export async function modelsStatusCommand(
   let probeSummary: AuthProbeSummary | undefined;
   if (opts.probe) {
     probeSummary = await withProgressTotals(
-      { label: "Probing auth profiles…", total: 1 },
+      { label: "正在探测认证配置文件…", total: 1 },
       async (update) => {
         return await runAuthProbes({
           cfg,
@@ -461,7 +461,7 @@ export async function modelsStatusCommand(
   );
 
   runtime.log("");
-  runtime.log(colorize(rich, theme.heading, "Auth overview"));
+  runtime.log(colorize(rich, theme.heading, "认证概览"));
   runtime.log(
     `${label("Auth store")}${colorize(rich, theme.muted, ":")} ${colorize(
       rich,
@@ -538,20 +538,20 @@ export async function modelsStatusCommand(
 
   if (missingProvidersInUse.length > 0) {
     runtime.log("");
-    runtime.log(colorize(rich, theme.heading, "Missing auth"));
+    runtime.log(colorize(rich, theme.heading, "缺少认证"));
     for (const provider of missingProvidersInUse) {
       const hint =
         provider === "anthropic"
-          ? `Run \`claude setup-token\`, then \`${formatCliCommand("openclaw models auth setup-token")}\` or \`${formatCliCommand("openclaw configure")}\`.`
-          : `Run \`${formatCliCommand("openclaw configure")}\` or set an API key env var.`;
+          ? `运行 \`claude setup-token\`，然后运行 \`${formatCliCommand("openclaw models auth setup-token")}\` 或 \`${formatCliCommand("openclaw configure")}\`。`
+          : `运行 \`${formatCliCommand("openclaw configure")}\` 或设置 API 密钥环境变量。`;
       runtime.log(`- ${theme.heading(provider)} ${hint}`);
     }
   }
 
   runtime.log("");
-  runtime.log(colorize(rich, theme.heading, "OAuth/token status"));
+  runtime.log(colorize(rich, theme.heading, "OAuth/令牌状态"));
   if (oauthProfiles.length === 0) {
-    runtime.log(colorize(rich, theme.muted, "- none"));
+    runtime.log(colorize(rich, theme.muted, "- 无"));
   } else {
     const usageByProvider = new Map<string, string>();
     const usageProviders = Array.from(
@@ -631,9 +631,9 @@ export async function modelsStatusCommand(
 
   if (probeSummary) {
     runtime.log("");
-    runtime.log(colorize(rich, theme.heading, "Auth probes"));
+    runtime.log(colorize(rich, theme.heading, "认证探测"));
     if (probeSummary.results.length === 0) {
-      runtime.log(colorize(rich, theme.muted, "- none"));
+      runtime.log(colorize(rich, theme.muted, "- 无"));
     } else {
       const tableWidth = Math.max(60, (process.stdout.columns ?? 120) - 1);
       const sorted = sortProbeResults(probeSummary.results);

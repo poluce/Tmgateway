@@ -30,24 +30,24 @@ export async function maybeRepairUiProtocolFreshness(
     ]);
 
     if (schemaStats && !uiStats) {
-      note(["- Control UI assets are missing.", "- Run: pnpm ui:build"].join("\n"), "UI");
+      note(["- 控制界面资源缺失。", "- 运行：pnpm ui:build"].join("\n"), "界面");
 
       // In slim/docker environments we may not have the UI source tree. Trying
       // to build would fail (and spam logs), so skip the interactive repair.
       const uiSourcesPath = path.join(root, "ui/package.json");
       const uiSourcesExist = await fs.stat(uiSourcesPath).catch(() => null);
       if (!uiSourcesExist) {
-        note("Skipping UI build: ui/ sources not present.", "UI");
+        note("跳过界面构建：ui/ 源代码不存在。", "界面");
         return;
       }
 
       const shouldRepair = await prompter.confirmRepair({
-        message: "Build Control UI assets now?",
+        message: "现在构建控制界面资源？",
         initialValue: true,
       });
 
       if (shouldRepair) {
-        note("Building Control UI assets... (this may take a moment)", "UI");
+        note("正在构建控制界面资源...（可能需要一些时间）", "界面");
         const uiScriptPath = path.join(root, "scripts/ui.js");
         const buildResult = await runCommandWithTimeout([process.execPath, uiScriptPath, "build"], {
           cwd: root,
@@ -55,15 +55,15 @@ export async function maybeRepairUiProtocolFreshness(
           env: { ...process.env, FORCE_COLOR: "1" },
         });
         if (buildResult.code === 0) {
-          note("UI build complete.", "UI");
+          note("界面构建完成。", "界面");
         } else {
           const details = [
-            `UI build failed (exit ${buildResult.code ?? "unknown"}).`,
+            `界面构建失败（退出码 ${buildResult.code ?? "未知"}）。`,
             buildResult.stderr.trim() ? buildResult.stderr.trim() : null,
           ]
             .filter(Boolean)
             .join("\n");
-          note(details, "UI");
+          note(details, "界面");
         }
       }
       return;
@@ -91,16 +91,16 @@ export async function maybeRepairUiProtocolFreshness(
 
       if (gitLog && gitLog.code === 0 && gitLog.stdout.trim()) {
         note(
-          `UI assets are older than the protocol schema.\nFunctional changes since last build:\n${gitLog.stdout
+          `界面资源比协议架构旧。\n自上次构建以来的功能更改：\n${gitLog.stdout
             .trim()
             .split("\n")
             .map((l) => `- ${l}`)
             .join("\n")}`,
-          "UI Freshness",
+          "界面新鲜度",
         );
 
         const shouldRepair = await prompter.confirmAggressive({
-          message: "Rebuild UI now? (Detected protocol mismatch requiring update)",
+          message: "现在重建界面？（检测到需要更新的协议不匹配）",
           initialValue: true,
         });
 
@@ -108,11 +108,11 @@ export async function maybeRepairUiProtocolFreshness(
           const uiSourcesPath = path.join(root, "ui/package.json");
           const uiSourcesExist = await fs.stat(uiSourcesPath).catch(() => null);
           if (!uiSourcesExist) {
-            note("Skipping UI rebuild: ui/ sources not present.", "UI");
+            note("跳过界面重建：ui/ 源代码不存在。", "界面");
             return;
           }
 
-          note("Rebuilding stale UI assets... (this may take a moment)", "UI");
+          note("正在重建过期的界面资源...（可能需要一些时间）", "界面");
           // Use scripts/ui.js to build, assuming node is available as we are running in it.
           // We use the same node executable to run the script.
           const uiScriptPath = path.join(root, "scripts/ui.js");
@@ -125,15 +125,15 @@ export async function maybeRepairUiProtocolFreshness(
             },
           );
           if (buildResult.code === 0) {
-            note("UI rebuild complete.", "UI");
+            note("界面重建完成。", "界面");
           } else {
             const details = [
-              `UI rebuild failed (exit ${buildResult.code ?? "unknown"}).`,
+              `界面重建失败（退出码 ${buildResult.code ?? "未知"}）。`,
               buildResult.stderr.trim() ? buildResult.stderr.trim() : null,
             ]
               .filter(Boolean)
               .join("\n");
-            note(details, "UI");
+            note(details, "界面");
           }
         }
       }

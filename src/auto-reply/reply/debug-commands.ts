@@ -19,7 +19,7 @@ export function parseDebugCommand(raw: string): DebugCommand | null {
 
   const match = rest.match(/^(\S+)(?:\s+([\s\S]+))?$/);
   if (!match) {
-    return { action: "error", message: "Invalid /debug syntax." };
+    return { action: "error", message: "无效的 /debug 语法。" };
   }
   const action = match[1].toLowerCase();
   const args = (match[2] ?? "").trim();
@@ -31,7 +31,7 @@ export function parseDebugCommand(raw: string): DebugCommand | null {
       return { action: "reset" };
     case "unset": {
       if (!args) {
-        return { action: "error", message: "Usage: /debug unset path" };
+        return { action: "error", message: "用法：/debug unset 路径" };
       }
       return { action: "unset", path: args };
     }
@@ -39,14 +39,14 @@ export function parseDebugCommand(raw: string): DebugCommand | null {
       if (!args) {
         return {
           action: "error",
-          message: "Usage: /debug set path=value",
+          message: "用法：/debug set 路径=值",
         };
       }
       const eqIndex = args.indexOf("=");
       if (eqIndex <= 0) {
         return {
           action: "error",
-          message: "Usage: /debug set path=value",
+          message: "用法：/debug set 路径=值",
         };
       }
       const path = args.slice(0, eqIndex).trim();
@@ -54,7 +54,7 @@ export function parseDebugCommand(raw: string): DebugCommand | null {
       if (!path) {
         return {
           action: "error",
-          message: "Usage: /debug set path=value",
+          message: "用法：/debug set 路径=值",
         };
       }
       const parsed = parseConfigValue(rawValue);
@@ -66,7 +66,7 @@ export function parseDebugCommand(raw: string): DebugCommand | null {
     default:
       return {
         action: "error",
-        message: "Usage: /debug show|set|unset|reset",
+        message: "用法：/debug show|set|unset|reset",
       };
   }
 }

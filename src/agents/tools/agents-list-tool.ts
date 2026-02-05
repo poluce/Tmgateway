@@ -24,9 +24,9 @@ export function createAgentsListTool(opts?: {
   requesterAgentIdOverride?: string;
 }): AnyAgentTool {
   return {
-    label: "Agents",
+    label: "代理列表",
     name: "agents_list",
-    description: "List agent ids you can target with sessions_spawn (based on allowlists).",
+    description: "列出可以通过 sessions_spawn 定位的代理 ID（基于允许列表）。",
     parameters: AgentsListToolSchema,
     execute: async () => {
       const cfg = loadConfig();

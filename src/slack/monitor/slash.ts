@@ -166,7 +166,7 @@ export function registerSlackMonitorSlashCommands(params: {
     try {
       if (!prompt.trim()) {
         await ack({
-          text: "Message required.",
+          text: "需要消息内容。",
           response_type: "ephemeral",
         });
         return;
@@ -194,7 +194,7 @@ export function registerSlackMonitorSlashCommands(params: {
         })
       ) {
         await respond({
-          text: "This channel is not allowed.",
+          text: "此频道不被允许。",
           response_type: "ephemeral",
         });
         return;
@@ -209,7 +209,7 @@ export function registerSlackMonitorSlashCommands(params: {
       if (isDirectMessage) {
         if (!ctx.dmEnabled || ctx.dmPolicy === "disabled") {
           await respond({
-            text: "Slack DMs are disabled.",
+            text: "Slack 私信已禁用。",
             response_type: "ephemeral",
           });
           return;
@@ -250,7 +250,7 @@ export function registerSlackMonitorSlashCommands(params: {
                 `slack: blocked slash sender ${command.user_id} (dmPolicy=${ctx.dmPolicy}, ${allowMatchMeta})`,
               );
               await respond({
-                text: "You are not authorized to use this command.",
+                text: "你没有权限使用此命令。",
                 response_type: "ephemeral",
               });
             }
@@ -279,7 +279,7 @@ export function registerSlackMonitorSlashCommands(params: {
             })
           ) {
             await respond({
-              text: "This channel is not allowed.",
+              text: "此频道不被允许。",
               response_type: "ephemeral",
             });
             return;
@@ -290,7 +290,7 @@ export function registerSlackMonitorSlashCommands(params: {
           const hasExplicitConfig = Boolean(channelConfig?.matchSource);
           if (!channelAllowed && (ctx.groupPolicy !== "open" || hasExplicitConfig)) {
             await respond({
-              text: "This channel is not allowed.",
+              text: "此频道不被允许。",
               response_type: "ephemeral",
             });
             return;
@@ -311,7 +311,7 @@ export function registerSlackMonitorSlashCommands(params: {
         : false;
       if (channelUsersAllowlistConfigured && !channelUserAllowed) {
         await respond({
-          text: "You are not authorized to use this command here.",
+          text: "你没有权限在此处使用此命令。",
           response_type: "ephemeral",
         });
         return;
@@ -332,7 +332,7 @@ export function registerSlackMonitorSlashCommands(params: {
         });
         if (ctx.useAccessGroups && !commandAuthorized) {
           await respond({
-            text: "You are not authorized to use this command.",
+            text: "你没有权限使用此命令。",
             response_type: "ephemeral",
           });
           return;
@@ -348,7 +348,7 @@ export function registerSlackMonitorSlashCommands(params: {
         if (menu) {
           const commandLabel = commandDefinition.nativeName ?? commandDefinition.key;
           const title =
-            menu.title ?? `Choose ${menu.arg.description || menu.arg.name} for /${commandLabel}.`;
+            menu.title ?? `请为 /${commandLabel} 选择 ${menu.arg.description || menu.arg.name}。`;
           const blocks = buildSlackCommandArgMenuBlocks({
             title,
             command: commandLabel,
@@ -476,7 +476,7 @@ export function registerSlackMonitorSlashCommands(params: {
     } catch (err) {
       runtime.error?.(danger(`slack slash handler failed: ${String(err)}`));
       await respond({
-        text: "Sorry, something went wrong handling that command.",
+        text: "抱歉，处理该命令时出错了。",
         response_type: "ephemeral",
       });
     }
@@ -538,7 +538,7 @@ export function registerSlackMonitorSlashCommands(params: {
       },
     );
   } else {
-    logVerbose("slack: slash commands disabled");
+    logVerbose("slack: 斜杠命令已禁用");
   }
 
   if (nativeCommands.length === 0 || !supportsInteractiveArgMenus) {
@@ -571,14 +571,14 @@ export function registerSlackMonitorSlashCommands(params: {
       const parsed = parseSlackCommandArgValue(action?.value);
       if (!parsed) {
         await respondFn({
-          text: "Sorry, that button is no longer valid.",
+          text: "抱歉，该按钮已不再有效。",
           response_type: "ephemeral",
         });
         return;
       }
       if (body.user?.id && parsed.userId !== body.user.id) {
         await respondFn({
-          text: "That menu is for another user.",
+          text: "该菜单是给其他用户的。",
           response_type: "ephemeral",
         });
         return;

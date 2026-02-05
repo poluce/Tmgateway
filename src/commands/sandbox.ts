@@ -74,14 +74,14 @@ export async function sandboxRecreateCommand(
   const filtered = await fetchAndFilterContainers(opts);
 
   if (filtered.containers.length + filtered.browsers.length === 0) {
-    runtime.log("No containers found matching the criteria.");
+    runtime.log("未找到符合条件的容器。");
     return;
   }
 
   displayRecreatePreview(filtered.containers, filtered.browsers, runtime);
 
   if (!opts.force && !(await confirmRecreate())) {
-    runtime.log("Cancelled.");
+    runtime.log("已取消。");
     return;
   }
 
@@ -97,14 +97,14 @@ export async function sandboxRecreateCommand(
 
 function validateRecreateOptions(opts: SandboxRecreateOptions, runtime: RuntimeEnv): boolean {
   if (!opts.all && !opts.session && !opts.agent) {
-    runtime.error("Please specify --all, --session <key>, or --agent <id>");
+    runtime.error("请指定 --all、--session <key> 或 --agent <id>");
     runtime.exit(1);
     return false;
   }
 
   const exclusiveCount = [opts.all, opts.session, opts.agent].filter(Boolean).length;
   if (exclusiveCount > 1) {
-    runtime.error("Please specify only one of: --all, --session, --agent");
+    runtime.error("请只指定以下选项之一：--all、--session、--agent");
     runtime.exit(1);
     return false;
   }
@@ -143,7 +143,7 @@ function createAgentMatcher(agentId: string) {
 
 async function confirmRecreate(): Promise<boolean> {
   const result = await clackConfirm({
-    message: "This will stop and remove these containers. Continue?",
+    message: "这将停止并移除这些容器。是否继续？",
     initialValue: false,
   });
 
@@ -154,7 +154,7 @@ async function removeContainers(
   filtered: FilteredContainers,
   runtime: RuntimeEnv,
 ): Promise<{ successCount: number; failCount: number }> {
-  runtime.log("\nRemoving containers...\n");
+  runtime.log("\n正在移除容器...\n");
 
   let successCount = 0;
   let failCount = 0;
@@ -191,10 +191,10 @@ async function removeContainer(
 ): Promise<{ success: boolean }> {
   try {
     await removeFn(containerName);
-    runtime.log(`✓ Removed ${containerName}`);
+    runtime.log(`✓ 已移除 ${containerName}`);
     return { success: true };
   } catch (err) {
-    runtime.error(`✗ Failed to remove ${containerName}: ${String(err)}`);
+    runtime.error(`✗ 移除 ${containerName} 失败：${String(err)}`);
     return { success: false };
   }
 }

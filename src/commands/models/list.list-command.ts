@@ -38,7 +38,7 @@ export async function modelsListCommand(
     models = loaded.models;
     availableKeys = loaded.availableKeys;
   } catch (err) {
-    runtime.error(`Model registry unavailable: ${String(err)}`);
+    runtime.error(`模型注册表不可用：${String(err)}`);
   }
 
   const modelByKey = new Map(models.map((model) => [modelKey(model.provider, model.id), model]));
@@ -121,7 +121,7 @@ export async function modelsListCommand(
   }
 
   if (rows.length === 0) {
-    runtime.log("No models found.");
+    runtime.log("未找到模型。");
     return;
   }
 

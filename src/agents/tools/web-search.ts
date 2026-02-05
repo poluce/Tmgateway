@@ -398,7 +398,7 @@ async function runWebSearch(params: {
   }
 
   if (params.provider !== "brave") {
-    throw new Error("Unsupported web search provider.");
+    throw new Error("不支持的网页搜索提供商。");
   }
 
   const url = new URL(BRAVE_SEARCH_ENDPOINT);
@@ -476,7 +476,7 @@ export function createWebSearchTool(options?: {
       : "Search the web using Brave Search API. Supports region-specific and localized search via country and language parameters. Returns titles, URLs, and snippets for fast research.";
 
   return {
-    label: "Web Search",
+    label: "网页搜索",
     name: "web_search",
     description,
     parameters: WebSearchSchema,

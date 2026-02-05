@@ -79,10 +79,9 @@ export function createSessionsSpawnTool(opts?: {
   requesterAgentIdOverride?: string;
 }): AnyAgentTool {
   return {
-    label: "Sessions",
+    label: "会话生成",
     name: "sessions_spawn",
-    description:
-      "Spawn a background sub-agent run in an isolated session and announce the result back to the requester chat.",
+    description: "在隔离会话中生成后台子代理运行，并将结果通知回请求者聊天。",
     parameters: SessionsSpawnToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -122,7 +121,7 @@ export function createSessionsSpawnTool(opts?: {
       if (typeof requesterSessionKey === "string" && isSubagentSessionKey(requesterSessionKey)) {
         return jsonResult({
           status: "forbidden",
-          error: "sessions_spawn is not allowed from sub-agent sessions",
+          error: "不允许从子代理会话调用 sessions_spawn",
         });
       }
       const requesterInternalKey = requesterSessionKey
@@ -161,7 +160,7 @@ export function createSessionsSpawnTool(opts?: {
               : "none";
           return jsonResult({
             status: "forbidden",
-            error: `agentId is not allowed for sessions_spawn (allowed: ${allowedText})`,
+            error: `agentId 不允许用于 sessions_spawn（允许的：${allowedText}）`,
           });
         }
       }
@@ -186,7 +185,7 @@ export function createSessionsSpawnTool(opts?: {
           const hint = formatThinkingLevels(provider, model);
           return jsonResult({
             status: "error",
-            error: `Invalid thinking level "${thinkingCandidateRaw}". Use one of: ${hint}.`,
+            error: `无效的思考级别 "${thinkingCandidateRaw}"。请使用以下之一：${hint}。`,
           });
         }
         thinkingOverride = normalized;

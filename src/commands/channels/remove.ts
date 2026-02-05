@@ -41,9 +41,9 @@ export async function channelsRemoveCommand(
   const deleteConfig = Boolean(opts.delete);
 
   if (useWizard && prompter) {
-    await prompter.intro("Remove channel account");
+    await prompter.intro("移除频道账户");
     const selectedChannel = await prompter.select({
-      message: "Channel",
+      message: "频道",
       options: listChannelPlugins().map((plugin) => ({
         value: plugin.id,
         label: plugin.meta.label,
@@ -54,10 +54,10 @@ export async function channelsRemoveCommand(
     accountId = await (async () => {
       const ids = listAccountIds(cfg, selectedChannel);
       const choice = await prompter.select({
-        message: "Account",
+        message: "账户",
         options: ids.map((id) => ({
           value: id,
-          label: id === DEFAULT_ACCOUNT_ID ? "default (primary)" : id,
+          label: id === DEFAULT_ACCOUNT_ID ? "默认（主要）" : id,
         })),
         initialValue: ids[0] ?? DEFAULT_ACCOUNT_ID,
       });
@@ -65,23 +65,23 @@ export async function channelsRemoveCommand(
     })();
 
     const wantsDisable = await prompter.confirm({
-      message: `Disable ${channelLabel(selectedChannel)} account "${accountId}"? (keeps config)`,
+      message: `禁用 ${channelLabel(selectedChannel)} 账户 "${accountId}"？（保留配置）`,
       initialValue: true,
     });
     if (!wantsDisable) {
-      await prompter.outro("Cancelled.");
+      await prompter.outro("已取消。");
       return;
     }
   } else {
     if (!channel) {
-      runtime.error("Channel is required. Use --channel <name>.");
+      runtime.error("需要频道。使用 --channel <名称>。");
       runtime.exit(1);
       return;
     }
     if (!deleteConfig) {
       const confirm = createClackPrompter();
       const ok = await confirm.confirm({
-        message: `Disable ${channelLabel(channel)} account "${accountId}"? (keeps config)`,
+        message: `禁用 ${channelLabel(channel)} 账户 "${accountId}"？（保留配置）`,
         initialValue: true,
       });
       if (!ok) {
@@ -92,7 +92,7 @@ export async function channelsRemoveCommand(
 
   const plugin = getChannelPlugin(channel);
   if (!plugin) {
-    runtime.error(`Unknown channel: ${channel}`);
+    runtime.error(`未知频道：${channel}`);
     runtime.exit(1);
     return;
   }
@@ -104,7 +104,7 @@ export async function channelsRemoveCommand(
   let next = { ...cfg };
   if (deleteConfig) {
     if (!plugin.config.deleteAccount) {
-      runtime.error(`Channel ${channel} does not support delete.`);
+      runtime.error(`频道 ${channel} 不支持删除。`);
       runtime.exit(1);
       return;
     }
@@ -114,7 +114,7 @@ export async function channelsRemoveCommand(
     });
   } else {
     if (!plugin.config.setAccountEnabled) {
-      runtime.error(`Channel ${channel} does not support disable.`);
+      runtime.error(`频道 ${channel} 不支持禁用。`);
       runtime.exit(1);
       return;
     }
@@ -129,14 +129,14 @@ export async function channelsRemoveCommand(
   if (useWizard && prompter) {
     await prompter.outro(
       deleteConfig
-        ? `Deleted ${channelLabel(channel)} account "${accountKey}".`
-        : `Disabled ${channelLabel(channel)} account "${accountKey}".`,
+        ? `已删除 ${channelLabel(channel)} 账户 "${accountKey}"。`
+        : `已禁用 ${channelLabel(channel)} 账户 "${accountKey}"。`,
     );
   } else {
     runtime.log(
       deleteConfig
-        ? `Deleted ${channelLabel(channel)} account "${accountKey}".`
-        : `Disabled ${channelLabel(channel)} account "${accountKey}".`,
+        ? `已删除 ${channelLabel(channel)} 账户 "${accountKey}"。`
+        : `已禁用 ${channelLabel(channel)} 账户 "${accountKey}"。`,
     );
   }
 }

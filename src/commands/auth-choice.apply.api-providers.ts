@@ -63,8 +63,8 @@ export async function applyAuthChoiceApiProviders(
       return;
     }
     await params.prompter.note(
-      `Default model set to ${model} for agent "${params.agentId}".`,
-      "Model configured",
+      `默认模型已设置为 ${model}，代理 "${params.agentId}"。`,
+      "模型已配置",
     );
   };
 
@@ -136,7 +136,7 @@ export async function applyAuthChoiceApiProviders(
       const envKey = resolveEnvApiKey("openrouter");
       if (envKey) {
         const useExisting = await params.prompter.confirm({
-          message: `Use existing OPENROUTER_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+          message: `使用现有的 OPENROUTER_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
           initialValue: true,
         });
         if (useExisting) {
@@ -148,7 +148,7 @@ export async function applyAuthChoiceApiProviders(
 
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter OpenRouter API key",
+        message: "输入 OpenRouter API 密钥",
         validate: validateApiKeyInput,
       });
       await setOpenrouterApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
@@ -194,7 +194,7 @@ export async function applyAuthChoiceApiProviders(
     const envKey = resolveEnvApiKey("vercel-ai-gateway");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing AI_GATEWAY_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 AI_GATEWAY_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -204,7 +204,7 @@ export async function applyAuthChoiceApiProviders(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter Vercel AI Gateway API key",
+        message: "输入 Vercel AI Gateway API 密钥",
         validate: validateApiKeyInput,
       });
       await setVercelAiGatewayApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
@@ -242,7 +242,7 @@ export async function applyAuthChoiceApiProviders(
     const envKey = resolveEnvApiKey("moonshot");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing MOONSHOT_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 MOONSHOT_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -252,7 +252,7 @@ export async function applyAuthChoiceApiProviders(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter Moonshot API key",
+        message: "输入 Moonshot API 密钥",
         validate: validateApiKeyInput,
       });
       await setMoonshotApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
@@ -289,7 +289,7 @@ export async function applyAuthChoiceApiProviders(
     const envKey = resolveEnvApiKey("moonshot");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing MOONSHOT_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 MOONSHOT_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -299,7 +299,7 @@ export async function applyAuthChoiceApiProviders(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter Moonshot API key (.cn)",
+        message: "输入 Moonshot API 密钥（.cn）",
         validate: validateApiKeyInput,
       });
       await setMoonshotApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
@@ -340,8 +340,8 @@ export async function applyAuthChoiceApiProviders(
     if (!hasCredential) {
       await params.prompter.note(
         [
-          "Kimi Coding uses a dedicated endpoint and API key.",
-          "Get your API key at: https://www.kimi.com/code/en",
+          "Kimi Coding 使用专用端点和 API 密钥。",
+          "在此获取您的 API 密钥：https://www.kimi.com/code/en",
         ].join("\n"),
         "Kimi Coding",
       );
@@ -349,7 +349,7 @@ export async function applyAuthChoiceApiProviders(
     const envKey = resolveEnvApiKey("kimi-coding");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing KIMI_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 KIMI_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -359,7 +359,7 @@ export async function applyAuthChoiceApiProviders(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter Kimi Coding API key",
+        message: "输入 Kimi Coding API 密钥",
         validate: validateApiKeyInput,
       });
       await setKimiCodingApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
@@ -397,7 +397,7 @@ export async function applyAuthChoiceApiProviders(
     const envKey = resolveEnvApiKey("google");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing GEMINI_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 GEMINI_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -407,7 +407,7 @@ export async function applyAuthChoiceApiProviders(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter Gemini API key",
+        message: "输入 Gemini API 密钥",
         validate: validateApiKeyInput,
       });
       await setGeminiApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
@@ -421,10 +421,7 @@ export async function applyAuthChoiceApiProviders(
       const applied = applyGoogleGeminiModelDefault(nextConfig);
       nextConfig = applied.next;
       if (applied.changed) {
-        await params.prompter.note(
-          `Default model set to ${GOOGLE_GEMINI_DEFAULT_MODEL}`,
-          "Model configured",
-        );
+        await params.prompter.note(`默认模型已设置为 ${GOOGLE_GEMINI_DEFAULT_MODEL}`, "模型已配置");
       }
     } else {
       agentModelOverride = GOOGLE_GEMINI_DEFAULT_MODEL;
@@ -444,7 +441,7 @@ export async function applyAuthChoiceApiProviders(
     const envKey = resolveEnvApiKey("zai");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing ZAI_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 ZAI_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -454,7 +451,7 @@ export async function applyAuthChoiceApiProviders(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter Z.AI API key",
+        message: "输入 Z.AI API 密钥",
         validate: validateApiKeyInput,
       });
       await setZaiApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
@@ -507,7 +504,7 @@ export async function applyAuthChoiceApiProviders(
     const envKey = resolveEnvApiKey("xiaomi");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing XIAOMI_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 XIAOMI_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -517,7 +514,7 @@ export async function applyAuthChoiceApiProviders(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter Xiaomi API key",
+        message: "输入小米 API 密钥",
         validate: validateApiKeyInput,
       });
       await setXiaomiApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
@@ -549,8 +546,8 @@ export async function applyAuthChoiceApiProviders(
       await setSyntheticApiKey(String(params.opts.token).trim(), params.agentDir);
     } else {
       const key = await params.prompter.text({
-        message: "Enter Synthetic API key",
-        validate: (value) => (value?.trim() ? undefined : "Required"),
+        message: "输入 Synthetic API 密钥",
+        validate: (value) => (value?.trim() ? undefined : "必填"),
       });
       await setSyntheticApiKey(String(key).trim(), params.agentDir);
     }
@@ -587,9 +584,9 @@ export async function applyAuthChoiceApiProviders(
     if (!hasCredential) {
       await params.prompter.note(
         [
-          "Venice AI provides privacy-focused inference with uncensored models.",
-          "Get your API key at: https://venice.ai/settings/api",
-          "Supports 'private' (fully private) and 'anonymized' (proxy) modes.",
+          "Venice AI 提供注重隐私的推理服务，支持无审查模型。",
+          "在此获取您的 API 密钥：https://venice.ai/settings/api",
+          "支持 'private'（完全私密）和 'anonymized'（代理）模式。",
         ].join("\n"),
         "Venice AI",
       );
@@ -598,7 +595,7 @@ export async function applyAuthChoiceApiProviders(
     const envKey = resolveEnvApiKey("venice");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing VENICE_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 VENICE_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -608,7 +605,7 @@ export async function applyAuthChoiceApiProviders(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter Venice AI API key",
+        message: "输入 Venice AI API 密钥",
         validate: validateApiKeyInput,
       });
       await setVeniceApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
@@ -645,9 +642,9 @@ export async function applyAuthChoiceApiProviders(
     if (!hasCredential) {
       await params.prompter.note(
         [
-          "OpenCode Zen provides access to Claude, GPT, Gemini, and more models.",
-          "Get your API key at: https://opencode.ai/auth",
-          "Requires an active OpenCode Zen subscription.",
+          "OpenCode Zen 提供对 Claude、GPT、Gemini 等模型的访问。",
+          "在此获取您的 API 密钥：https://opencode.ai/auth",
+          "需要有效的 OpenCode Zen 订阅。",
         ].join("\n"),
         "OpenCode Zen",
       );
@@ -655,7 +652,7 @@ export async function applyAuthChoiceApiProviders(
     const envKey = resolveEnvApiKey("opencode");
     if (envKey) {
       const useExisting = await params.prompter.confirm({
-        message: `Use existing OPENCODE_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        message: `使用现有的 OPENCODE_API_KEY（${envKey.source}，${formatApiKeyPreview(envKey.apiKey)}）？`,
         initialValue: true,
       });
       if (useExisting) {
@@ -665,7 +662,7 @@ export async function applyAuthChoiceApiProviders(
     }
     if (!hasCredential) {
       const key = await params.prompter.text({
-        message: "Enter OpenCode Zen API key",
+        message: "输入 OpenCode Zen API 密钥",
         validate: validateApiKeyInput,
       });
       await setOpencodeZenApiKey(normalizeApiKeyInput(String(key)), params.agentDir);

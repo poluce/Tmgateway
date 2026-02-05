@@ -49,9 +49,9 @@ export function createSessionsHistoryTool(opts?: {
   sandboxed?: boolean;
 }): AnyAgentTool {
   return {
-    label: "Session History",
+    label: "会话历史",
     name: "sessions_history",
-    description: "Fetch message history for a session.",
+    description: "获取会话的消息历史。",
     parameters: SessionsHistoryToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -96,7 +96,7 @@ export function createSessionsHistoryTool(opts?: {
         if (!ok) {
           return jsonResult({
             status: "forbidden",
-            error: `Session not visible from this sandboxed agent session: ${sessionKeyParam}`,
+            error: `从此沙盒代理会话无法访问该会话：${sessionKeyParam}`,
           });
         }
       }
@@ -109,14 +109,13 @@ export function createSessionsHistoryTool(opts?: {
         if (!a2aPolicy.enabled) {
           return jsonResult({
             status: "forbidden",
-            error:
-              "Agent-to-agent history is disabled. Set tools.agentToAgent.enabled=true to allow cross-agent access.",
+            error: "代理间历史已禁用。设置 tools.agentToAgent.enabled=true 以允许跨代理访问。",
           });
         }
         if (!a2aPolicy.isAllowed(requesterAgentId, targetAgentId)) {
           return jsonResult({
             status: "forbidden",
-            error: "Agent-to-agent history denied by tools.agentToAgent.allow.",
+            error: "代理间历史被 tools.agentToAgent.allow 拒绝。",
           });
         }
       }

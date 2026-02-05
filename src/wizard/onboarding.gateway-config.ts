@@ -37,9 +37,9 @@ export async function configureGatewayForOnboarding(
       : Number.parseInt(
           String(
             await prompter.text({
-              message: "Gateway port",
+              message: "网关端口",
               initialValue: String(localPort),
-              validate: (value) => (Number.isFinite(Number(value)) ? undefined : "Invalid port"),
+              validate: (value) => (Number.isFinite(Number(value)) ? undefined : "无效端口"),
             }),
           ),
           10,
@@ -49,13 +49,13 @@ export async function configureGatewayForOnboarding(
     flow === "quickstart"
       ? quickstartGateway.bind
       : await prompter.select<GatewayWizardSettings["bind"]>({
-          message: "Gateway bind",
+          message: "网关绑定",
           options: [
-            { value: "loopback", label: "Loopback (127.0.0.1)" },
-            { value: "lan", label: "LAN (0.0.0.0)" },
-            { value: "tailnet", label: "Tailnet (Tailscale IP)" },
-            { value: "auto", label: "Auto (Loopback → LAN)" },
-            { value: "custom", label: "Custom IP" },
+            { value: "loopback", label: "回环（127.0.0.1）" },
+            { value: "lan", label: "局域网（0.0.0.0）" },
+            { value: "tailnet", label: "Tailnet（Tailscale IP）" },
+            { value: "auto", label: "自动（回环 → 局域网）" },
+            { value: "custom", label: "自定义 IP" },
           ],
         });
 
@@ -64,17 +64,17 @@ export async function configureGatewayForOnboarding(
     const needsPrompt = flow !== "quickstart" || !customBindHost;
     if (needsPrompt) {
       const input = await prompter.text({
-        message: "Custom IP address",
+        message: "自定义 IP 地址",
         placeholder: "192.168.1.100",
         initialValue: customBindHost ?? "",
         validate: (value) => {
           if (!value) {
-            return "IP address is required for custom bind mode";
+            return "自定义绑定模式需要 IP 地址";
           }
           const trimmed = value.trim();
           const parts = trimmed.split(".");
           if (parts.length !== 4) {
-            return "Invalid IPv4 address (e.g., 192.168.1.100)";
+            return "无效的 IPv4 地址（例如：192.168.1.100）";
           }
           if (
             parts.every((part) => {
@@ -84,7 +84,7 @@ export async function configureGatewayForOnboarding(
           ) {
             return undefined;
           }
-          return "Invalid IPv4 address (each octet must be 0-255)";
+          return "无效的 IPv4 地址（每个八位字节必须在 0-255 之间）";
         },
       });
       customBindHost = typeof input === "string" ? input.trim() : undefined;
@@ -95,14 +95,14 @@ export async function configureGatewayForOnboarding(
     flow === "quickstart"
       ? quickstartGateway.authMode
       : ((await prompter.select({
-          message: "Gateway auth",
+          message: "网关认证",
           options: [
             {
               value: "token",
-              label: "Token",
-              hint: "Recommended default (local + remote)",
+              label: "令牌",
+              hint: "推荐默认（本地 + 远程）",
             },
-            { value: "password", label: "Password" },
+            { value: "password", label: "密码" },
           ],
           initialValue: "token",
         })) as GatewayAuthChoice);
@@ -111,18 +111,18 @@ export async function configureGatewayForOnboarding(
     flow === "quickstart"
       ? quickstartGateway.tailscaleMode
       : await prompter.select<GatewayWizardSettings["tailscaleMode"]>({
-          message: "Tailscale exposure",
+          message: "Tailscale 暴露",
           options: [
-            { value: "off", label: "Off", hint: "No Tailscale exposure" },
+            { value: "off", label: "关闭", hint: "不暴露 Tailscale" },
             {
               value: "serve",
               label: "Serve",
-              hint: "Private HTTPS for your tailnet (devices on Tailscale)",
+              hint: "为您的 tailnet 提供私有 HTTPS（Tailscale 上的设备）",
             },
             {
               value: "funnel",
               label: "Funnel",
-              hint: "Public HTTPS via Tailscale Funnel (internet)",
+              hint: "通过 Tailscale Funnel 提供公共 HTTPS（互联网）",
             },
           ],
         });
@@ -133,13 +133,13 @@ export async function configureGatewayForOnboarding(
     if (!tailscaleBin) {
       await prompter.note(
         [
-          "Tailscale binary not found in PATH or /Applications.",
-          "Ensure Tailscale is installed from:",
+          "在 PATH 或 /Applications 中未找到 Tailscale 二进制文件。",
+          "请确保从以下地址安装 Tailscale：",
           "  https://tailscale.com/download/mac",
           "",
-          "You can continue setup, but serve/funnel will fail at runtime.",
+          "您可以继续设置，但 serve/funnel 将在运行时失败。",
         ].join("\n"),
-        "Tailscale Warning",
+        "Tailscale 警告",
       );
     }
   }
@@ -154,7 +154,7 @@ export async function configureGatewayForOnboarding(
     );
     tailscaleResetOnExit = Boolean(
       await prompter.confirm({
-        message: "Reset Tailscale serve/funnel on exit?",
+        message: "退出时重置 Tailscale serve/funnel？",
         initialValue: false,
       }),
     );
@@ -164,13 +164,13 @@ export async function configureGatewayForOnboarding(
   // - Tailscale wants bind=loopback so we never expose a non-loopback server + tailscale serve/funnel at once.
   // - Funnel requires password auth.
   if (tailscaleMode !== "off" && bind !== "loopback") {
-    await prompter.note("Tailscale requires bind=loopback. Adjusting bind to loopback.", "Note");
+    await prompter.note("Tailscale 需要 bind=loopback。正在将绑定调整为 loopback。", "注意");
     bind = "loopback";
     customBindHost = undefined;
   }
 
   if (tailscaleMode === "funnel" && authMode !== "password") {
-    await prompter.note("Tailscale funnel requires password auth.", "Note");
+    await prompter.note("Tailscale funnel 需要密码认证。", "注意");
     authMode = "password";
   }
 
@@ -180,8 +180,8 @@ export async function configureGatewayForOnboarding(
       gatewayToken = quickstartGateway.token ?? randomToken();
     } else {
       const tokenInput = await prompter.text({
-        message: "Gateway token (blank to generate)",
-        placeholder: "Needed for multi-machine or non-loopback access",
+        message: "网关令牌（留空自动生成）",
+        placeholder: "多机器或非回环访问需要",
         initialValue: quickstartGateway.token ?? "",
       });
       gatewayToken = normalizeGatewayTokenInput(tokenInput) || randomToken();
@@ -193,8 +193,8 @@ export async function configureGatewayForOnboarding(
       flow === "quickstart" && quickstartGateway.password
         ? quickstartGateway.password
         : await prompter.text({
-            message: "Gateway password",
-            validate: (value) => (value?.trim() ? undefined : "Required"),
+            message: "网关密码",
+            validate: (value) => (value?.trim() ? undefined : "必填"),
           });
     nextConfig = {
       ...nextConfig,

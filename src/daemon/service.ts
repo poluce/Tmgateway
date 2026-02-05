@@ -151,5 +151,5 @@ export function resolveGatewayService(): GatewayService {
     };
   }
 
-  throw new Error(`Gateway service install not supported on ${process.platform}`);
+  throw new Error(`${process.platform} 平台不支持网关服务安装`);
 }

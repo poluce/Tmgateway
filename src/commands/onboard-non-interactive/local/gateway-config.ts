@@ -21,7 +21,7 @@ export function applyNonInteractiveGatewayConfig(params: {
 
   const hasGatewayPort = opts.gatewayPort !== undefined;
   if (hasGatewayPort && (!Number.isFinite(opts.gatewayPort) || (opts.gatewayPort ?? 0) <= 0)) {
-    runtime.error("Invalid --gateway-port");
+    runtime.error("无效的 --gateway-port");
     runtime.exit(1);
     return null;
   }
@@ -30,7 +30,7 @@ export function applyNonInteractiveGatewayConfig(params: {
   let bind = opts.gatewayBind ?? "loopback";
   const authModeRaw = opts.gatewayAuth ?? "token";
   if (authModeRaw !== "token" && authModeRaw !== "password") {
-    runtime.error("Invalid --gateway-auth (use token|password).");
+    runtime.error("无效的 --gateway-auth（使用 token|password）。");
     runtime.exit(1);
     return null;
   }
@@ -71,7 +71,7 @@ export function applyNonInteractiveGatewayConfig(params: {
   if (authMode === "password") {
     const password = opts.gatewayPassword?.trim();
     if (!password) {
-      runtime.error("Missing --gateway-password for password auth.");
+      runtime.error("密码认证缺少 --gateway-password。");
       runtime.exit(1);
       return null;
     }

@@ -38,7 +38,7 @@ export function normalizeLegacyConfigValues(cfg: OpenClawConfig): {
         },
       };
       changes.push(
-        `Copied messages.ackReaction → channels.whatsapp.ackReaction (scope: ${legacyScope}).`,
+        `已复制 messages.ackReaction → channels.whatsapp.ackReaction（范围：${legacyScope}）。`,
       );
     }
   }

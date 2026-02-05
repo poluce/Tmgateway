@@ -19,9 +19,9 @@ export async function promptGatewayConfig(
 }> {
   const portRaw = guardCancel(
     await text({
-      message: "Gateway port",
+      message: "网关端口",
       initialValue: String(resolveGatewayPort(cfg)),
-      validate: (value) => (Number.isFinite(Number(value)) ? undefined : "Invalid port"),
+      validate: (value) => (Number.isFinite(Number(value)) ? undefined : "无效端口"),
     }),
     runtime,
   );
@@ -29,32 +29,32 @@ export async function promptGatewayConfig(
 
   let bind = guardCancel(
     await select({
-      message: "Gateway bind mode",
+      message: "网关绑定模式",
       options: [
         {
           value: "loopback",
-          label: "Loopback (Local only)",
-          hint: "Bind to 127.0.0.1 - secure, local-only access",
+          label: "回环（仅本地）",
+          hint: "绑定到 127.0.0.1 - 安全的本地访问",
         },
         {
           value: "tailnet",
-          label: "Tailnet (Tailscale IP)",
-          hint: "Bind to your Tailscale IP only (100.x.x.x)",
+          label: "Tailnet（Tailscale IP）",
+          hint: "仅绑定到您的 Tailscale IP (100.x.x.x)",
         },
         {
           value: "auto",
-          label: "Auto (Loopback → LAN)",
-          hint: "Prefer loopback; fall back to all interfaces if unavailable",
+          label: "自动（回环 → 局域网）",
+          hint: "优先回环；不可用时回退到所有接口",
         },
         {
           value: "lan",
-          label: "LAN (All interfaces)",
-          hint: "Bind to 0.0.0.0 - accessible from anywhere on your network",
+          label: "局域网（所有接口）",
+          hint: "绑定到 0.0.0.0 - 可从网络上任何位置访问",
         },
         {
           value: "custom",
-          label: "Custom IP",
-          hint: "Specify a specific IP address, with 0.0.0.0 fallback if unavailable",
+          label: "自定义 IP",
+          hint: "指定特定 IP 地址，不可用时回退到 0.0.0.0",
         },
       ],
     }),
@@ -65,16 +65,16 @@ export async function promptGatewayConfig(
   if (bind === "custom") {
     const input = guardCancel(
       await text({
-        message: "Custom IP address",
+        message: "自定义 IP 地址",
         placeholder: "192.168.1.100",
         validate: (value) => {
           if (!value) {
-            return "IP address is required for custom bind mode";
+            return "自定义绑定模式需要 IP 地址";
           }
           const trimmed = value.trim();
           const parts = trimmed.split(".");
           if (parts.length !== 4) {
-            return "Invalid IPv4 address (e.g., 192.168.1.100)";
+            return "无效的 IPv4 地址（例如 192.168.1.100）";
           }
           if (
             parts.every((part) => {
@@ -84,7 +84,7 @@ export async function promptGatewayConfig(
           ) {
             return undefined;
           }
-          return "Invalid IPv4 address (each octet must be 0-255)";
+          return "无效的 IPv4 地址（每个八位字节必须是 0-255）";
         },
       }),
       runtime,
@@ -94,10 +94,10 @@ export async function promptGatewayConfig(
 
   let authMode = guardCancel(
     await select({
-      message: "Gateway auth",
+      message: "网关认证",
       options: [
-        { value: "token", label: "Token", hint: "Recommended default" },
-        { value: "password", label: "Password" },
+        { value: "token", label: "令牌", hint: "推荐默认方式" },
+        { value: "password", label: "密码" },
       ],
       initialValue: "token",
     }),
@@ -106,18 +106,18 @@ export async function promptGatewayConfig(
 
   const tailscaleMode = guardCancel(
     await select({
-      message: "Tailscale exposure",
+      message: "Tailscale 暴露方式",
       options: [
-        { value: "off", label: "Off", hint: "No Tailscale exposure" },
+        { value: "off", label: "关闭", hint: "不使用 Tailscale 暴露" },
         {
           value: "serve",
           label: "Serve",
-          hint: "Private HTTPS for your tailnet (devices on Tailscale)",
+          hint: "为您的 tailnet 提供私有 HTTPS（Tailscale 上的设备）",
         },
         {
           value: "funnel",
           label: "Funnel",
-          hint: "Public HTTPS via Tailscale Funnel (internet)",
+          hint: "通过 Tailscale Funnel 提供公共 HTTPS（互联网）",
         },
       ],
     }),
@@ -130,13 +130,13 @@ export async function promptGatewayConfig(
     if (!tailscaleBin) {
       note(
         [
-          "Tailscale binary not found in PATH or /Applications.",
-          "Ensure Tailscale is installed from:",
+          "在 PATH 或 /Applications 中未找到 Tailscale 二进制文件。",
+          "请确保已从以下地址安装 Tailscale：",
           "  https://tailscale.com/download/mac",
           "",
-          "You can continue setup, but serve/funnel will fail at runtime.",
+          "您可以继续设置，但 serve/funnel 将在运行时失败。",
         ].join("\n"),
-        "Tailscale Warning",
+        "Tailscale 警告",
       );
     }
   }
@@ -144,7 +144,7 @@ export async function promptGatewayConfig(
   let tailscaleResetOnExit = false;
   if (tailscaleMode !== "off") {
     note(
-      ["Docs:", "https://docs.openclaw.ai/gateway/tailscale", "https://docs.openclaw.ai/web"].join(
+      ["文档：", "https://docs.openclaw.ai/gateway/tailscale", "https://docs.openclaw.ai/web"].join(
         "\n",
       ),
       "Tailscale",
@@ -152,7 +152,7 @@ export async function promptGatewayConfig(
     tailscaleResetOnExit = Boolean(
       guardCancel(
         await confirm({
-          message: "Reset Tailscale serve/funnel on exit?",
+          message: "退出时重置 Tailscale serve/funnel？",
           initialValue: false,
         }),
         runtime,
@@ -161,12 +161,12 @@ export async function promptGatewayConfig(
   }
 
   if (tailscaleMode !== "off" && bind !== "loopback") {
-    note("Tailscale requires bind=loopback. Adjusting bind to loopback.", "Note");
+    note("Tailscale 需要 bind=loopback。正在将绑定调整为回环。", "提示");
     bind = "loopback";
   }
 
   if (tailscaleMode === "funnel" && authMode !== "password") {
-    note("Tailscale funnel requires password auth.", "Note");
+    note("Tailscale funnel 需要密码认证。", "提示");
     authMode = "password";
   }
 
@@ -177,7 +177,7 @@ export async function promptGatewayConfig(
   if (authMode === "token") {
     const tokenInput = guardCancel(
       await text({
-        message: "Gateway token (blank to generate)",
+        message: "网关令牌（留空自动生成）",
         initialValue: randomToken(),
       }),
       runtime,
@@ -188,8 +188,8 @@ export async function promptGatewayConfig(
   if (authMode === "password") {
     const password = guardCancel(
       await text({
-        message: "Gateway password",
-        validate: (value) => (value?.trim() ? undefined : "Required"),
+        message: "网关密码",
+        validate: (value) => (value?.trim() ? undefined : "必填"),
       }),
       runtime,
     );

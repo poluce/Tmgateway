@@ -136,21 +136,21 @@ export const formatContextUsageShort = (
 
 const formatAge = (ms?: number | null) => {
   if (!ms || ms < 0) {
-    return "unknown";
+    return "未知";
   }
   const minutes = Math.round(ms / 60_000);
   if (minutes < 1) {
-    return "just now";
+    return "刚刚";
   }
   if (minutes < 60) {
-    return `${minutes}m ago`;
+    return `${minutes}分钟前`;
   }
   const hours = Math.round(minutes / 60);
   if (hours < 48) {
-    return `${hours}h ago`;
+    return `${hours}小时前`;
   }
   const days = Math.round(hours / 24);
-  return `${days}d ago`;
+  return `${days}天前`;
 };
 
 const formatQueueDetails = (queue?: QueueStatus) => {
@@ -486,13 +486,13 @@ export function buildStatusMessage(args: StatusArgs): string {
 }
 
 const CATEGORY_LABELS: Record<CommandCategory, string> = {
-  session: "Session",
-  options: "Options",
-  status: "Status",
-  management: "Management",
-  media: "Media",
-  tools: "Tools",
-  docks: "Docks",
+  session: "会话",
+  options: "选项",
+  status: "状态",
+  management: "管理",
+  media: "媒体",
+  tools: "工具",
+  docks: "停靠",
 };
 
 const CATEGORY_ORDER: CommandCategory[] = [
@@ -522,32 +522,32 @@ function groupCommandsByCategory(
 }
 
 export function buildHelpMessage(cfg?: OpenClawConfig): string {
-  const lines = ["ℹ️ Help", ""];
+  const lines = ["ℹ️ 帮助", ""];
 
-  lines.push("Session");
-  lines.push("  /new  |  /reset  |  /compact [instructions]  |  /stop");
+  lines.push("会话");
+  lines.push("  /new  |  /reset  |  /compact [指令]  |  /stop");
   lines.push("");
 
-  const optionParts = ["/think <level>", "/model <id>", "/verbose on|off"];
+  const optionParts = ["/think <级别>", "/model <id>", "/verbose on|off"];
   if (cfg?.commands?.config === true) {
     optionParts.push("/config");
   }
   if (cfg?.commands?.debug === true) {
     optionParts.push("/debug");
   }
-  lines.push("Options");
+  lines.push("选项");
   lines.push(`  ${optionParts.join("  |  ")}`);
   lines.push("");
 
-  lines.push("Status");
+  lines.push("状态");
   lines.push("  /status  |  /whoami  |  /context");
   lines.push("");
 
-  lines.push("Skills");
-  lines.push("  /skill <name> [input]");
+  lines.push("技能");
+  lines.push("  /skill <名称> [输入]");
 
   lines.push("");
-  lines.push("More: /commands for full list");
+  lines.push("更多：/commands 查看完整列表");
 
   return lines.join("\n");
 }
@@ -613,9 +613,9 @@ function buildCommandItems(
   }
 
   for (const command of pluginCommands) {
-    const pluginLabel = command.pluginId ? ` (${command.pluginId})` : "";
+    const pluginLabel = command.pluginId ? `（${command.pluginId}）` : "";
     items.push({
-      label: "Plugins",
+      label: "插件",
       text: `/${command.name}${pluginLabel} - ${command.description}`,
     });
   }
@@ -666,7 +666,7 @@ export function buildCommandsMessagePaginated(
   const items = buildCommandItems(commands, pluginCommands);
 
   if (!isTelegram) {
-    const lines = ["ℹ️ Slash commands", ""];
+    const lines = ["ℹ️ 斜杠命令", ""];
     lines.push(formatCommandList(items));
     return {
       text: lines.join("\n").trim(),
@@ -684,7 +684,7 @@ export function buildCommandsMessagePaginated(
   const endIndex = startIndex + COMMANDS_PER_PAGE;
   const pageItems = items.slice(startIndex, endIndex);
 
-  const lines = [`ℹ️ Commands (${currentPage}/${totalPages})`, ""];
+  const lines = [`ℹ️ 命令（${currentPage}/${totalPages}）`, ""];
   lines.push(formatCommandList(pageItems));
 
   return {

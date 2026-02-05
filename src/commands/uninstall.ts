@@ -58,7 +58,7 @@ function buildScopeSelection(opts: UninstallOptions): {
 
 async function stopAndUninstallService(runtime: RuntimeEnv): Promise<boolean> {
   if (isNixMode) {
-    runtime.error("Nix mode detected; service uninstall is disabled.");
+    runtime.error("检测到 Nix 模式；服务卸载已禁用。");
     return false;
   }
   const service = resolveGatewayService();
@@ -66,23 +66,23 @@ async function stopAndUninstallService(runtime: RuntimeEnv): Promise<boolean> {
   try {
     loaded = await service.isLoaded({ env: process.env });
   } catch (err) {
-    runtime.error(`Gateway service check failed: ${String(err)}`);
+    runtime.error(`网关服务检查失败：${String(err)}`);
     return false;
   }
   if (!loaded) {
-    runtime.log(`Gateway service ${service.notLoadedText}.`);
+    runtime.log(`网关服务 ${service.notLoadedText}。`);
     return true;
   }
   try {
     await service.stop({ env: process.env, stdout: process.stdout });
   } catch (err) {
-    runtime.error(`Gateway stop failed: ${String(err)}`);
+    runtime.error(`网关停止失败：${String(err)}`);
   }
   try {
     await service.uninstall({ env: process.env, stdout: process.stdout });
     return true;
   } catch (err) {
-    runtime.error(`Gateway uninstall failed: ${String(err)}`);
+    runtime.error(`网关卸载失败：${String(err)}`);
     return false;
   }
 }
@@ -101,37 +101,37 @@ export async function uninstallCommand(runtime: RuntimeEnv, opts: UninstallOptio
   const { scopes, hadExplicit } = buildScopeSelection(opts);
   const interactive = !opts.nonInteractive;
   if (!interactive && !opts.yes) {
-    runtime.error("Non-interactive mode requires --yes.");
+    runtime.error("非交互模式需要 --yes。");
     runtime.exit(1);
     return;
   }
 
   if (!hadExplicit) {
     if (!interactive) {
-      runtime.error("Non-interactive mode requires explicit scopes (use --all).");
+      runtime.error("非交互模式需要明确的范围（使用 --all）。");
       runtime.exit(1);
       return;
     }
     const selection = await multiselectStyled<UninstallScope>({
-      message: "Uninstall which components?",
+      message: "卸载哪些组件？",
       options: [
         {
           value: "service",
-          label: "Gateway service",
+          label: "网关服务",
           hint: "launchd / systemd / schtasks",
         },
-        { value: "state", label: "State + config", hint: "~/.openclaw" },
-        { value: "workspace", label: "Workspace", hint: "agent files" },
+        { value: "state", label: "状态 + 配置", hint: "~/.openclaw" },
+        { value: "workspace", label: "工作空间", hint: "代理文件" },
         {
           value: "app",
-          label: "macOS app",
+          label: "macOS 应用",
           hint: "/Applications/OpenClaw.app",
         },
       ],
       initialValues: ["service", "state", "workspace"],
     });
     if (isCancel(selection)) {
-      cancel(stylePromptTitle("Uninstall cancelled.") ?? "Uninstall cancelled.");
+      cancel(stylePromptTitle("卸载已取消。") ?? "卸载已取消。");
       runtime.exit(0);
       return;
     }
@@ -141,16 +141,16 @@ export async function uninstallCommand(runtime: RuntimeEnv, opts: UninstallOptio
   }
 
   if (scopes.size === 0) {
-    runtime.log("Nothing selected.");
+    runtime.log("未选择任何内容。");
     return;
   }
 
   if (interactive && !opts.yes) {
     const ok = await confirm({
-      message: stylePromptMessage("Proceed with uninstall?"),
+      message: stylePromptMessage("继续卸载？"),
     });
     if (isCancel(ok) || !ok) {
-      cancel(stylePromptTitle("Uninstall cancelled.") ?? "Uninstall cancelled.");
+      cancel(stylePromptTitle("卸载已取消。") ?? "卸载已取消。");
       runtime.exit(0);
       return;
     }
@@ -193,12 +193,12 @@ export async function uninstallCommand(runtime: RuntimeEnv, opts: UninstallOptio
     await removeMacApp(runtime, dryRun);
   }
 
-  runtime.log("CLI still installed. Remove via npm/pnpm if desired.");
+  runtime.log("CLI 仍已安装。如需移除，请通过 npm/pnpm 卸载。");
 
   if (scopes.has("state") && !scopes.has("workspace")) {
     const home = resolveHomeDir();
     if (home && workspaceDirs.some((dir) => dir.startsWith(path.resolve(home)))) {
-      runtime.log("Tip: workspaces were preserved. Re-run with --workspace to remove them.");
+      runtime.log("提示：工作空间已保留。使用 --workspace 重新运行以移除它们。");
     }
   }
 }

@@ -26,11 +26,11 @@ export async function noteMacLaunchAgentOverrides() {
 
   const displayMarkerPath = shortenHomePath(markerPath);
   const lines = [
-    `- LaunchAgent writes are disabled via ${displayMarkerPath}.`,
-    "- To restore default behavior:",
+    `- LaunchAgent 写入已通过 ${displayMarkerPath} 禁用。`,
+    "- 要恢复默认行为：",
     `  rm ${displayMarkerPath}`,
   ].filter((line): line is string => Boolean(line));
-  note(lines.join("\n"), "Gateway (macOS)");
+  note(lines.join("\n"), "网关 (macOS)");
 }
 
 async function launchctlGetenv(name: string): Promise<string | undefined> {
@@ -80,13 +80,12 @@ export async function noteMacLaunchctlGatewayEnvOverrides(
   ].filter((entry): entry is [string, string] => Boolean(entry[1]?.trim()));
   if (deprecatedLaunchctlEntries.length > 0) {
     const lines = [
-      "- Deprecated launchctl environment variables detected (ignored).",
+      "- 检测到已弃用的 launchctl 环境变量（已忽略）。",
       ...deprecatedLaunchctlEntries.map(
-        ([key]) =>
-          `- \`${key}\` is set; use \`OPENCLAW_${key.slice(key.indexOf("_") + 1)}\` instead.`,
+        ([key]) => `- \`${key}\` 已设置；请改用 \`OPENCLAW_${key.slice(key.indexOf("_") + 1)}\`。`,
       ),
     ];
-    (deps?.noteFn ?? note)(lines.join("\n"), "Gateway (macOS)");
+    (deps?.noteFn ?? note)(lines.join("\n"), "网关 (macOS)");
   }
 
   const tokenEntries = [
@@ -106,19 +105,17 @@ export async function noteMacLaunchctlGatewayEnvOverrides(
   }
 
   const lines = [
-    "- launchctl environment overrides detected (can cause confusing unauthorized errors).",
-    envToken && envTokenKey
-      ? `- \`${envTokenKey}\` is set; it overrides config tokens.`
-      : undefined,
+    "- 检测到 launchctl 环境覆盖（可能导致令人困惑的未授权错误）。",
+    envToken && envTokenKey ? `- \`${envTokenKey}\` 已设置；它会覆盖配置中的令牌。` : undefined,
     envPassword
-      ? `- \`${envPasswordKey ?? "OPENCLAW_GATEWAY_PASSWORD"}\` is set; it overrides config passwords.`
+      ? `- \`${envPasswordKey ?? "OPENCLAW_GATEWAY_PASSWORD"}\` 已设置；它会覆盖配置中的密码。`
       : undefined,
-    "- Clear overrides and restart the app/gateway:",
+    "- 清除覆盖并重启应用/网关：",
     envTokenKey ? `  launchctl unsetenv ${envTokenKey}` : undefined,
     envPasswordKey ? `  launchctl unsetenv ${envPasswordKey}` : undefined,
   ].filter((line): line is string => Boolean(line));
 
-  (deps?.noteFn ?? note)(lines.join("\n"), "Gateway (macOS)");
+  (deps?.noteFn ?? note)(lines.join("\n"), "网关 (macOS)");
 }
 
 export function noteDeprecatedLegacyEnvVars(
@@ -136,12 +133,12 @@ export function noteDeprecatedLegacyEnvVars(
   }
 
   const lines = [
-    "- Deprecated legacy environment variables detected (ignored).",
-    "- Use OPENCLAW_* equivalents instead:",
+    "- 检测到已弃用的旧版环境变量（已忽略）。",
+    "- 请改用 OPENCLAW_* 等效变量：",
     ...entries.map((key) => {
       const suffix = key.slice(key.indexOf("_") + 1);
       return `  ${key} -> OPENCLAW_${suffix}`;
     }),
   ];
-  (deps?.noteFn ?? note)(lines.join("\n"), "Environment");
+  (deps?.noteFn ?? note)(lines.join("\n"), "环境");
 }

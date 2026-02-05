@@ -71,8 +71,8 @@ export function collectBlueBubblesStatusIssues(
         channel: "bluebubbles",
         accountId,
         kind: "config",
-        message: "Not configured (missing serverUrl or password).",
-        fix: "Run: openclaw channels add bluebubbles --http-url <server-url> --password <password>",
+        message: "未配置（缺少 serverUrl 或 password）。",
+        fix: "运行：openclaw channels add bluebubbles --http-url <server-url> --password <password>",
       });
       continue;
     }
@@ -80,16 +80,16 @@ export function collectBlueBubblesStatusIssues(
     // Check for probe failures
     if (probe && probe.ok === false) {
       const errorDetail = probe.error
-        ? `: ${probe.error}`
+        ? `：${probe.error}`
         : probe.status
-          ? ` (HTTP ${probe.status})`
+          ? `（HTTP ${probe.status}）`
           : "";
       issues.push({
         channel: "bluebubbles",
         accountId,
         kind: "runtime",
-        message: `BlueBubbles server unreachable${errorDetail}`,
-        fix: "Check that the BlueBubbles server is running and accessible. Verify serverUrl and password in your config.",
+        message: `BlueBubbles 服务器无法访问${errorDetail}`,
+        fix: "检查 BlueBubbles 服务器是否正在运行且可访问。验证配置中的 serverUrl 和 password。",
       });
     }
 
@@ -99,8 +99,8 @@ export function collectBlueBubblesStatusIssues(
         channel: "bluebubbles",
         accountId,
         kind: "runtime",
-        message: `Channel error: ${lastError}`,
-        fix: "Check gateway logs for details. If the webhook is failing, verify the webhook URL is configured in BlueBubbles server settings.",
+        message: `渠道错误：${lastError}`,
+        fix: "检查网关日志以获取详细信息。如果 webhook 失败，请验证 BlueBubbles 服务器设置中是否配置了 webhook URL。",
       });
     }
   }

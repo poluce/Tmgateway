@@ -65,7 +65,7 @@ function renderObjectSummary(payload: unknown, opts: FormatOpts): string[] {
   const obj = payload as Record<string, unknown>;
   const keys = Object.keys(obj);
   if (keys.length === 0) {
-    return [theme.muted("(empty)")];
+    return [theme.muted("（空）")];
   }
 
   const rows = keys.slice(0, 20).map((k) => {
@@ -162,7 +162,7 @@ function renderMessagesFromPayload(payload: unknown, opts: FormatOpts): string[]
   if (!Array.isArray(messages)) {
     return null;
   }
-  return renderMessageList(messages, opts, "No messages.");
+  return renderMessageList(messages, opts, "无消息。");
 }
 
 function renderPinsFromPayload(payload: unknown, opts: FormatOpts): string[] | null {
@@ -173,7 +173,7 @@ function renderPinsFromPayload(payload: unknown, opts: FormatOpts): string[] | n
   if (!Array.isArray(pins)) {
     return null;
   }
-  return renderMessageList(pins, opts, "No pins.");
+  return renderMessageList(pins, opts, "无置顶消息。");
 }
 
 function extractDiscordSearchResultsMessages(results: unknown): unknown[] | null {
@@ -242,7 +242,7 @@ function renderReactions(payload: unknown, opts: FormatOpts): string[] | null {
   });
 
   if (rows.length === 0) {
-    return [theme.muted("No reactions.")];
+    return [theme.muted("无反应。")];
   }
 
   return [
@@ -268,7 +268,7 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
   const opts: FormatOpts = { width };
 
   if (result.handledBy === "dry-run") {
-    return [muted(`[dry-run] would run ${result.action} via ${result.channel}`)];
+    return [muted(`[试运行] 将通过 ${result.channel} 运行 ${result.action}`)];
   }
 
   if (result.kind === "broadcast") {
@@ -276,14 +276,12 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
     const rows = results.map((entry) => ({
       Channel: resolveChannelLabel(entry.channel),
       Target: shortenText(formatTargetDisplay({ channel: entry.channel, target: entry.to }), 36),
-      Status: entry.ok ? "ok" : "error",
-      Error: entry.ok ? "" : shortenText(entry.error ?? "unknown error", 48),
+      Status: entry.ok ? "成功" : "错误",
+      Error: entry.ok ? "" : shortenText(entry.error ?? "未知错误", 48),
     }));
     const okCount = results.filter((entry) => entry.ok).length;
     const total = results.length;
-    const headingLine = ok(
-      `✅ Broadcast complete (${okCount}/${total} succeeded, ${total - okCount} failed)`,
-    );
+    const headingLine = ok(`✅ 广播完成（${okCount}/${total} 成功，${total - okCount} 失败）`);
     return [
       headingLine,
       renderTable({
@@ -319,7 +317,7 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
 
     const label = resolveChannelLabel(result.channel);
     const msgId = extractMessageId(result.payload);
-    return [ok(`✅ Sent via ${label}.${msgId ? ` Message ID: ${msgId}` : ""}`)];
+    return [ok(`✅ 已通过 ${label} 发送。${msgId ? ` 消息 ID：${msgId}` : ""}`)];
   }
 
   if (result.kind === "poll") {
@@ -330,21 +328,21 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
       const lines = [
         ok(
           formatGatewaySummary({
-            action: "Poll sent",
+            action: "投票已发送",
             channel: poll.channel,
             messageId: msgId,
           }),
         ),
       ];
       if (pollId) {
-        lines.push(ok(`Poll id: ${pollId}`));
+        lines.push(ok(`投票 ID：${pollId}`));
       }
       return lines;
     }
 
     const label = resolveChannelLabel(result.channel);
     const msgId = extractMessageId(result.payload);
-    return [ok(`✅ Poll sent via ${label}.${msgId ? ` Message ID: ${msgId}` : ""}`)];
+    return [ok(`✅ 投票已通过 ${label} 发送。${msgId ? ` 消息 ID：${msgId}` : ""}`)];
   }
 
   // channel actions (non-send/poll)
@@ -355,11 +353,11 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
     const added = (payload as { added?: unknown }).added;
     const removed = (payload as { removed?: unknown }).removed;
     if (typeof added === "string" && added.trim()) {
-      lines.push(ok(`✅ Reaction added: ${added.trim()}`));
+      lines.push(ok(`✅ 已添加反应：${added.trim()}`));
       return lines;
     }
     if (typeof removed === "string" && removed.trim()) {
-      lines.push(ok(`✅ Reaction removed: ${removed.trim()}`));
+      lines.push(ok(`✅ 已移除反应：${removed.trim()}`));
       return lines;
     }
     if (Array.isArray(removed)) {
@@ -367,16 +365,16 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
         .map((x) => String(x).trim())
         .filter(Boolean)
         .join(", ");
-      lines.push(ok(`✅ Reactions removed${list ? `: ${list}` : ""}`));
+      lines.push(ok(`✅ 已移除反应${list ? `：${list}` : ""}`));
       return lines;
     }
-    lines.push(ok("✅ Reaction updated."));
+    lines.push(ok("✅ 反应已更新。"));
     return lines;
   }
 
   const reactionsTable = renderReactions(payload, opts);
   if (reactionsTable && result.action === "reactions") {
-    lines.push(heading("Reactions"));
+    lines.push(heading("反应"));
     lines.push(reactionsTable[0] ?? "");
     return lines;
   }
@@ -384,7 +382,7 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
   if (result.action === "read") {
     const messagesTable = renderMessagesFromPayload(payload, opts);
     if (messagesTable) {
-      lines.push(heading("Messages"));
+      lines.push(heading("消息"));
       lines.push(messagesTable[0] ?? "");
       return lines;
     }
@@ -393,7 +391,7 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
   if (result.action === "list-pins") {
     const pinsTable = renderPinsFromPayload(payload, opts);
     if (pinsTable) {
-      lines.push(heading("Pinned messages"));
+      lines.push(heading("置顶消息"));
       lines.push(pinsTable[0] ?? "");
       return lines;
     }
@@ -403,20 +401,20 @@ export function formatMessageCliText(result: MessageActionRunResult): string[] {
     const results = (payload as { results?: unknown }).results;
     const list = extractDiscordSearchResultsMessages(results);
     if (list) {
-      lines.push(heading("Search results"));
-      lines.push(renderMessageList(list, opts, "No results.")[0] ?? "");
+      lines.push(heading("搜索结果"));
+      lines.push(renderMessageList(list, opts, "无结果。")[0] ?? "");
       return lines;
     }
   }
 
   // Generic success + compact details table.
-  lines.push(ok(`✅ ${result.action} via ${resolveChannelLabel(result.channel)}.`));
+  lines.push(ok(`✅ ${result.action} 通过 ${resolveChannelLabel(result.channel)}。`));
   const summary = renderObjectSummary(payload, opts);
   if (summary.length) {
     lines.push("");
     lines.push(...summary);
     lines.push("");
-    lines.push(muted("Tip: use --json for full output."));
+    lines.push(muted("提示：使用 --json 获取完整输出。"));
   }
   return lines;
 }

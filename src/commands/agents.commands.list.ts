@@ -20,7 +20,7 @@ type AgentsListOptions = {
 };
 
 function formatSummary(summary: AgentSummary) {
-  const defaultTag = summary.isDefault ? " (default)" : "";
+  const defaultTag = summary.isDefault ? " (默认)" : "";
   const header =
     summary.name && summary.name !== summary.id
       ? `${summary.id}${defaultTag} (${summary.name})`
@@ -38,32 +38,32 @@ function formatSummary(summary: AgentSummary) {
     summary.identitySource === "identity"
       ? "IDENTITY.md"
       : summary.identitySource === "config"
-        ? "config"
+        ? "配置"
         : null;
 
   const lines = [`- ${header}`];
   if (identityLine) {
-    lines.push(`  Identity: ${identityLine}${identitySource ? ` (${identitySource})` : ""}`);
+    lines.push(`  身份：${identityLine}${identitySource ? ` (${identitySource})` : ""}`);
   }
-  lines.push(`  Workspace: ${shortenHomePath(summary.workspace)}`);
-  lines.push(`  Agent dir: ${shortenHomePath(summary.agentDir)}`);
+  lines.push(`  工作空间：${shortenHomePath(summary.workspace)}`);
+  lines.push(`  代理目录：${shortenHomePath(summary.agentDir)}`);
   if (summary.model) {
-    lines.push(`  Model: ${summary.model}`);
+    lines.push(`  模型：${summary.model}`);
   }
-  lines.push(`  Routing rules: ${summary.bindings}`);
+  lines.push(`  路由规则：${summary.bindings}`);
 
   if (summary.routes?.length) {
-    lines.push(`  Routing: ${summary.routes.join(", ")}`);
+    lines.push(`  路由：${summary.routes.join(", ")}`);
   }
   if (summary.providers?.length) {
-    lines.push("  Providers:");
+    lines.push("  提供商：");
     for (const provider of summary.providers) {
       lines.push(`    - ${provider}`);
     }
   }
 
   if (summary.bindingDetails?.length) {
-    lines.push("  Routing rules:");
+    lines.push("  路由规则：");
     for (const binding of summary.bindingDetails) {
       lines.push(`    - ${binding}`);
     }
@@ -106,7 +106,7 @@ export async function agentsListCommand(
     if (routes.length > 0) {
       summary.routes = routes;
     } else if (summary.isDefault) {
-      summary.routes = ["default (no explicit rules)"];
+      summary.routes = ["默认（无明确规则）"];
     }
 
     const providerLines = listProvidersForAgent({
@@ -125,10 +125,10 @@ export async function agentsListCommand(
     return;
   }
 
-  const lines = ["Agents:", ...summaries.map(formatSummary)];
-  lines.push("Routing rules map channel/account/peer to an agent. Use --bindings for full rules.");
+  const lines = ["代理：", ...summaries.map(formatSummary)];
+  lines.push("路由规则将频道/账户/对等方映射到代理。使用 --bindings 查看完整规则。");
   lines.push(
-    `Channel status reflects local config/creds. For live health: ${formatCliCommand("openclaw channels status --probe")}.`,
+    `频道状态反映本地配置/凭证。实时健康检查：${formatCliCommand("openclaw channels status --probe")}。`,
   );
   runtime.log(lines.join("\n"));
 }

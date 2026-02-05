@@ -102,7 +102,7 @@ export function collectAttackSurfaceSummaryFindings(cfg: OpenClawConfig): Securi
     {
       checkId: "summary.attack_surface",
       severity: "info",
-      title: "Attack surface summary",
+      title: "攻击面摘要",
       detail,
     },
   ];
@@ -128,9 +128,9 @@ export function collectSyncedFolderFindings(params: {
     findings.push({
       checkId: "fs.synced_dir",
       severity: "warn",
-      title: "State/config path looks like a synced folder",
-      detail: `stateDir=${params.stateDir}, configPath=${params.configPath}. Synced folders (iCloud/Dropbox/OneDrive/Google Drive) can leak tokens and transcripts onto other devices.`,
-      remediation: `Keep OPENCLAW_STATE_DIR on a local-only volume and re-run "${formatCliCommand("openclaw security audit --fix")}".`,
+      title: "状态/配置路径疑似同步文件夹",
+      detail: `stateDir=${params.stateDir}, configPath=${params.configPath}。同步文件夹（iCloud/Dropbox/OneDrive/Google Drive）可能会将令牌和对话记录泄露到其他设备。`,
+      remediation: `请将 OPENCLAW_STATE_DIR 保存在仅本地的卷上，然后重新运行 "${formatCliCommand("openclaw security audit --fix")}"。`,
     });
   }
   return findings;
@@ -149,11 +149,10 @@ export function collectSecretsInConfigFindings(cfg: OpenClawConfig): SecurityAud
     findings.push({
       checkId: "config.secrets.gateway_password_in_config",
       severity: "warn",
-      title: "Gateway password is stored in config",
-      detail:
-        "gateway.auth.password is set in the config file; prefer environment variables for secrets when possible.",
+      title: "网关密码存储在配置文件中",
+      detail: "gateway.auth.password 已在配置文件中设置；建议尽可能使用环境变量存储敏感信息。",
       remediation:
-        "Prefer OPENCLAW_GATEWAY_PASSWORD (env) and remove gateway.auth.password from disk.",
+        "建议使用 OPENCLAW_GATEWAY_PASSWORD（环境变量）并从磁盘中删除 gateway.auth.password。",
     });
   }
 
@@ -162,9 +161,8 @@ export function collectSecretsInConfigFindings(cfg: OpenClawConfig): SecurityAud
     findings.push({
       checkId: "config.secrets.hooks_token_in_config",
       severity: "info",
-      title: "Hooks token is stored in config",
-      detail:
-        "hooks.token is set in the config file; keep config perms tight and treat it like an API secret.",
+      title: "Hooks 令牌存储在配置文件中",
+      detail: "hooks.token 已在配置文件中设置；请确保配置文件权限严格，并将其视为 API 密钥对待。",
     });
   }
 
@@ -182,8 +180,8 @@ export function collectHooksHardeningFindings(cfg: OpenClawConfig): SecurityAudi
     findings.push({
       checkId: "hooks.token_too_short",
       severity: "warn",
-      title: "Hooks token looks short",
-      detail: `hooks.token is ${token.length} chars; prefer a long random token.`,
+      title: "Hooks 令牌过短",
+      detail: `hooks.token 长度为 ${token.length} 个字符；建议使用更长的随机令牌。`,
     });
   }
 
@@ -201,10 +199,9 @@ export function collectHooksHardeningFindings(cfg: OpenClawConfig): SecurityAudi
     findings.push({
       checkId: "hooks.token_reuse_gateway_token",
       severity: "warn",
-      title: "Hooks token reuses the Gateway token",
-      detail:
-        "hooks.token matches gateway.auth token; compromise of hooks expands blast radius to the Gateway API.",
-      remediation: "Use a separate hooks.token dedicated to hook ingress.",
+      title: "Hooks 令牌与网关令牌重复",
+      detail: "hooks.token 与 gateway.auth 令牌相同；hooks 泄露将扩大影响范围至网关 API。",
+      remediation: "请使用专用于 hook 入口的独立 hooks.token。",
     });
   }
 
@@ -213,9 +210,9 @@ export function collectHooksHardeningFindings(cfg: OpenClawConfig): SecurityAudi
     findings.push({
       checkId: "hooks.path_root",
       severity: "critical",
-      title: "Hooks base path is '/'",
-      detail: "hooks.path='/' would shadow other HTTP endpoints and is unsafe.",
-      remediation: "Use a dedicated path like '/hooks'.",
+      title: "Hooks 基础路径为 '/'",
+      detail: "hooks.path='/' 会遮蔽其他 HTTP 端点，存在安全风险。",
+      remediation: "请使用专用路径，如 '/hooks'。",
     });
   }
 
@@ -372,12 +369,9 @@ export function collectModelHygieneFindings(cfg: OpenClawConfig): SecurityAuditF
     findings.push({
       checkId: "models.legacy",
       severity: "warn",
-      title: "Some configured models look legacy",
-      detail:
-        "Older/legacy models can be less robust against prompt injection and tool misuse.\n" +
-        lines +
-        more,
-      remediation: "Prefer modern, instruction-hardened models for any bot that can run tools.",
+      title: "部分配置的模型已过时",
+      detail: "旧版/过时的模型对提示注入和工具滥用的防护能力较弱。\n" + lines + more,
+      remediation: "对于可运行工具的机器人，建议使用现代的、经过指令强化的模型。",
     });
   }
 
@@ -390,13 +384,10 @@ export function collectModelHygieneFindings(cfg: OpenClawConfig): SecurityAuditF
     findings.push({
       checkId: "models.weak_tier",
       severity: "warn",
-      title: "Some configured models are below recommended tiers",
-      detail:
-        "Smaller/older models are generally more susceptible to prompt injection and tool misuse.\n" +
-        lines +
-        more,
+      title: "部分配置的模型低于推荐等级",
+      detail: "较小/较旧的模型通常更容易受到提示注入和工具滥用的影响。\n" + lines + more,
       remediation:
-        "Use the latest, top-tier model for any bot with tools or untrusted inboxes. Avoid Haiku tiers; prefer GPT-5+ and Claude 4.5+.",
+        "对于具有工具或不受信任收件箱的机器人，请使用最新的顶级模型。避免使用 Haiku 等级；建议使用 GPT-5+ 和 Claude 4.5+。",
     });
   }
 
@@ -563,22 +554,22 @@ export function collectSmallModelRiskFindings(params: {
   const exposureList = Array.from(exposureSet);
   const exposureDetail =
     exposureList.length > 0
-      ? `Uncontrolled input tools allowed: ${exposureList.join(", ")}.`
-      : "No web/browser tools detected for these models.";
+      ? `允许的不受控输入工具：${exposureList.join(", ")}。`
+      : "这些模型未检测到网络/浏览器工具。";
 
   findings.push({
     checkId: "models.small_params",
     severity: hasUnsafe ? "critical" : "info",
-    title: "Small models require sandboxing and web tools disabled",
+    title: "小型模型需要沙箱并禁用网络工具",
     detail:
-      `Small models (<=${SMALL_MODEL_PARAM_B_MAX}B params) detected:\n` +
+      `检测到小型模型（<=${SMALL_MODEL_PARAM_B_MAX}B 参数）：\n` +
       modelLines.join("\n") +
       `\n` +
       exposureDetail +
       `\n` +
-      "Small models are not recommended for untrusted inputs.",
+      "不建议将小型模型用于不受信任的输入。",
     remediation:
-      'If you must use small models, enable sandboxing for all sessions (agents.defaults.sandbox.mode="all") and disable web_search/web_fetch/browser (tools.deny=["group:web","browser"]).',
+      '如果必须使用小型模型，请为所有会话启用沙箱（agents.defaults.sandbox.mode="all"）并禁用 web_search/web_fetch/browser（tools.deny=["group:web","browser"]）。',
   });
 
   return findings;
@@ -671,13 +662,13 @@ export async function collectPluginsTrustFindings(params: {
     findings.push({
       checkId: "plugins.extensions_no_allowlist",
       severity: skillCommandsLikelyExposed ? "critical" : "warn",
-      title: "Extensions exist but plugins.allow is not set",
+      title: "存在扩展但未设置 plugins.allow",
       detail:
-        `Found ${pluginDirs.length} extension(s) under ${extensionsDir}. Without plugins.allow, any discovered plugin id may load (depending on config and plugin behavior).` +
+        `在 ${extensionsDir} 下发现 ${pluginDirs.length} 个扩展。如果没有设置 plugins.allow，任何发现的插件 ID 都可能被加载（取决于配置和插件行为）。` +
         (skillCommandsLikelyExposed
-          ? "\nNative skill commands are enabled on at least one configured chat surface; treat unpinned/unallowlisted extensions as high risk."
+          ? "\n至少有一个已配置的聊天界面启用了原生技能命令；请将未固定/未列入白名单的扩展视为高风险。"
           : ""),
-      remediation: "Set plugins.allow to an explicit list of plugin ids you trust.",
+      remediation: "请将 plugins.allow 设置为您信任的插件 ID 的明确列表。",
     });
   }
 
@@ -800,8 +791,8 @@ export async function collectIncludeFilePermFindings(params: {
       findings.push({
         checkId: "fs.config_include.perms_writable",
         severity: "critical",
-        title: "Config include file is writable by others",
-        detail: `${formatPermissionDetail(p, perms)}; another user could influence your effective config.`,
+        title: "配置包含文件可被他人写入",
+        detail: `${formatPermissionDetail(p, perms)}；其他用户可能会影响您的有效配置。`,
         remediation: formatPermissionRemediation({
           targetPath: p,
           perms,
@@ -814,8 +805,8 @@ export async function collectIncludeFilePermFindings(params: {
       findings.push({
         checkId: "fs.config_include.perms_world_readable",
         severity: "critical",
-        title: "Config include file is world-readable",
-        detail: `${formatPermissionDetail(p, perms)}; include files can contain tokens and private settings.`,
+        title: "配置包含文件可被所有人读取",
+        detail: `${formatPermissionDetail(p, perms)}；包含文件可能包含令牌和私有设置。`,
         remediation: formatPermissionRemediation({
           targetPath: p,
           perms,
@@ -828,8 +819,8 @@ export async function collectIncludeFilePermFindings(params: {
       findings.push({
         checkId: "fs.config_include.perms_group_readable",
         severity: "warn",
-        title: "Config include file is group-readable",
-        detail: `${formatPermissionDetail(p, perms)}; include files can contain tokens and private settings.`,
+        title: "配置包含文件可被同组用户读取",
+        detail: `${formatPermissionDetail(p, perms)}；包含文件可能包含令牌和私有设置。`,
         remediation: formatPermissionRemediation({
           targetPath: p,
           perms,
@@ -864,8 +855,8 @@ export async function collectStateDeepFilesystemFindings(params: {
       findings.push({
         checkId: "fs.credentials_dir.perms_writable",
         severity: "critical",
-        title: "Credentials dir is writable by others",
-        detail: `${formatPermissionDetail(oauthDir, oauthPerms)}; another user could drop/modify credential files.`,
+        title: "凭据目录可被他人写入",
+        detail: `${formatPermissionDetail(oauthDir, oauthPerms)}；其他用户可能会投放/修改凭据文件。`,
         remediation: formatPermissionRemediation({
           targetPath: oauthDir,
           perms: oauthPerms,
@@ -878,8 +869,8 @@ export async function collectStateDeepFilesystemFindings(params: {
       findings.push({
         checkId: "fs.credentials_dir.perms_readable",
         severity: "warn",
-        title: "Credentials dir is readable by others",
-        detail: `${formatPermissionDetail(oauthDir, oauthPerms)}; credentials and allowlists can be sensitive.`,
+        title: "凭据目录可被他人读取",
+        detail: `${formatPermissionDetail(oauthDir, oauthPerms)}；凭据和白名单可能包含敏感信息。`,
         remediation: formatPermissionRemediation({
           targetPath: oauthDir,
           perms: oauthPerms,
@@ -913,8 +904,8 @@ export async function collectStateDeepFilesystemFindings(params: {
         findings.push({
           checkId: "fs.auth_profiles.perms_writable",
           severity: "critical",
-          title: "auth-profiles.json is writable by others",
-          detail: `${formatPermissionDetail(authPath, authPerms)}; another user could inject credentials.`,
+          title: "auth-profiles.json 可被他人写入",
+          detail: `${formatPermissionDetail(authPath, authPerms)}；其他用户可能会注入凭据。`,
           remediation: formatPermissionRemediation({
             targetPath: authPath,
             perms: authPerms,
@@ -927,8 +918,8 @@ export async function collectStateDeepFilesystemFindings(params: {
         findings.push({
           checkId: "fs.auth_profiles.perms_readable",
           severity: "warn",
-          title: "auth-profiles.json is readable by others",
-          detail: `${formatPermissionDetail(authPath, authPerms)}; auth-profiles.json contains API keys and OAuth tokens.`,
+          title: "auth-profiles.json 可被他人读取",
+          detail: `${formatPermissionDetail(authPath, authPerms)}；auth-profiles.json 包含 API 密钥和 OAuth 令牌。`,
           remediation: formatPermissionRemediation({
             targetPath: authPath,
             perms: authPerms,
@@ -952,8 +943,8 @@ export async function collectStateDeepFilesystemFindings(params: {
         findings.push({
           checkId: "fs.sessions_store.perms_readable",
           severity: "warn",
-          title: "sessions.json is readable by others",
-          detail: `${formatPermissionDetail(storePath, storePerms)}; routing and transcript metadata can be sensitive.`,
+          title: "sessions.json 可被他人读取",
+          detail: `${formatPermissionDetail(storePath, storePerms)}；路由和对话元数据可能包含敏感信息。`,
           remediation: formatPermissionRemediation({
             targetPath: storePath,
             perms: storePerms,
@@ -982,8 +973,8 @@ export async function collectStateDeepFilesystemFindings(params: {
           findings.push({
             checkId: "fs.log_file.perms_readable",
             severity: "warn",
-            title: "Log file is readable by others",
-            detail: `${formatPermissionDetail(logPath, logPerms)}; logs can contain private messages and tool output.`,
+            title: "日志文件可被他人读取",
+            detail: `${formatPermissionDetail(logPath, logPerms)}；日志可能包含私人消息和工具输出。`,
             remediation: formatPermissionRemediation({
               targetPath: logPath,
               perms: logPerms,
@@ -1042,11 +1033,11 @@ export function collectExposureMatrixFindings(cfg: OpenClawConfig): SecurityAudi
     findings.push({
       checkId: "security.exposure.open_groups_with_elevated",
       severity: "critical",
-      title: "Open groupPolicy with elevated tools enabled",
+      title: "开放群组策略与提权工具同时启用",
       detail:
-        `Found groupPolicy="open" at:\n${openGroups.map((p) => `- ${p}`).join("\n")}\n` +
-        "With tools.elevated enabled, a prompt injection in those rooms can become a high-impact incident.",
-      remediation: `Set groupPolicy="allowlist" and keep elevated allowlists extremely tight.`,
+        `发现 groupPolicy="open" 位于：\n${openGroups.map((p) => `- ${p}`).join("\n")}\n` +
+        "当 tools.elevated 启用时，这些房间中的提示注入可能导致高影响事件。",
+      remediation: `请设置 groupPolicy="allowlist" 并严格控制提权白名单。`,
     });
   }
 

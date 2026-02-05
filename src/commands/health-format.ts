@@ -9,9 +9,9 @@ const formatKv = (line: string, rich: boolean) => {
   const value = line.slice(idx + 2);
 
   const valueColor =
-    key === "Gateway target" || key === "Config"
+    key === "Gateway target" || key === "网关目标" || key === "Config" || key === "配置"
       ? theme.command
-      : key === "Source"
+      : key === "Source" || key === "来源"
         ? theme.muted
         : theme.info;
 
@@ -24,14 +24,16 @@ export function formatHealthCheckFailure(err: unknown, opts: { rich?: boolean } 
   const message = err instanceof Error ? err.message : raw;
 
   if (!rich) {
-    return `Health check failed: ${raw}`;
+    return `健康检查失败：${raw}`;
   }
 
   const lines = message
     .split("\n")
     .map((l) => l.trimEnd())
     .filter(Boolean);
-  const detailsIdx = lines.findIndex((l) => l.startsWith("Gateway target: "));
+  const detailsIdx = lines.findIndex(
+    (l) => l.startsWith("Gateway target: ") || l.startsWith("网关目标："),
+  );
 
   const summaryLines = (detailsIdx >= 0 ? lines.slice(0, detailsIdx) : lines)
     .map((l) => l.trim())
@@ -39,9 +41,9 @@ export function formatHealthCheckFailure(err: unknown, opts: { rich?: boolean } 
   const detailLines = detailsIdx >= 0 ? lines.slice(detailsIdx) : [];
 
   const summary = summaryLines.length > 0 ? summaryLines.join(" ") : message;
-  const header = colorize(rich, theme.error.bold, "Health check failed");
+  const header = colorize(rich, theme.error.bold, "健康检查失败");
 
-  const out: string[] = [`${header}: ${summary}`];
+  const out: string[] = [`${header}：${summary}`];
   for (const line of detailLines) {
     out.push(`  ${formatKv(line, rich)}`);
   }

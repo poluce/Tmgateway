@@ -567,7 +567,7 @@ export async function healthCommand(
   // Always query the running gateway; do not open a direct Baileys socket here.
   const summary = await withProgress(
     {
-      label: "Checking gateway health…",
+      label: "正在检查网关健康状态…",
       indeterminate: true,
       enabled: opts.json !== true,
     },
@@ -588,7 +588,7 @@ export async function healthCommand(
     const debugEnabled = isTruthyEnvValue(process.env.OPENCLAW_DEBUG_HEALTH);
     if (opts.verbose) {
       const details = buildGatewayConnectionDetails({ config: cfg });
-      runtime.log(info("Gateway connection:"));
+      runtime.log(info("网关连接："));
       for (const line of details.message.split("\n")) {
         runtime.log(`  ${line}`);
       }
@@ -738,28 +738,26 @@ export async function healthCommand(
 
     if (resolvedAgents.length > 0) {
       const agentLabels = resolvedAgents.map((agent) =>
-        agent.isDefault ? `${agent.agentId} (default)` : agent.agentId,
+        agent.isDefault ? `${agent.agentId} (默认)` : agent.agentId,
       );
-      runtime.log(info(`Agents: ${agentLabels.join(", ")}`));
+      runtime.log(info(`代理：${agentLabels.join(", ")}`));
     }
     const heartbeatParts = displayAgents
       .map((agent) => {
         const everyMs = agent.heartbeat?.everyMs;
-        const label = everyMs ? formatDurationParts(everyMs) : "disabled";
+        const label = everyMs ? formatDurationParts(everyMs) : "已禁用";
         return `${label} (${agent.agentId})`;
       })
       .filter(Boolean);
     if (heartbeatParts.length > 0) {
-      runtime.log(info(`Heartbeat interval: ${heartbeatParts.join(", ")}`));
+      runtime.log(info(`心跳间隔：${heartbeatParts.join(", ")}`));
     }
     if (displayAgents.length === 0) {
-      runtime.log(
-        info(`Session store: ${summary.sessions.path} (${summary.sessions.count} entries)`),
-      );
+      runtime.log(info(`会话存储：${summary.sessions.path} (${summary.sessions.count} 条记录)`));
       if (summary.sessions.recent.length > 0) {
         for (const r of summary.sessions.recent) {
           runtime.log(
-            `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)}m ago` : "no activity"})`,
+            `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)} 分钟前` : "无活动"})`,
           );
         }
       }
@@ -767,13 +765,13 @@ export async function healthCommand(
       for (const agent of displayAgents) {
         runtime.log(
           info(
-            `Session store (${agent.agentId}): ${agent.sessions.path} (${agent.sessions.count} entries)`,
+            `会话存储 (${agent.agentId})：${agent.sessions.path} (${agent.sessions.count} 条记录)`,
           ),
         );
         if (agent.sessions.recent.length > 0) {
           for (const r of agent.sessions.recent) {
             runtime.log(
-              `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)}m ago` : "no activity"})`,
+              `- ${r.key} (${r.updatedAt ? `${Math.round((Date.now() - r.updatedAt) / 60000)} 分钟前` : "无活动"})`,
             );
           }
         }

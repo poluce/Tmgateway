@@ -68,10 +68,10 @@ export async function agentCommand(
 ) {
   const body = (opts.message ?? "").trim();
   if (!body) {
-    throw new Error("Message (--message) is required");
+    throw new Error("消息（--message）是必需的");
   }
   if (!opts.to && !opts.sessionId && !opts.sessionKey && !opts.agentId) {
-    throw new Error("Pass --to <E.164>, --session-id, or --agent to choose a session");
+    throw new Error("使用 --to <E.164>、--session-id 或 --agent 选择会话");
   }
 
   const cfg = loadConfig();
@@ -81,7 +81,7 @@ export async function agentCommand(
     const knownAgents = listAgentIds(cfg);
     if (!knownAgents.includes(agentIdOverride)) {
       throw new Error(
-        `Unknown agent id "${agentIdOverrideRaw}". Use "${formatCliCommand("openclaw agents list")}" to see configured agents.`,
+        `未知代理 ID "${agentIdOverrideRaw}"。使用 "${formatCliCommand("openclaw agents list")}" 查看已配置的代理。`,
       );
     }
   }
@@ -89,7 +89,7 @@ export async function agentCommand(
     const sessionAgentId = resolveAgentIdFromSessionKey(opts.sessionKey);
     if (sessionAgentId !== agentIdOverride) {
       throw new Error(
-        `Agent id "${agentIdOverrideRaw}" does not match session key agent "${sessionAgentId}".`,
+        `代理 ID "${agentIdOverrideRaw}" 与会话密钥代理 "${sessionAgentId}" 不匹配。`,
       );
     }
   }
@@ -112,15 +112,15 @@ export async function agentCommand(
   const thinkOverride = normalizeThinkLevel(opts.thinking);
   const thinkOnce = normalizeThinkLevel(opts.thinkingOnce);
   if (opts.thinking && !thinkOverride) {
-    throw new Error(`Invalid thinking level. Use one of: ${thinkingLevelsHint}.`);
+    throw new Error(`无效的思考级别。使用以下之一：${thinkingLevelsHint}。`);
   }
   if (opts.thinkingOnce && !thinkOnce) {
-    throw new Error(`Invalid one-shot thinking level. Use one of: ${thinkingLevelsHint}.`);
+    throw new Error(`无效的一次性思考级别。使用以下之一：${thinkingLevelsHint}。`);
   }
 
   const verboseOverride = normalizeVerboseLevel(opts.verbose);
   if (opts.verbose && !verboseOverride) {
-    throw new Error('Invalid verbose level. Use "on", "full", or "off".');
+    throw new Error('无效的详细级别。使用 "on"、"full" 或 "off"。');
   }
 
   const timeoutSecondsRaw =
@@ -129,7 +129,7 @@ export async function agentCommand(
     timeoutSecondsRaw !== undefined &&
     (Number.isNaN(timeoutSecondsRaw) || timeoutSecondsRaw <= 0)
   ) {
-    throw new Error("--timeout must be a positive integer (seconds)");
+    throw new Error("--timeout 必须是正整数（秒）");
   }
   const timeoutMs = resolveAgentTimeoutMs({
     cfg,
@@ -167,7 +167,7 @@ export async function agentCommand(
         chatType: sessionEntry?.chatType,
       });
       if (sendPolicy === "deny") {
-        throw new Error("send blocked by session policy");
+        throw new Error("发送被会话策略阻止");
       }
     }
 
@@ -356,7 +356,7 @@ export async function agentCommand(
     if (resolvedThinkLevel === "xhigh" && !supportsXHighThinking(provider, model)) {
       const explicitThink = Boolean(thinkOnce || thinkOverride);
       if (explicitThink) {
-        throw new Error(`Thinking level "xhigh" is only supported for ${formatXHighModelHint()}.`);
+        throw new Error(`思考级别 "xhigh" 仅支持 ${formatXHighModelHint()}。`);
       }
       resolvedThinkLevel = "high";
       if (sessionEntry && sessionStore && sessionKey && sessionEntry.thinkingLevel === "xhigh") {

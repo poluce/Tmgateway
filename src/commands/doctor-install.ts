@@ -20,21 +20,21 @@ export function noteSourceInstallIssues(root: string | null) {
 
   if (fs.existsSync(nodeModules) && !fs.existsSync(pnpmStore)) {
     warnings.push(
-      "- node_modules was not installed by pnpm (missing node_modules/.pnpm). Run: pnpm install",
+      "- node_modules 不是由 pnpm 安装的（缺少 node_modules/.pnpm）。运行：pnpm install",
     );
   }
 
   if (fs.existsSync(path.join(root, "package-lock.json"))) {
     warnings.push(
-      "- package-lock.json present in a pnpm workspace. If you ran npm install, remove it and reinstall with pnpm.",
+      "- 在 pnpm 工作空间中存在 package-lock.json。如果您运行了 npm install，请删除它并使用 pnpm 重新安装。",
     );
   }
 
   if (fs.existsSync(srcEntry) && !fs.existsSync(tsxBin)) {
-    warnings.push("- tsx binary is missing for source runs. Run: pnpm install");
+    warnings.push("- 源代码运行缺少 tsx 二进制文件。运行：pnpm install");
   }
 
   if (warnings.length > 0) {
-    note(warnings.join("\n"), "Install");
+    note(warnings.join("\n"), "安装");
   }
 }

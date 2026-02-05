@@ -232,11 +232,11 @@ async function resolveModelOverride(params: {
     aliasIndex,
   });
   if (!resolved) {
-    throw new Error(`Unrecognized model "${raw}".`);
+    throw new Error(`未识别的模型 "${raw}"。`);
   }
   const key = modelKey(resolved.ref.provider, resolved.ref.model);
   if (allowed.allowedKeys.size > 0 && !allowed.allowedKeys.has(key)) {
-    throw new Error(`Model "${key}" is not allowed.`);
+    throw new Error(`模型 "${key}" 不被允许。`);
   }
   const isDefault =
     resolved.ref.provider === configDefault.provider && resolved.ref.model === configDefault.model;
@@ -253,10 +253,10 @@ export function createSessionStatusTool(opts?: {
   config?: OpenClawConfig;
 }): AnyAgentTool {
   return {
-    label: "Session Status",
+    label: "会话状态",
     name: "session_status",
     description:
-      "Show a /status-equivalent session status card (usage + time + cost when available). Use for model-use questions (📊 session_status). Optional: set per-session model override (model=default resets overrides).",
+      "显示类似 /status 的会话状态卡片（使用量 + 时间 + 可用时的费用）。用于模型使用问题（📊 session_status）。可选：设置每会话模型覆盖（model=default 重置覆盖）。",
     parameters: SessionStatusToolSchema,
     execute: async (_toolCallId, args) => {
       const params = args as Record<string, unknown>;
@@ -267,7 +267,7 @@ export function createSessionStatusTool(opts?: {
       const requestedKeyParam = readStringParam(params, "sessionKey");
       let requestedKeyRaw = requestedKeyParam ?? opts?.agentSessionKey;
       if (!requestedKeyRaw?.trim()) {
-        throw new Error("sessionKey required");
+        throw new Error("需要提供 sessionKey");
       }
 
       const requesterAgentId = resolveAgentIdFromSessionKey(
@@ -280,11 +280,11 @@ export function createSessionStatusTool(opts?: {
         // Gate cross-agent access behind tools.agentToAgent settings.
         if (!a2aPolicy.enabled) {
           throw new Error(
-            "Agent-to-agent status is disabled. Set tools.agentToAgent.enabled=true to allow cross-agent access.",
+            "代理间状态已禁用。设置 tools.agentToAgent.enabled=true 以允许跨代理访问。",
           );
         }
         if (!a2aPolicy.isAllowed(requesterAgentId, targetAgentId)) {
-          throw new Error("Agent-to-agent session status denied by tools.agentToAgent.allow.");
+          throw new Error("代理间会话状态被 tools.agentToAgent.allow 拒绝。");
         }
       };
 

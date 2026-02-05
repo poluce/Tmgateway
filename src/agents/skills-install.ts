@@ -69,12 +69,12 @@ function formatInstallFailureMessage(result: {
   stdout: string;
   stderr: string;
 }): string {
-  const code = typeof result.code === "number" ? `exit ${result.code}` : "unknown exit";
+  const code = typeof result.code === "number" ? `退出码 ${result.code}` : "未知退出码";
   const summary = summarizeInstallOutput(result.stderr) ?? summarizeInstallOutput(result.stdout);
   if (!summary) {
-    return `Install failed (${code})`;
+    return `安装失败（${code}）`;
   }
-  return `Install failed (${code}): ${summary}`;
+  return `安装失败（${code}）：${summary}`;
 }
 
 function resolveInstallId(spec: SkillInstallSpec, index: number): string {
@@ -235,7 +235,7 @@ async function installDownloadSpec(params: {
   if (!url) {
     return {
       ok: false,
-      message: "missing download url",
+      message: "缺少下载 URL",
       stdout: "",
       stderr: "",
       code: null,
@@ -271,7 +271,7 @@ async function installDownloadSpec(params: {
   if (!shouldExtract) {
     return {
       ok: true,
-      message: `Downloaded to ${archivePath}`,
+      message: `已下载到 ${archivePath}`,
       stdout: `downloaded=${downloaded}`,
       stderr: "",
       code: 0,
@@ -281,7 +281,7 @@ async function installDownloadSpec(params: {
   if (!archiveType) {
     return {
       ok: false,
-      message: "extract requested but archive type could not be detected",
+      message: "请求解压但无法检测归档类型",
       stdout: "",
       stderr: "",
       code: null,
@@ -298,9 +298,7 @@ async function installDownloadSpec(params: {
   const success = extractResult.code === 0;
   return {
     ok: success,
-    message: success
-      ? `Downloaded and extracted to ${targetDir}`
-      : formatInstallFailureMessage(extractResult),
+    message: success ? `已下载并解压到 ${targetDir}` : formatInstallFailureMessage(extractResult),
     stdout: extractResult.stdout.trim(),
     stderr: extractResult.stderr.trim(),
     code: extractResult.code,
@@ -348,7 +346,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
   if (!entry) {
     return {
       ok: false,
-      message: `Skill not found: ${params.skillName}`,
+      message: `未找到技能：${params.skillName}`,
       stdout: "",
       stderr: "",
       code: null,
@@ -359,7 +357,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
   if (!spec) {
     return {
       ok: false,
-      message: `Installer not found: ${params.installId}`,
+      message: `未找到安装器：${params.installId}`,
       stdout: "",
       stderr: "",
       code: null,
@@ -385,7 +383,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
   if (spec.kind === "brew" && !brewExe) {
     return {
       ok: false,
-      message: "brew not installed",
+      message: "brew 未安装",
       stdout: "",
       stderr: "",
       code: null,
@@ -399,7 +397,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
       if (brewResult.code !== 0) {
         return {
           ok: false,
-          message: "Failed to install uv (brew)",
+          message: "安装 uv 失败（brew）",
           stdout: brewResult.stdout.trim(),
           stderr: brewResult.stderr.trim(),
           code: brewResult.code,
@@ -408,7 +406,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
     } else {
       return {
         ok: false,
-        message: "uv not installed (install via brew)",
+        message: "uv 未安装（通过 brew 安装）",
         stdout: "",
         stderr: "",
         code: null,
@@ -418,7 +416,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
   if (!command.argv || command.argv.length === 0) {
     return {
       ok: false,
-      message: "invalid install command",
+      message: "无效的安装命令",
       stdout: "",
       stderr: "",
       code: null,
@@ -437,7 +435,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
       if (brewResult.code !== 0) {
         return {
           ok: false,
-          message: "Failed to install go (brew)",
+          message: "安装 go 失败（brew）",
           stdout: brewResult.stdout.trim(),
           stderr: brewResult.stderr.trim(),
           code: brewResult.code,
@@ -446,7 +444,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
     } else {
       return {
         ok: false,
-        message: "go not installed (install via brew)",
+        message: "go 未安装（通过 brew 安装）",
         stdout: "",
         stderr: "",
         code: null,
@@ -481,7 +479,7 @@ export async function installSkill(params: SkillInstallRequest): Promise<SkillIn
   const success = result.code === 0;
   return {
     ok: success,
-    message: success ? "Installed" : formatInstallFailureMessage(result),
+    message: success ? "已安装" : formatInstallFailureMessage(result),
     stdout: result.stdout.trim(),
     stderr: result.stderr.trim(),
     code: result.code,

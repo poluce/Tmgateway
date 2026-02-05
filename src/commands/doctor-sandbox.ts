@@ -40,25 +40,23 @@ function resolveSandboxScript(scriptRel: string): SandboxScriptInfo | null {
 async function runSandboxScript(scriptRel: string, runtime: RuntimeEnv): Promise<boolean> {
   const script = resolveSandboxScript(scriptRel);
   if (!script) {
-    note(`Unable to locate ${scriptRel}. Run it from the repo root.`, "Sandbox");
+    note(`无法找到 ${scriptRel}。请从仓库根目录运行。`, "沙盒");
     return false;
   }
 
-  runtime.log(`Running ${scriptRel}...`);
+  runtime.log(`正在运行 ${scriptRel}...`);
   const result = await runCommandWithTimeout(["bash", script.scriptPath], {
     timeoutMs: 20 * 60 * 1000,
     cwd: script.cwd,
   });
   if (result.code !== 0) {
     runtime.error(
-      `Failed running ${scriptRel}: ${
-        result.stderr.trim() || result.stdout.trim() || "unknown error"
-      }`,
+      `运行 ${scriptRel} 失败：${result.stderr.trim() || result.stdout.trim() || "未知错误"}`,
     );
     return false;
   }
 
-  runtime.log(`Completed ${scriptRel}.`);
+  runtime.log(`已完成 ${scriptRel}。`);
   return true;
 }
 
@@ -155,14 +153,14 @@ async function handleMissingSandboxImage(
   }
 
   const buildHint = params.buildScript
-    ? `Build it with ${params.buildScript}.`
-    : "Build or pull it first.";
-  note(`Sandbox ${params.kind} image missing: ${params.image}. ${buildHint}`, "Sandbox");
+    ? `使用 ${params.buildScript} 构建。`
+    : "请先构建或拉取镜像。";
+  note(`沙盒 ${params.kind} 镜像缺失：${params.image}。${buildHint}`, "沙盒");
 
   let built = false;
   if (params.buildScript) {
     const build = await prompter.confirmSkipInNonInteractive({
-      message: `Build ${params.kind} sandbox image now?`,
+      message: `现在构建 ${params.kind} 沙盒镜像？`,
       initialValue: true,
     });
     if (build) {
@@ -188,7 +186,7 @@ export async function maybeRepairSandboxImages(
 
   const dockerAvailable = await isDockerAvailable();
   if (!dockerAvailable) {
-    note("Docker not available; skipping sandbox image checks.", "Sandbox");
+    note("Docker 不可用；跳过沙盒镜像检查。", "沙盒");
     return cfg;
   }
 
@@ -232,7 +230,7 @@ export async function maybeRepairSandboxImages(
   }
 
   if (changes.length > 0) {
-    note(changes.join("\n"), "Doctor changes");
+    note(changes.join("\n"), "Doctor 更改");
   }
 
   return next;
@@ -283,6 +281,6 @@ export function noteSandboxScopeWarnings(cfg: OpenClawConfig) {
   }
 
   if (warnings.length > 0) {
-    note(warnings.join("\n"), "Sandbox");
+    note(warnings.join("\n"), "沙盒");
   }
 }

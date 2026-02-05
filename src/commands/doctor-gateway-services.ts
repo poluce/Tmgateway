@@ -95,12 +95,12 @@ export async function maybeRepairGatewayServiceConfig(
   prompter: DoctorPrompter,
 ) {
   if (resolveIsNixMode(process.env)) {
-    note("Nix mode detected; skip service updates.", "Gateway");
+    note("检测到 Nix 模式；跳过服务更新。", "网关");
     return;
   }
 
   if (mode === "remote") {
-    note("Gateway mode is remote; skipped local service audit.", "Gateway");
+    note("网关模式为远程；跳过本地服务审计。", "网关");
     return;
   }
 
@@ -127,11 +127,11 @@ export async function maybeRepairGatewayServiceConfig(
   if (needsNodeRuntime && !systemNodePath) {
     const warning = renderSystemNodeWarning(systemNodeInfo);
     if (warning) {
-      note(warning, "Gateway runtime");
+      note(warning, "网关运行时");
     }
     note(
-      "System Node 22+ not found. Install via Homebrew/apt/choco and rerun doctor to migrate off Bun/version managers.",
-      "Gateway runtime",
+      "未找到系统 Node 22+。通过 Homebrew/apt/choco 安装后重新运行 doctor 以从 Bun/版本管理器迁移。",
+      "网关运行时",
     );
   }
 
@@ -155,7 +155,7 @@ export async function maybeRepairGatewayServiceConfig(
   ) {
     audit.issues.push({
       code: SERVICE_AUDIT_CODES.gatewayEntrypointMismatch,
-      message: "Gateway service entrypoint does not match the current install.",
+      message: "网关服务入口点与当前安装不匹配。",
       detail: `${currentEntrypoint} -> ${expectedEntrypoint}`,
       level: "recommended",
     });
@@ -171,26 +171,23 @@ export async function maybeRepairGatewayServiceConfig(
         issue.detail ? `- ${issue.message} (${issue.detail})` : `- ${issue.message}`,
       )
       .join("\n"),
-    "Gateway service config",
+    "网关服务配置",
   );
 
   const aggressiveIssues = audit.issues.filter((issue) => issue.level === "aggressive");
   const needsAggressive = aggressiveIssues.length > 0;
 
   if (needsAggressive && !prompter.shouldForce) {
-    note(
-      "Custom or unexpected service edits detected. Rerun with --force to overwrite.",
-      "Gateway service config",
-    );
+    note("检测到自定义或意外的服务编辑。使用 --force 重新运行以覆盖。", "网关服务配置");
   }
 
   const repair = needsAggressive
     ? await prompter.confirmAggressive({
-        message: "Overwrite gateway service config with current defaults now?",
+        message: "立即用当前默认值覆盖网关服务配置？",
         initialValue: Boolean(prompter.shouldForce),
       })
     : await prompter.confirmRepair({
-        message: "Update gateway service config to the recommended defaults now?",
+        message: "立即将网关服务配置更新为推荐的默认值？",
         initialValue: true,
       });
   if (!repair) {
@@ -205,7 +202,7 @@ export async function maybeRepairGatewayServiceConfig(
       environment,
     });
   } catch (err) {
-    runtime.error(`Gateway service update failed: ${String(err)}`);
+    runtime.error(`网关服务更新失败: ${String(err)}`);
   }
 }
 
@@ -223,13 +220,13 @@ export async function maybeScanExtraGatewayServices(
 
   note(
     extraServices.map((svc) => `- ${svc.label} (${svc.scope}, ${svc.detail})`).join("\n"),
-    "Other gateway-like services detected",
+    "检测到其他类似网关的服务",
   );
 
   const legacyServices = extraServices.filter((svc) => svc.legacy === true);
   if (legacyServices.length > 0) {
     const shouldRemove = await prompter.confirmSkipInNonInteractive({
-      message: "Remove legacy gateway services (clawdbot/moltbot) now?",
+      message: "立即移除旧版网关服务 (clawdbot/moltbot)？",
       initialValue: true,
     });
     if (shouldRemove) {
@@ -246,7 +243,7 @@ export async function maybeScanExtraGatewayServices(
         }
         const plistPath = extractDetailPath(svc.detail, "plist:");
         if (!plistPath) {
-          failed.push(`${svc.label} (missing plist path)`);
+          failed.push(`${svc.label} (缺少 plist 路径)`);
           continue;
         }
         const dest = await cleanupLegacyLaunchdService({
@@ -256,28 +253,28 @@ export async function maybeScanExtraGatewayServices(
         removed.push(dest ? `${svc.label} -> ${dest}` : svc.label);
       }
       if (removed.length > 0) {
-        note(removed.map((line) => `- ${line}`).join("\n"), "Legacy gateway removed");
+        note(removed.map((line) => `- ${line}`).join("\n"), "旧版网关已移除");
       }
       if (failed.length > 0) {
-        note(failed.map((line) => `- ${line}`).join("\n"), "Legacy gateway cleanup skipped");
+        note(failed.map((line) => `- ${line}`).join("\n"), "旧版网关清理已跳过");
       }
       if (removed.length > 0) {
-        runtime.log("Legacy gateway services removed. Installing OpenClaw gateway next.");
+        runtime.log("旧版网关服务已移除。接下来安装 OpenClaw 网关。");
       }
     }
   }
 
   const cleanupHints = renderGatewayServiceCleanupHints();
   if (cleanupHints.length > 0) {
-    note(cleanupHints.map((hint) => `- ${hint}`).join("\n"), "Cleanup hints");
+    note(cleanupHints.map((hint) => `- ${hint}`).join("\n"), "清理提示");
   }
 
   note(
     [
-      "Recommendation: run a single gateway per machine for most setups.",
-      "One gateway supports multiple agents.",
-      "If you need multiple gateways (e.g., a rescue bot on the same host), isolate ports + config/state (see docs: /gateway#multiple-gateways-same-host).",
+      "建议：大多数设置每台机器运行单个网关。",
+      "一个网关支持多个代理。",
+      "如果您需要多个网关（例如，同一主机上的救援机器人），请隔离端口 + 配置/状态（参见文档：/gateway#multiple-gateways-same-host）。",
     ].join("\n"),
-    "Gateway recommendation",
+    "网关建议",
   );
 }

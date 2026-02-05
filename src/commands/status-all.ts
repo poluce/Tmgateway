@@ -36,14 +36,14 @@ export async function statusAllCommand(
   runtime: RuntimeEnv,
   opts?: { timeoutMs?: number },
 ): Promise<void> {
-  await withProgress({ label: "Scanning status --all…", total: 11 }, async (progress) => {
-    progress.setLabel("Loading config…");
+  await withProgress({ label: "正在扫描状态 --all…", total: 11 }, async (progress) => {
+    progress.setLabel("正在加载配置…");
     const cfg = loadConfig();
     const osSummary = resolveOsSummary();
     const snap = await readConfigFileSnapshot().catch(() => null);
     progress.tick();
 
-    progress.setLabel("Checking Tailscale…");
+    progress.setLabel("正在检查 Tailscale…");
     const tailscaleMode = cfg.gateway?.tailscale?.mode ?? "off";
     const tailscale = await (async () => {
       try {
@@ -80,7 +80,7 @@ export async function statusAllCommand(
         : null;
     progress.tick();
 
-    progress.setLabel("Checking for updates…");
+    progress.setLabel("正在检查更新…");
     const root = await resolveOpenClawPackageRoot({
       moduleUrl: import.meta.url,
       argv1: process.argv[1],
@@ -121,7 +121,7 @@ export async function statusAllCommand(
         : null;
     progress.tick();
 
-    progress.setLabel("Probing gateway…");
+    progress.setLabel("正在探测网关…");
     const connection = buildGatewayConnectionDetails({ config: cfg });
     const isRemoteMode = cfg.gateway?.mode === "remote";
     const remoteUrlRaw =
@@ -165,7 +165,7 @@ export async function statusAllCommand(
     const gatewaySelf = pickGatewaySelfPresence(gatewayProbe?.presence ?? null);
     progress.tick();
 
-    progress.setLabel("Checking services…");
+    progress.setLabel("正在检查服务…");
     const readServiceSummary = async (service: GatewayService) => {
       try {
         const [loaded, runtimeInfo, command] = await Promise.all([
@@ -189,10 +189,10 @@ export async function statusAllCommand(
     const nodeService = await readServiceSummary(resolveNodeService());
     progress.tick();
 
-    progress.setLabel("Scanning agents…");
+    progress.setLabel("正在扫描代理…");
     const agentStatus = await getAgentLocalStatuses(cfg);
     progress.tick();
-    progress.setLabel("Summarizing channels…");
+    progress.setLabel("正在汇总频道…");
     const channels = await buildChannelsTable(cfg, { showSecrets: false });
     progress.tick();
 
@@ -220,7 +220,7 @@ export async function statusAllCommand(
         }
       : {};
 
-    progress.setLabel("Querying gateway…");
+    progress.setLabel("正在查询网关…");
     const health = gatewayReachable
       ? await callGateway({
           method: "health",
@@ -240,7 +240,7 @@ export async function statusAllCommand(
     const channelIssues = channelsStatus ? collectChannelStatusIssues(channelsStatus) : [];
     progress.tick();
 
-    progress.setLabel("Checking local state…");
+    progress.setLabel("正在检查本地状态…");
     const sentinel = await readRestartSentinel().catch(() => null);
     const lastErr = await readLastGatewayErrorLine(process.env).catch(() => null);
     const port = resolveGatewayPort(cfg);
@@ -457,7 +457,7 @@ export async function statusAllCommand(
       },
     });
 
-    progress.setLabel("Rendering…");
+    progress.setLabel("正在渲染…");
     runtime.log(lines.join("\n"));
     progress.tick();
   });

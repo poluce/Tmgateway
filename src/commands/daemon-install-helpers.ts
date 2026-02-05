@@ -78,6 +78,6 @@ export async function buildGatewayInstallPlan(params: {
 
 export function gatewayInstallErrorHint(platform = process.platform): string {
   return platform === "win32"
-    ? "Tip: rerun from an elevated PowerShell (Start → type PowerShell → right-click → Run as administrator) or skip service install."
-    : `Tip: rerun \`${formatCliCommand("openclaw gateway install")}\` after fixing the error.`;
+    ? "提示：从提升权限的 PowerShell 重新运行（开始 → 输入 PowerShell → 右键 → 以管理员身份运行）或跳过服务安装。"
+    : `提示：修复错误后重新运行 \`${formatCliCommand("openclaw gateway install")}\`。`;
 }

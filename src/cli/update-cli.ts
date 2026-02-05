@@ -70,22 +70,22 @@ export type UpdateWizardOptions = {
 };
 
 const STEP_LABELS: Record<string, string> = {
-  "clean check": "Working directory is clean",
-  "upstream check": "Upstream branch exists",
-  "git fetch": "Fetching latest changes",
-  "git rebase": "Rebasing onto target commit",
-  "git rev-parse @{upstream}": "Resolving upstream commit",
-  "git rev-list": "Enumerating candidate commits",
-  "git clone": "Cloning git checkout",
-  "preflight worktree": "Preparing preflight worktree",
-  "preflight cleanup": "Cleaning preflight worktree",
-  "deps install": "Installing dependencies",
-  build: "Building",
-  "ui:build": "Building UI",
-  "openclaw doctor": "Running doctor checks",
-  "git rev-parse HEAD (after)": "Verifying update",
-  "global update": "Updating via package manager",
-  "global install": "Installing global package",
+  "clean check": "工作目录是干净的",
+  "upstream check": "上游分支存在",
+  "git fetch": "正在获取最新更改",
+  "git rebase": "正在变基到目标提交",
+  "git rev-parse @{upstream}": "正在解析上游提交",
+  "git rev-list": "正在枚举候选提交",
+  "git clone": "正在克隆 git 仓库",
+  "preflight worktree": "正在准备预检工作树",
+  "preflight cleanup": "正在清理预检工作树",
+  "deps install": "正在安装依赖",
+  build: "正在构建",
+  "ui:build": "正在构建 UI",
+  "openclaw doctor": "正在运行诊断检查",
+  "git rev-parse HEAD (after)": "正在验证更新",
+  "global update": "正在通过包管理器更新",
+  "global install": "正在安装全局包",
 };
 
 const UPDATE_QUIPS = [
@@ -213,14 +213,14 @@ async function tryWriteCompletionCache(root: string, jsonMode: boolean): Promise
   });
   if (result.error) {
     if (!jsonMode) {
-      defaultRuntime.log(theme.warn(`Completion cache update failed: ${String(result.error)}`));
+      defaultRuntime.log(theme.warn(`完成缓存更新失败：${String(result.error)}`));
     }
     return;
   }
   if (result.status !== 0 && !jsonMode) {
     const stderr = (result.stderr ?? "").toString().trim();
     const detail = stderr ? ` (${stderr})` : "";
-    defaultRuntime.log(theme.warn(`Completion cache update failed${detail}.`));
+    defaultRuntime.log(theme.warn(`完成缓存更新失败${detail}。`));
   }
 }
 
@@ -374,7 +374,7 @@ function formatGitStatusLine(params: {
 export async function updateStatusCommand(opts: UpdateStatusOptions): Promise<void> {
   const timeoutMs = opts.timeout ? Number.parseInt(opts.timeout, 10) * 1000 : undefined;
   if (timeoutMs !== undefined && (Number.isNaN(timeoutMs) || timeoutMs <= 0)) {
-    defaultRuntime.error("--timeout must be a positive integer (seconds)");
+    defaultRuntime.error("--timeout 必须是正整数（秒）");
     defaultRuntime.exit(1);
     return;
   }
@@ -455,7 +455,7 @@ export async function updateStatusCommand(opts: UpdateStatusOptions): Promise<vo
     },
   ];
 
-  defaultRuntime.log(theme.heading("OpenClaw update status"));
+  defaultRuntime.log(theme.heading("OpenClaw 更新状态"));
   defaultRuntime.log("");
   defaultRuntime.log(
     renderTable({
@@ -622,7 +622,7 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
   const shouldRestart = opts.restart !== false;
 
   if (timeoutMs !== undefined && (Number.isNaN(timeoutMs) || timeoutMs <= 0)) {
-    defaultRuntime.error("--timeout must be a positive integer (seconds)");
+    defaultRuntime.error("--timeout 必须是正整数（秒）");
     defaultRuntime.exit(1);
     return;
   }
@@ -649,13 +649,13 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
 
   const requestedChannel = normalizeUpdateChannel(opts.channel);
   if (opts.channel && !requestedChannel) {
-    defaultRuntime.error(`--channel must be "stable", "beta", or "dev" (got "${opts.channel}")`);
+    defaultRuntime.error(`--channel 必须是 "stable"、"beta" 或 "dev"（收到 "${opts.channel}"）`);
     defaultRuntime.exit(1);
     return;
   }
   if (opts.channel && !configSnapshot.valid) {
     const issues = configSnapshot.issues.map((issue) => `- ${issue.path}: ${issue.message}`);
-    defaultRuntime.error(["Config is invalid; cannot set update channel.", ...issues].join("\n"));
+    defaultRuntime.error(["配置无效；无法设置更新频道。", ...issues].join("\n"));
     defaultRuntime.exit(1);
     return;
   }
@@ -707,7 +707,7 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
       });
       if (isCancel(ok) || !ok) {
         if (!opts.json) {
-          defaultRuntime.log(theme.muted("Update cancelled."));
+          defaultRuntime.log(theme.muted("更新已取消。"));
         }
         defaultRuntime.exit(0);
         return;
@@ -730,14 +730,14 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
     await writeConfigFile(next);
     activeConfig = next;
     if (!opts.json) {
-      defaultRuntime.log(theme.muted(`Update channel set to ${requestedChannel}.`));
+      defaultRuntime.log(theme.muted(`更新频道已设置为 ${requestedChannel}。`));
     }
   }
 
   const showProgress = !opts.json && process.stdout.isTTY;
 
   if (!opts.json) {
-    defaultRuntime.log(theme.heading("Updating OpenClaw..."));
+    defaultRuntime.log(theme.heading("正在更新 OpenClaw..."));
     defaultRuntime.log("");
   }
 
@@ -905,7 +905,7 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
 
     if (!opts.json) {
       defaultRuntime.log("");
-      defaultRuntime.log(theme.heading("Updating plugins..."));
+      defaultRuntime.log(theme.heading("正在更新插件..."));
     }
 
     const syncResult = await syncPluginsForUpdateChannel({
@@ -960,7 +960,7 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
       const skipped = npmResult.outcomes.filter((entry) => entry.status === "skipped").length;
 
       if (npmResult.outcomes.length === 0) {
-        defaultRuntime.log(theme.muted("No plugin updates needed."));
+        defaultRuntime.log(theme.muted("无需更新插件。"));
       } else {
         const parts = [`${updated} updated`, `${unchanged} unchanged`];
         if (failed > 0) {
@@ -989,13 +989,13 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
   if (shouldRestart) {
     if (!opts.json) {
       defaultRuntime.log("");
-      defaultRuntime.log(theme.heading("Restarting service..."));
+      defaultRuntime.log(theme.heading("正在重启服务..."));
     }
     try {
       const { runDaemonRestart } = await import("./daemon-cli.js");
       const restarted = await runDaemonRestart();
       if (!opts.json && restarted) {
-        defaultRuntime.log(theme.success("Daemon restarted successfully."));
+        defaultRuntime.log(theme.success("守护进程重启成功。"));
         defaultRuntime.log("");
         process.env.OPENCLAW_UPDATE_IN_PROGRESS = "1";
         try {
@@ -1005,14 +1005,14 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
             nonInteractive: !interactiveDoctor,
           });
         } catch (err) {
-          defaultRuntime.log(theme.warn(`Doctor failed: ${String(err)}`));
+          defaultRuntime.log(theme.warn(`诊断失败：${String(err)}`));
         } finally {
           delete process.env.OPENCLAW_UPDATE_IN_PROGRESS;
         }
       }
     } catch (err) {
       if (!opts.json) {
-        defaultRuntime.log(theme.warn(`Daemon restart failed: ${String(err)}`));
+        defaultRuntime.log(theme.warn(`守护进程重启失败：${String(err)}`));
         defaultRuntime.log(
           theme.muted(
             `You may need to restart the service manually: ${replaceCliName(formatCliCommand("openclaw gateway restart"), CLI_NAME)}`,
@@ -1045,7 +1045,7 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
 export async function updateWizardCommand(opts: UpdateWizardOptions = {}): Promise<void> {
   if (!process.stdin.isTTY) {
     defaultRuntime.error(
-      "Update wizard requires a TTY. Use `openclaw update --channel <stable|beta|dev>` instead.",
+      "更新向导需要 TTY。请改用 `openclaw update --channel <stable|beta|dev>`。",
     );
     defaultRuntime.exit(1);
     return;
@@ -1053,7 +1053,7 @@ export async function updateWizardCommand(opts: UpdateWizardOptions = {}): Promi
 
   const timeoutMs = opts.timeout ? Number.parseInt(opts.timeout, 10) * 1000 : undefined;
   if (timeoutMs !== undefined && (Number.isNaN(timeoutMs) || timeoutMs <= 0)) {
-    defaultRuntime.error("--timeout must be a positive integer (seconds)");
+    defaultRuntime.error("--timeout 必须是正整数（秒）");
     defaultRuntime.exit(1);
     return;
   }
@@ -1093,26 +1093,26 @@ export async function updateWizardCommand(opts: UpdateWizardOptions = {}): Promi
   });
 
   const pickedChannel = await selectStyled({
-    message: "Update channel",
+    message: "更新频道",
     options: [
       {
         value: "keep",
-        label: `Keep current (${channelInfo.channel})`,
+        label: `保持当前（${channelInfo.channel}）`,
         hint: channelLabel,
       },
       {
         value: "stable",
-        label: "Stable",
-        hint: "Tagged releases (npm latest)",
+        label: "稳定版",
+        hint: "标记发布（npm latest）",
       },
       {
         value: "beta",
-        label: "Beta",
-        hint: "Prereleases (npm beta)",
+        label: "测试版",
+        hint: "预发布（npm beta）",
       },
       {
         value: "dev",
-        label: "Dev",
+        label: "开发版",
         hint: "Git main",
       },
     ],
@@ -1157,7 +1157,7 @@ export async function updateWizardCommand(opts: UpdateWizardOptions = {}): Promi
   }
 
   const restart = await confirm({
-    message: stylePromptMessage("Restart the gateway service after update?"),
+    message: stylePromptMessage("更新后重启网关服务？"),
     initialValue: true,
   });
   if (isCancel(restart)) {

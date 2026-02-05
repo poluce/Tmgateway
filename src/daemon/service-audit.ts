@@ -132,7 +132,7 @@ async function auditSystemdUnit(
   if (!parsed.after.has("network-online.target")) {
     issues.push({
       code: SERVICE_AUDIT_CODES.systemdAfterNetworkOnline,
-      message: "Missing systemd After=network-online.target",
+      message: "缺少 systemd After=network-online.target",
       detail: unitPath,
       level: "recommended",
     });
@@ -140,7 +140,7 @@ async function auditSystemdUnit(
   if (!parsed.wants.has("network-online.target")) {
     issues.push({
       code: SERVICE_AUDIT_CODES.systemdWantsNetworkOnline,
-      message: "Missing systemd Wants=network-online.target",
+      message: "缺少 systemd Wants=network-online.target",
       detail: unitPath,
       level: "recommended",
     });
@@ -148,7 +148,7 @@ async function auditSystemdUnit(
   if (!isRestartSecPreferred(parsed.restartSec)) {
     issues.push({
       code: SERVICE_AUDIT_CODES.systemdRestartSec,
-      message: "RestartSec does not match the recommended 5s",
+      message: "RestartSec 与推荐的 5s 不匹配",
       detail: unitPath,
       level: "recommended",
     });
@@ -172,7 +172,7 @@ async function auditLaunchdPlist(
   if (!hasRunAtLoad) {
     issues.push({
       code: SERVICE_AUDIT_CODES.launchdRunAtLoad,
-      message: "LaunchAgent is missing RunAtLoad=true",
+      message: "LaunchAgent 缺少 RunAtLoad=true",
       detail: plistPath,
       level: "recommended",
     });
@@ -180,7 +180,7 @@ async function auditLaunchdPlist(
   if (!hasKeepAlive) {
     issues.push({
       code: SERVICE_AUDIT_CODES.launchdKeepAlive,
-      message: "LaunchAgent is missing KeepAlive=true",
+      message: "LaunchAgent 缺少 KeepAlive=true",
       detail: plistPath,
       level: "recommended",
     });
@@ -194,7 +194,7 @@ function auditGatewayCommand(programArguments: string[] | undefined, issues: Ser
   if (!hasGatewaySubcommand(programArguments)) {
     issues.push({
       code: SERVICE_AUDIT_CODES.gatewayCommandMissing,
-      message: "Service command does not include the gateway subcommand",
+      message: "服务命令不包含 gateway 子命令",
       level: "aggressive",
     });
   }
@@ -236,7 +236,7 @@ function auditGatewayServicePath(
   if (!servicePath) {
     issues.push({
       code: SERVICE_AUDIT_CODES.gatewayPathMissing,
-      message: "Gateway service PATH is not set; the daemon should use a minimal PATH.",
+      message: "网关服务 PATH 未设置；守护进程应使用最小 PATH。",
       level: "recommended",
     });
     return;
@@ -256,7 +256,7 @@ function auditGatewayServicePath(
   if (missing.length > 0) {
     issues.push({
       code: SERVICE_AUDIT_CODES.gatewayPathMissingDirs,
-      message: `Gateway service PATH missing required dirs: ${missing.join(", ")}`,
+      message: `网关服务 PATH 缺少必需目录：${missing.join(", ")}`,
       level: "recommended",
     });
   }
@@ -283,8 +283,7 @@ function auditGatewayServicePath(
   if (nonMinimal.length > 0) {
     issues.push({
       code: SERVICE_AUDIT_CODES.gatewayPathNonMinimal,
-      message:
-        "Gateway service PATH includes version managers or package managers; recommend a minimal PATH.",
+      message: "网关服务 PATH 包含版本管理器或包管理器；建议使用最小 PATH。",
       detail: nonMinimal.join(", "),
       level: "recommended",
     });
@@ -305,7 +304,7 @@ async function auditGatewayRuntime(
   if (isBunRuntime(execPath)) {
     issues.push({
       code: SERVICE_AUDIT_CODES.gatewayRuntimeBun,
-      message: "Gateway service uses Bun; Bun is incompatible with WhatsApp + Telegram channels.",
+      message: "网关服务使用 Bun；Bun 与 WhatsApp + Telegram 渠道不兼容。",
       detail: execPath,
       level: "recommended",
     });
@@ -319,7 +318,7 @@ async function auditGatewayRuntime(
   if (isVersionManagedNodePath(execPath, platform)) {
     issues.push({
       code: SERVICE_AUDIT_CODES.gatewayRuntimeNodeVersionManager,
-      message: "Gateway service uses Node from a version manager; it can break after upgrades.",
+      message: "网关服务使用版本管理器中的 Node；升级后可能会出问题。",
       detail: execPath,
       level: "recommended",
     });
@@ -328,8 +327,7 @@ async function auditGatewayRuntime(
       if (!systemNode) {
         issues.push({
           code: SERVICE_AUDIT_CODES.gatewayRuntimeNodeSystemMissing,
-          message:
-            "System Node 22+ not found; install it before migrating away from version managers.",
+          message: "未找到系统 Node 22+；在迁移离开版本管理器之前请先安装。",
           level: "recommended",
         });
       }

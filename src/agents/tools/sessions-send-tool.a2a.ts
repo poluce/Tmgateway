@@ -125,7 +125,7 @@ export async function runSessionsSendA2AFlow(params: {
           timeoutMs: 10_000,
         });
       } catch (err) {
-        log.warn("sessions_send announce delivery failed", {
+        log.warn("sessions_send 通知投递失败", {
           runId: runContextId,
           channel: announceTarget.channel,
           to: announceTarget.to,
@@ -134,7 +134,7 @@ export async function runSessionsSendA2AFlow(params: {
       }
     }
   } catch (err) {
-    log.warn("sessions_send announce flow failed", {
+    log.warn("sessions_send 通知流程失败", {
       runId: runContextId,
       error: formatErrorMessage(err),
     });
