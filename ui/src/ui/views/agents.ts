@@ -85,92 +85,92 @@ export type AgentsProps = {
 const TOOL_SECTIONS = [
   {
     id: "fs",
-    label: "Files",
+    label: "文件",
     tools: [
-      { id: "read", label: "read", description: "Read file contents" },
-      { id: "write", label: "write", description: "Create or overwrite files" },
-      { id: "edit", label: "edit", description: "Make precise edits" },
-      { id: "apply_patch", label: "apply_patch", description: "Patch files (OpenAI)" },
+      { id: "read", label: "read", description: "读取文件内容" },
+      { id: "write", label: "write", description: "创建或覆盖文件" },
+      { id: "edit", label: "edit", description: "进行精确编辑" },
+      { id: "apply_patch", label: "apply_patch", description: "修补文件 (OpenAI)" },
     ],
   },
   {
     id: "runtime",
-    label: "Runtime",
+    label: "运行时",
     tools: [
-      { id: "exec", label: "exec", description: "Run shell commands" },
-      { id: "process", label: "process", description: "Manage background processes" },
+      { id: "exec", label: "exec", description: "运行 shell 命令" },
+      { id: "process", label: "process", description: "管理后台进程" },
     ],
   },
   {
     id: "web",
-    label: "Web",
+    label: "网络",
     tools: [
-      { id: "web_search", label: "web_search", description: "Search the web" },
-      { id: "web_fetch", label: "web_fetch", description: "Fetch web content" },
+      { id: "web_search", label: "web_search", description: "搜索网络" },
+      { id: "web_fetch", label: "web_fetch", description: "获取网络内容" },
     ],
   },
   {
     id: "memory",
-    label: "Memory",
+    label: "内存",
     tools: [
-      { id: "memory_search", label: "memory_search", description: "Semantic search" },
-      { id: "memory_get", label: "memory_get", description: "Read memory files" },
+      { id: "memory_search", label: "memory_search", description: "语义搜索" },
+      { id: "memory_get", label: "memory_get", description: "读取内存文件" },
     ],
   },
   {
     id: "sessions",
-    label: "Sessions",
+    label: "会话",
     tools: [
-      { id: "sessions_list", label: "sessions_list", description: "List sessions" },
-      { id: "sessions_history", label: "sessions_history", description: "Session history" },
-      { id: "sessions_send", label: "sessions_send", description: "Send to session" },
-      { id: "sessions_spawn", label: "sessions_spawn", description: "Spawn sub-agent" },
-      { id: "session_status", label: "session_status", description: "Session status" },
+      { id: "sessions_list", label: "sessions_list", description: "列出会话" },
+      { id: "sessions_history", label: "sessions_history", description: "会话历史" },
+      { id: "sessions_send", label: "sessions_send", description: "发送到会话" },
+      { id: "sessions_spawn", label: "sessions_spawn", description: "生成子代理" },
+      { id: "session_status", label: "session_status", description: "会话状态" },
     ],
   },
   {
     id: "ui",
-    label: "UI",
+    label: "用户界面",
     tools: [
-      { id: "browser", label: "browser", description: "Control web browser" },
-      { id: "canvas", label: "canvas", description: "Control canvases" },
+      { id: "browser", label: "browser", description: "控制网络浏览器" },
+      { id: "canvas", label: "canvas", description: "控制画布" },
     ],
   },
   {
     id: "messaging",
-    label: "Messaging",
-    tools: [{ id: "message", label: "message", description: "Send messages" }],
+    label: "消息",
+    tools: [{ id: "message", label: "message", description: "发送消息" }],
   },
   {
     id: "automation",
-    label: "Automation",
+    label: "自动化",
     tools: [
-      { id: "cron", label: "cron", description: "Schedule tasks" },
-      { id: "gateway", label: "gateway", description: "Gateway control" },
+      { id: "cron", label: "cron", description: "计划任务" },
+      { id: "gateway", label: "gateway", description: "网关控制" },
     ],
   },
   {
     id: "nodes",
-    label: "Nodes",
-    tools: [{ id: "nodes", label: "nodes", description: "Nodes + devices" }],
+    label: "节点",
+    tools: [{ id: "nodes", label: "nodes", description: "节点 + 设备" }],
   },
   {
     id: "agents",
-    label: "Agents",
-    tools: [{ id: "agents_list", label: "agents_list", description: "List agents" }],
+    label: "代理",
+    tools: [{ id: "agents_list", label: "agents_list", description: "列出代理" }],
   },
   {
     id: "media",
-    label: "Media",
-    tools: [{ id: "image", label: "image", description: "Image understanding" }],
+    label: "媒体",
+    tools: [{ id: "image", label: "image", description: "图像理解" }],
   },
 ];
 
 const PROFILE_OPTIONS = [
-  { id: "minimal", label: "Minimal" },
-  { id: "coding", label: "Coding" },
-  { id: "messaging", label: "Messaging" },
-  { id: "full", label: "Full" },
+  { id: "minimal", label: "最小" },
+  { id: "coding", label: "编码" },
+  { id: "messaging", label: "消息" },
+  { id: "full", label: "完全" },
 ] as const;
 
 type ToolPolicy = {
@@ -258,7 +258,7 @@ function resolveAgentEmoji(
 }
 
 function agentBadgeText(agentId: string, defaultId: string | null) {
-  return defaultId && agentId === defaultId ? "default" : null;
+  return defaultId && agentId === defaultId ? "默认" : null;
 }
 
 function formatBytes(bytes?: number) {
@@ -327,7 +327,7 @@ function buildAgentContext(
     model: modelLabel,
     identityName,
     identityEmoji,
-    skillsLabel: skillFilter ? `${skillCount} selected` : "all skills",
+    skillsLabel: skillFilter ? `已选择 ${skillCount} 个` : "所有技能",
     isDefault: Boolean(defaultId && agent.id === defaultId),
   };
 }
@@ -344,14 +344,14 @@ function resolveModelLabel(model?: unknown): string {
     const primary = record.primary?.trim();
     if (primary) {
       const fallbackCount = Array.isArray(record.fallbacks) ? record.fallbacks.length : 0;
-      return fallbackCount > 0 ? `${primary} (+${fallbackCount} fallback)` : primary;
+      return fallbackCount > 0 ? `${primary} (+${fallbackCount} 个回退)` : primary;
     }
   }
   return "-";
 }
 
 function normalizeModelValue(label: string): string {
-  const match = label.match(/^(.+) \(\+\d+ fallback\)$/);
+  const match = label.match(/^(.+) \(\+\d+ 个回退\)$/);
   return match ? match[1] : label;
 }
 
@@ -445,7 +445,7 @@ function buildModelOptions(configForm: Record<string, unknown> | null, current?:
   }
   if (options.length === 0) {
     return html`
-      <option value="" disabled>No configured models</option>
+      <option value="" disabled>无已配置模型</option>
     `;
   }
   return options.map((option) => html`<option value=${option.value}>${option.label}</option>`);
@@ -547,11 +547,11 @@ export function renderAgents(props: AgentsProps) {
       <section class="card agents-sidebar">
         <div class="row" style="justify-content: space-between;">
           <div>
-            <div class="card-title">Agents</div>
-            <div class="card-sub">${agents.length} configured.</div>
+            <div class="card-title">代理</div>
+            <div class="card-sub">${agents.length} 个已配置。</div>
           </div>
           <button class="btn btn--sm" ?disabled=${props.loading} @click=${props.onRefresh}>
-            ${props.loading ? "Loading…" : "Refresh"}
+            ${props.loading ? "加载中…" : "刷新"}
           </button>
         </div>
         ${
@@ -563,7 +563,7 @@ export function renderAgents(props: AgentsProps) {
           ${
             agents.length === 0
               ? html`
-                  <div class="muted">No agents found.</div>
+                  <div class="muted">未找到代理。</div>
                 `
               : agents.map((agent) => {
                   const badge = agentBadgeText(agent.id, defaultId);
@@ -593,8 +593,8 @@ export function renderAgents(props: AgentsProps) {
           !selectedAgent
             ? html`
                 <div class="card">
-                  <div class="card-title">Select an agent</div>
-                  <div class="card-sub">Pick an agent to inspect its workspace and tools.</div>
+                  <div class="card-title">选择一个代理</div>
+                  <div class="card-sub">选择一个代理以检查其工作区和工具。</div>
                 </div>
               `
             : html`
@@ -727,7 +727,7 @@ function renderAgentHeader(
 ) {
   const badge = agentBadgeText(agent.id, defaultId);
   const displayName = normalizeAgentLabel(agent);
-  const subtitle = agent.identity?.theme?.trim() || "Agent workspace and routing.";
+  const subtitle = agent.identity?.theme?.trim() || "代理工作区和路由。";
   const emoji = resolveAgentEmoji(agent, agentIdentity);
   return html`
     <section class="card agent-header">
@@ -750,12 +750,12 @@ function renderAgentHeader(
 
 function renderAgentTabs(active: AgentsPanel, onSelect: (panel: AgentsPanel) => void) {
   const tabs: Array<{ id: AgentsPanel; label: string }> = [
-    { id: "overview", label: "Overview" },
-    { id: "files", label: "Files" },
-    { id: "tools", label: "Tools" },
-    { id: "skills", label: "Skills" },
-    { id: "channels", label: "Channels" },
-    { id: "cron", label: "Cron Jobs" },
+    { id: "overview", label: "概览" },
+    { id: "files", label: "文件" },
+    { id: "tools", label: "工具" },
+    { id: "skills", label: "技能" },
+    { id: "channels", label: "频道" },
+    { id: "cron", label: "定时任务" },
   ];
   return html`
     <div class="agent-tabs">
@@ -832,50 +832,46 @@ function renderAgentOverview(params: {
   const identityEmoji = resolvedEmoji || "-";
   const skillFilter = Array.isArray(config.entry?.skills) ? config.entry?.skills : null;
   const skillCount = skillFilter?.length ?? null;
-  const identityStatus = agentIdentityLoading
-    ? "Loading…"
-    : agentIdentityError
-      ? "Unavailable"
-      : "";
+  const identityStatus = agentIdentityLoading ? "加载中…" : agentIdentityError ? "不可用" : "";
   const isDefault = Boolean(params.defaultId && agent.id === params.defaultId);
 
   return html`
     <section class="card">
-      <div class="card-title">Overview</div>
-      <div class="card-sub">Workspace paths and identity metadata.</div>
+      <div class="card-title">概览</div>
+      <div class="card-sub">工作区路径和身份元数据。</div>
       <div class="agents-overview-grid" style="margin-top: 16px;">
         <div class="agent-kv">
-          <div class="label">Workspace</div>
+          <div class="label">工作区</div>
           <div class="mono">${workspace}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Primary Model</div>
+          <div class="label">主模型</div>
           <div class="mono">${model}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Identity Name</div>
+          <div class="label">身份名称</div>
           <div>${identityName}</div>
           ${identityStatus ? html`<div class="agent-kv-sub muted">${identityStatus}</div>` : nothing}
         </div>
         <div class="agent-kv">
-          <div class="label">Default</div>
-          <div>${isDefault ? "yes" : "no"}</div>
+          <div class="label">默认</div>
+          <div>${isDefault ? "是" : "否"}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Identity Emoji</div>
+          <div class="label">身份表情</div>
           <div>${identityEmoji}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Skills Filter</div>
-          <div>${skillFilter ? `${skillCount} selected` : "all skills"}</div>
+          <div class="label">技能筛选</div>
+          <div>${skillFilter ? `已选择 ${skillCount} 个` : "所有技能"}</div>
         </div>
       </div>
 
       <div class="agent-model-select" style="margin-top: 20px;">
-        <div class="label">Model Selection</div>
+        <div class="label">模型选择</div>
         <div class="row" style="gap: 12px; flex-wrap: wrap;">
           <label class="field" style="min-width: 260px; flex: 1;">
-            <span>Primary model</span>
+            <span>主模型</span>
             <select
               .value=${effectivePrimary ?? ""}
               ?disabled=${!configForm || configLoading || configSaving}
@@ -883,17 +879,17 @@ function renderAgentOverview(params: {
                 onModelChange(agent.id, (e.target as HTMLSelectElement).value || null)}
             >
               <option value="">
-                ${defaultPrimary ? `Inherit default (${defaultPrimary})` : "Inherit default"}
+                ${defaultPrimary ? `继承默认 (${defaultPrimary})` : "继承默认"}
               </option>
               ${buildModelOptions(configForm, effectivePrimary ?? undefined)}
             </select>
           </label>
           <label class="field" style="min-width: 260px; flex: 1;">
-            <span>Fallbacks (comma-separated)</span>
+            <span>回退（逗号分隔）</span>
             <input
               .value=${fallbackText}
               ?disabled=${!configForm || configLoading || configSaving}
-              placeholder="provider/model, provider/model"
+              placeholder="提供商/模型, 提供商/模型"
               @input=${(e: Event) =>
                 onModelFallbacksChange(
                   agent.id,
@@ -908,14 +904,14 @@ function renderAgentOverview(params: {
             ?disabled=${configLoading}
             @click=${onConfigReload}
           >
-            Reload Config
+            重新加载配置
           </button>
           <button
             class="btn btn--sm primary"
             ?disabled=${configSaving || !configDirty}
             @click=${onConfigSave}
           >
-            ${configSaving ? "Saving…" : "Save"}
+            ${configSaving ? "保存中…" : "保存"}
           </button>
         </div>
       </div>
@@ -926,32 +922,32 @@ function renderAgentOverview(params: {
 function renderAgentContextCard(context: AgentContext, subtitle: string) {
   return html`
     <section class="card">
-      <div class="card-title">Agent Context</div>
+      <div class="card-title">代理上下文</div>
       <div class="card-sub">${subtitle}</div>
       <div class="agents-overview-grid" style="margin-top: 16px;">
         <div class="agent-kv">
-          <div class="label">Workspace</div>
+          <div class="label">工作区</div>
           <div class="mono">${context.workspace}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Primary Model</div>
+          <div class="label">主模型</div>
           <div class="mono">${context.model}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Identity Name</div>
+          <div class="label">身份名称</div>
           <div>${context.identityName}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Identity Emoji</div>
+          <div class="label">身份表情</div>
           <div>${context.identityEmoji}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Skills Filter</div>
+          <div class="label">技能筛选</div>
           <div>${context.skillsLabel}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Default</div>
-          <div>${context.isDefault ? "yes" : "no"}</div>
+          <div class="label">默认</div>
+          <div>${context.isDefault ? "是" : "否"}</div>
         </div>
       </div>
     </section>
@@ -1107,19 +1103,19 @@ function renderAgentChannels(params: {
   const lastSuccessLabel = params.lastSuccess ? formatAgo(params.lastSuccess) : "never";
   return html`
     <section class="grid grid-cols-2">
-      ${renderAgentContextCard(context, "Workspace, identity, and model configuration.")}
+      ${renderAgentContextCard(context, "工作区、身份和模型配置。")}
       <section class="card">
         <div class="row" style="justify-content: space-between;">
           <div>
-            <div class="card-title">Channels</div>
-            <div class="card-sub">Gateway-wide channel status snapshot.</div>
+            <div class="card-title">频道</div>
+            <div class="card-sub">网关范围的频道状态快照。</div>
           </div>
           <button class="btn btn--sm" ?disabled=${params.loading} @click=${params.onRefresh}>
-            ${params.loading ? "Refreshing…" : "Refresh"}
+            ${params.loading ? "刷新中…" : "刷新"}
           </button>
         </div>
         <div class="muted" style="margin-top: 8px;">
-          Last refresh: ${lastSuccessLabel}
+          最后刷新: ${lastSuccessLabel}
         </div>
         ${
           params.error
@@ -1129,26 +1125,24 @@ function renderAgentChannels(params: {
         ${
           !params.snapshot
             ? html`
-                <div class="callout info" style="margin-top: 12px">Load channels to see live status.</div>
+                <div class="callout info" style="margin-top: 12px">加载频道以查看实时状态。</div>
               `
             : nothing
         }
         ${
           entries.length === 0
             ? html`
-                <div class="muted" style="margin-top: 16px">No channels found.</div>
+                <div class="muted" style="margin-top: 16px">未找到频道。</div>
               `
             : html`
               <div class="list" style="margin-top: 16px;">
                 ${entries.map((entry) => {
                   const summary = summarizeChannelAccounts(entry.accounts);
                   const status = summary.total
-                    ? `${summary.connected}/${summary.total} connected`
-                    : "no accounts";
-                  const config = summary.configured
-                    ? `${summary.configured} configured`
-                    : "not configured";
-                  const enabled = summary.total ? `${summary.enabled} enabled` : "disabled";
+                    ? `${summary.connected}/${summary.total} 已连接`
+                    : "无账户";
+                  const config = summary.configured ? `${summary.configured} 已配置` : "未配置";
+                  const enabled = summary.total ? `${summary.enabled} 已启用` : "已禁用";
                   const extras = resolveChannelExtras(params.configForm, entry.id);
                   return html`
                     <div class="list-item">
@@ -1199,30 +1193,30 @@ function renderAgentCron(params: {
   const jobs = params.jobs.filter((job) => job.agentId === params.agent.id);
   return html`
     <section class="grid grid-cols-2">
-      ${renderAgentContextCard(context, "Workspace and scheduling targets.")}
+      ${renderAgentContextCard(context, "工作区和调度目标。")}
       <section class="card">
         <div class="row" style="justify-content: space-between;">
           <div>
-            <div class="card-title">Scheduler</div>
-            <div class="card-sub">Gateway cron status.</div>
+            <div class="card-title">调度器</div>
+            <div class="card-sub">网关定时任务状态。</div>
           </div>
           <button class="btn btn--sm" ?disabled=${params.loading} @click=${params.onRefresh}>
-            ${params.loading ? "Refreshing…" : "Refresh"}
+            ${params.loading ? "刷新中…" : "刷新"}
           </button>
         </div>
         <div class="stat-grid" style="margin-top: 16px;">
           <div class="stat">
-            <div class="stat-label">Enabled</div>
+            <div class="stat-label">已启用</div>
             <div class="stat-value">
-              ${params.status ? (params.status.enabled ? "Yes" : "No") : "n/a"}
+              ${params.status ? (params.status.enabled ? "是" : "否") : "不适用"}
             </div>
           </div>
           <div class="stat">
-            <div class="stat-label">Jobs</div>
-            <div class="stat-value">${params.status?.jobs ?? "n/a"}</div>
+            <div class="stat-label">任务</div>
+            <div class="stat-value">${params.status?.jobs ?? "不适用"}</div>
           </div>
           <div class="stat">
-            <div class="stat-label">Next wake</div>
+            <div class="stat-label">下次唤醒</div>
             <div class="stat-value">${formatNextRun(params.status?.nextWakeAtMs ?? null)}</div>
           </div>
         </div>
@@ -1234,12 +1228,12 @@ function renderAgentCron(params: {
       </section>
     </section>
     <section class="card">
-      <div class="card-title">Agent Cron Jobs</div>
-      <div class="card-sub">Scheduled jobs targeting this agent.</div>
+      <div class="card-title">代理定时任务</div>
+      <div class="card-sub">针对此代理的计划任务。</div>
       ${
         jobs.length === 0
           ? html`
-              <div class="muted" style="margin-top: 16px">No jobs assigned.</div>
+              <div class="muted" style="margin-top: 16px">未分配任务。</div>
             `
           : html`
               <div class="list" style="margin-top: 16px;">
@@ -1252,7 +1246,7 @@ function renderAgentCron(params: {
                       <div class="chip-row" style="margin-top: 6px;">
                         <span class="chip">${formatCronSchedule(job)}</span>
                         <span class="chip ${job.enabled ? "chip-ok" : "chip-warn"}">
-                          ${job.enabled ? "enabled" : "disabled"}
+                          ${job.enabled ? "已启用" : "已禁用"}
                         </span>
                         <span class="chip">${job.sessionTarget}</span>
                       </div>
@@ -1298,18 +1292,18 @@ function renderAgentFiles(params: {
     <section class="card">
       <div class="row" style="justify-content: space-between;">
         <div>
-          <div class="card-title">Core Files</div>
-          <div class="card-sub">Bootstrap persona, identity, and tool guidance.</div>
+          <div class="card-title">核心文件</div>
+          <div class="card-sub">引导角色、身份和工具指导。</div>
         </div>
         <button
           class="btn btn--sm"
           ?disabled=${params.agentFilesLoading}
           @click=${() => params.onLoadFiles(params.agentId)}
         >
-          ${params.agentFilesLoading ? "Loading…" : "Refresh"}
+          ${params.agentFilesLoading ? "加载中…" : "刷新"}
         </button>
       </div>
-      ${list ? html`<div class="muted mono" style="margin-top: 8px;">Workspace: ${list.workspace}</div>` : nothing}
+      ${list ? html`<div class="muted mono" style="margin-top: 8px;">工作区: ${list.workspace}</div>` : nothing}
       ${
         params.agentFilesError
           ? html`<div class="callout danger" style="margin-top: 12px;">${
@@ -1320,9 +1314,7 @@ function renderAgentFiles(params: {
       ${
         !list
           ? html`
-              <div class="callout info" style="margin-top: 12px">
-                Load the agent workspace files to edit core instructions.
-              </div>
+              <div class="callout info" style="margin-top: 12px">加载代理工作区文件以编辑核心指令。</div>
             `
           : html`
               <div class="agent-files-grid" style="margin-top: 16px;">
@@ -1330,7 +1322,7 @@ function renderAgentFiles(params: {
                   ${
                     files.length === 0
                       ? html`
-                          <div class="muted">No files found.</div>
+                          <div class="muted">未找到文件。</div>
                         `
                       : files.map((file) =>
                           renderAgentFileRow(file, active, () => params.onSelectFile(file.name)),
@@ -1341,7 +1333,7 @@ function renderAgentFiles(params: {
                   ${
                     !activeEntry
                       ? html`
-                          <div class="muted">Select a file to edit.</div>
+                          <div class="muted">选择一个文件进行编辑。</div>
                         `
                       : html`
                           <div class="agent-file-header">
@@ -1355,28 +1347,26 @@ function renderAgentFiles(params: {
                                 ?disabled=${!isDirty}
                                 @click=${() => params.onFileReset(activeEntry.name)}
                               >
-                                Reset
+                                重置
                               </button>
                               <button
                                 class="btn btn--sm primary"
                                 ?disabled=${params.agentFileSaving || !isDirty}
                                 @click=${() => params.onFileSave(activeEntry.name)}
                               >
-                                ${params.agentFileSaving ? "Saving…" : "Save"}
+                                ${params.agentFileSaving ? "保存中…" : "保存"}
                               </button>
                             </div>
                           </div>
                           ${
                             activeEntry.missing
                               ? html`
-                                  <div class="callout info" style="margin-top: 10px">
-                                    This file is missing. Saving will create it in the agent workspace.
-                                  </div>
+                                  <div class="callout info" style="margin-top: 10px">此文件缺失。保存将在代理工作区中创建它。</div>
                                 `
                               : nothing
                           }
                           <label class="field" style="margin-top: 12px;">
-                            <span>Content</span>
+                            <span>内容</span>
                             <textarea
                               .value=${draft}
                               @input=${(e: Event) =>
@@ -1398,7 +1388,7 @@ function renderAgentFiles(params: {
 
 function renderAgentFileRow(file: AgentFileEntry, active: string | null, onSelect: () => void) {
   const status = file.missing
-    ? "Missing"
+    ? "缺失"
     : `${formatBytes(file.size)} · ${formatAgo(file.updatedAtMs ?? null)}`;
   return html`
     <button
@@ -1413,7 +1403,7 @@ function renderAgentFileRow(file: AgentFileEntry, active: string | null, onSelec
       ${
         file.missing
           ? html`
-              <span class="agent-pill warn">missing</span>
+              <span class="agent-pill warn">缺失</span>
             `
           : nothing
       }
@@ -1517,10 +1507,10 @@ function renderAgentTools(params: {
     <section class="card">
       <div class="row" style="justify-content: space-between;">
         <div>
-          <div class="card-title">Tool Access</div>
+          <div class="card-title">工具访问</div>
           <div class="card-sub">
-            Profile + per-tool overrides for this agent.
-            <span class="mono">${enabledCount}/${toolIds.length}</span> enabled.
+            此代理的配置文件 + 每个工具覆盖。
+            <span class="mono">${enabledCount}/${toolIds.length}</span> 已启用。
           </div>
         </div>
         <div class="row" style="gap: 8px;">
@@ -1529,28 +1519,28 @@ function renderAgentTools(params: {
             ?disabled=${!editable}
             @click=${() => updateAll(true)}
           >
-            Enable All
+            全部启用
           </button>
           <button
             class="btn btn--sm"
             ?disabled=${!editable}
             @click=${() => updateAll(false)}
           >
-            Disable All
+            全部禁用
           </button>
           <button
             class="btn btn--sm"
             ?disabled=${params.configLoading}
             @click=${params.onConfigReload}
           >
-            Reload Config
+            重新加载配置
           </button>
           <button
             class="btn btn--sm primary"
             ?disabled=${params.configSaving || !params.configDirty}
             @click=${params.onConfigSave}
           >
-            ${params.configSaving ? "Saving…" : "Save"}
+            ${params.configSaving ? "保存中…" : "保存"}
           </button>
         </div>
       </div>
@@ -1558,9 +1548,7 @@ function renderAgentTools(params: {
       ${
         !params.configForm
           ? html`
-              <div class="callout info" style="margin-top: 12px">
-                Load the gateway config to adjust tool profiles.
-              </div>
+              <div class="callout info" style="margin-top: 12px">加载网关配置以调整工具配置文件。</div>
             `
           : nothing
       }
@@ -1568,7 +1556,7 @@ function renderAgentTools(params: {
         hasAgentAllow
           ? html`
               <div class="callout info" style="margin-top: 12px">
-                This agent is using an explicit allowlist in config. Tool overrides are managed in the Config tab.
+                此代理在配置中使用显式允许列表。工具覆盖在配置选项卡中管理。
               </div>
             `
           : nothing
@@ -1577,7 +1565,7 @@ function renderAgentTools(params: {
         hasGlobalAllow
           ? html`
               <div class="callout info" style="margin-top: 12px">
-                Global tools.allow is set. Agent overrides cannot enable tools that are globally blocked.
+                已设置全局 tools.allow。代理覆盖无法启用全局阻止的工具。
               </div>
             `
           : nothing
@@ -1585,19 +1573,19 @@ function renderAgentTools(params: {
 
       <div class="agent-tools-meta" style="margin-top: 16px;">
         <div class="agent-kv">
-          <div class="label">Profile</div>
+          <div class="label">配置文件</div>
           <div class="mono">${profile}</div>
         </div>
         <div class="agent-kv">
-          <div class="label">Source</div>
+          <div class="label">来源</div>
           <div>${profileSource}</div>
         </div>
         ${
           params.configDirty
             ? html`
                 <div class="agent-kv">
-                  <div class="label">Status</div>
-                  <div class="mono">unsaved</div>
+                  <div class="label">状态</div>
+                  <div class="mono">未保存</div>
                 </div>
               `
             : nothing
@@ -1605,7 +1593,7 @@ function renderAgentTools(params: {
       </div>
 
       <div class="agent-tools-presets" style="margin-top: 16px;">
-        <div class="label">Quick Presets</div>
+        <div class="label">快速预设</div>
         <div class="agent-tools-buttons">
           ${PROFILE_OPTIONS.map(
             (option) => html`
@@ -1623,7 +1611,7 @@ function renderAgentTools(params: {
             ?disabled=${!editable}
             @click=${() => params.onProfileChange(params.agentId, null, false)}
           >
-            Inherit
+            继承
           </button>
         </div>
       </div>
@@ -1672,10 +1660,10 @@ type SkillGroup = {
 };
 
 const SKILL_SOURCE_GROUPS: Array<{ id: string; label: string; sources: string[] }> = [
-  { id: "workspace", label: "Workspace Skills", sources: ["openclaw-workspace"] },
-  { id: "built-in", label: "Built-in Skills", sources: ["openclaw-bundled"] },
-  { id: "installed", label: "Installed Skills", sources: ["openclaw-managed"] },
-  { id: "extra", label: "Extra Skills", sources: ["openclaw-extra"] },
+  { id: "workspace", label: "工作区技能", sources: ["openclaw-workspace"] },
+  { id: "built-in", label: "内置技能", sources: ["openclaw-bundled"] },
+  { id: "installed", label: "已安装技能", sources: ["openclaw-managed"] },
+  { id: "extra", label: "额外技能", sources: ["openclaw-extra"] },
 ];
 
 function groupSkills(skills: SkillStatusEntry[]): SkillGroup[] {
@@ -1684,7 +1672,7 @@ function groupSkills(skills: SkillStatusEntry[]): SkillGroup[] {
     groups.set(def.id, { id: def.id, label: def.label, skills: [] });
   }
   const builtInGroup = SKILL_SOURCE_GROUPS.find((group) => group.id === "built-in");
-  const other: SkillGroup = { id: "other", label: "Other Skills", skills: [] };
+  const other: SkillGroup = { id: "other", label: "其他技能", skills: [] };
   for (const skill of skills) {
     const match = skill.bundled
       ? builtInGroup
@@ -1746,35 +1734,35 @@ function renderAgentSkills(params: {
     <section class="card">
       <div class="row" style="justify-content: space-between;">
         <div>
-          <div class="card-title">Skills</div>
+          <div class="card-title">技能</div>
           <div class="card-sub">
-            Per-agent skill allowlist and workspace skills.
+            每个代理的技能允许列表和工作区技能。
             ${totalCount > 0 ? html`<span class="mono">${enabledCount}/${totalCount}</span>` : nothing}
           </div>
         </div>
         <div class="row" style="gap: 8px;">
           <button class="btn btn--sm" ?disabled=${!editable} @click=${() => params.onClear(params.agentId)}>
-            Use All
+            使用全部
           </button>
           <button class="btn btn--sm" ?disabled=${!editable} @click=${() => params.onDisableAll(params.agentId)}>
-            Disable All
+            全部禁用
           </button>
           <button
             class="btn btn--sm"
             ?disabled=${params.configLoading}
             @click=${params.onConfigReload}
           >
-            Reload Config
+            重新加载配置
           </button>
           <button class="btn btn--sm" ?disabled=${params.loading} @click=${params.onRefresh}>
-            ${params.loading ? "Loading…" : "Refresh"}
+            ${params.loading ? "加载中…" : "刷新"}
           </button>
           <button
             class="btn btn--sm primary"
             ?disabled=${params.configSaving || !params.configDirty}
             @click=${params.onConfigSave}
           >
-            ${params.configSaving ? "Saving…" : "Save"}
+            ${params.configSaving ? "保存中…" : "保存"}
           </button>
         </div>
       </div>
@@ -1782,29 +1770,25 @@ function renderAgentSkills(params: {
       ${
         !params.configForm
           ? html`
-              <div class="callout info" style="margin-top: 12px">
-                Load the gateway config to set per-agent skills.
-              </div>
+              <div class="callout info" style="margin-top: 12px">加载网关配置以设置每个代理的技能。</div>
             `
           : nothing
       }
       ${
         usingAllowlist
           ? html`
-              <div class="callout info" style="margin-top: 12px">This agent uses a custom skill allowlist.</div>
+              <div class="callout info" style="margin-top: 12px">此代理使用自定义技能允许列表。</div>
             `
           : html`
               <div class="callout info" style="margin-top: 12px">
-                All skills are enabled. Disabling any skill will create a per-agent allowlist.
+                所有技能均已启用。禁用任何技能将创建每个代理的允许列表。
               </div>
             `
       }
       ${
         !reportReady && !params.loading
           ? html`
-              <div class="callout info" style="margin-top: 12px">
-                Load skills for this agent to view workspace-specific entries.
-              </div>
+              <div class="callout info" style="margin-top: 12px">为此代理加载技能以查看特定于工作区的条目。</div>
             `
           : nothing
       }
@@ -1816,20 +1800,20 @@ function renderAgentSkills(params: {
 
       <div class="filters" style="margin-top: 14px;">
         <label class="field" style="flex: 1;">
-          <span>Filter</span>
+          <span>筛选</span>
           <input
             .value=${params.filter}
             @input=${(e: Event) => params.onFilterChange((e.target as HTMLInputElement).value)}
-            placeholder="Search skills"
+            placeholder="搜索技能"
           />
         </label>
-        <div class="muted">${filtered.length} shown</div>
+        <div class="muted">显示 ${filtered.length} 个</div>
       </div>
 
       ${
         filtered.length === 0
           ? html`
-              <div class="muted" style="margin-top: 16px">No skills found.</div>
+              <div class="muted" style="margin-top: 16px">未找到技能。</div>
             `
           : html`
               <div class="agent-skills-groups" style="margin-top: 16px;">
@@ -1900,10 +1884,10 @@ function renderAgentSkillRow(
   ];
   const reasons: string[] = [];
   if (skill.disabled) {
-    reasons.push("disabled");
+    reasons.push("已禁用");
   }
   if (skill.blockedByAllowlist) {
-    reasons.push("blocked by allowlist");
+    reasons.push("被允许列表阻止");
   }
   return html`
     <div class="list-item agent-skill-row">
@@ -1915,24 +1899,24 @@ function renderAgentSkillRow(
         <div class="chip-row" style="margin-top: 6px;">
           <span class="chip">${skill.source}</span>
           <span class="chip ${skill.eligible ? "chip-ok" : "chip-warn"}">
-            ${skill.eligible ? "eligible" : "blocked"}
+            ${skill.eligible ? "符合条件" : "已阻止"}
           </span>
           ${
             skill.disabled
               ? html`
-                  <span class="chip chip-warn">disabled</span>
+                  <span class="chip chip-warn">已禁用</span>
                 `
               : nothing
           }
         </div>
         ${
           missing.length > 0
-            ? html`<div class="muted" style="margin-top: 6px;">Missing: ${missing.join(", ")}</div>`
+            ? html`<div class="muted" style="margin-top: 6px;">缺失: ${missing.join(", ")}</div>`
             : nothing
         }
         ${
           reasons.length > 0
-            ? html`<div class="muted" style="margin-top: 6px;">Reason: ${reasons.join(", ")}</div>`
+            ? html`<div class="muted" style="margin-top: 6px;">原因: ${reasons.join(", ")}</div>`
             : nothing
         }
       </div>

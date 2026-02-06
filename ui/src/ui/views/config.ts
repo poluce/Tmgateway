@@ -264,18 +264,18 @@ const sidebarIcons = {
 
 // Section definitions
 const SECTIONS: Array<{ key: string; label: string }> = [
-  { key: "env", label: "Environment" },
-  { key: "update", label: "Updates" },
-  { key: "agents", label: "Agents" },
-  { key: "auth", label: "Authentication" },
-  { key: "channels", label: "Channels" },
-  { key: "messages", label: "Messages" },
-  { key: "commands", label: "Commands" },
-  { key: "hooks", label: "Hooks" },
-  { key: "skills", label: "Skills" },
-  { key: "tools", label: "Tools" },
-  { key: "gateway", label: "Gateway" },
-  { key: "wizard", label: "Setup Wizard" },
+  { key: "env", label: "环境" },
+  { key: "update", label: "更新" },
+  { key: "agents", label: "代理" },
+  { key: "auth", label: "认证" },
+  { key: "channels", label: "频道" },
+  { key: "messages", label: "消息" },
+  { key: "commands", label: "命令" },
+  { key: "hooks", label: "钩子" },
+  { key: "skills", label: "技能" },
+  { key: "tools", label: "工具" },
+  { key: "gateway", label: "网关" },
+  { key: "wizard", label: "设置向导" },
 ];
 
 type SubsectionEntry = {
@@ -449,12 +449,12 @@ export function renderConfig(props: ConfigProps) {
       <!-- Sidebar -->
       <aside class="config-sidebar">
         <div class="config-sidebar__header">
-          <div class="config-sidebar__title">Settings</div>
+          <div class="config-sidebar__title">设置</div>
           <span
             class="pill pill--sm ${
               validity === "valid" ? "pill--ok" : validity === "invalid" ? "pill--danger" : ""
             }"
-            >${validity}</span
+            >${validity === "valid" ? "有效" : validity === "invalid" ? "无效" : "未知"}</span
           >
         </div>
 
@@ -473,7 +473,7 @@ export function renderConfig(props: ConfigProps) {
           <input
             type="text"
             class="config-search__input"
-            placeholder="Search settings..."
+            placeholder="搜索设置..."
             .value=${props.searchQuery}
             @input=${(e: Event) => props.onSearchChange((e.target as HTMLInputElement).value)}
           />
@@ -498,7 +498,7 @@ export function renderConfig(props: ConfigProps) {
             @click=${() => props.onSectionChange(null)}
           >
             <span class="config-nav__icon">${sidebarIcons.all}</span>
-            <span class="config-nav__label">All Settings</span>
+            <span class="config-nav__label">所有设置</span>
           </button>
           ${allSections.map(
             (section) => html`
@@ -523,13 +523,13 @@ export function renderConfig(props: ConfigProps) {
               ?disabled=${props.schemaLoading || !props.schema}
               @click=${() => props.onFormModeChange("form")}
             >
-              Form
+              表单
             </button>
             <button
               class="config-mode-toggle__btn ${props.formMode === "raw" ? "active" : ""}"
               @click=${() => props.onFormModeChange("raw")}
             >
-              Raw
+              原始
             </button>
           </div>
         </div>
@@ -545,14 +545,12 @@ export function renderConfig(props: ConfigProps) {
                 ? html`
                   <span class="config-changes-badge"
                     >${
-                      props.formMode === "raw"
-                        ? "Unsaved changes"
-                        : `${diff.length} unsaved change${diff.length !== 1 ? "s" : ""}`
+                      props.formMode === "raw" ? "未保存的更改" : `${diff.length} 个未保存的更改`
                     }</span
                   >
                 `
                 : html`
-                    <span class="config-status muted">No changes</span>
+                    <span class="config-status muted">无更改</span>
                   `
             }
           </div>
@@ -562,28 +560,28 @@ export function renderConfig(props: ConfigProps) {
               ?disabled=${props.loading}
               @click=${props.onReload}
             >
-              ${props.loading ? "Loading…" : "Reload"}
+              ${props.loading ? "加载中…" : "重新加载"}
             </button>
             <button
               class="btn btn--sm primary"
               ?disabled=${!canSave}
               @click=${props.onSave}
             >
-              ${props.saving ? "Saving…" : "Save"}
+              ${props.saving ? "保存中…" : "保存"}
             </button>
             <button
               class="btn btn--sm"
               ?disabled=${!canApply}
               @click=${props.onApply}
             >
-              ${props.applying ? "Applying…" : "Apply"}
+              ${props.applying ? "应用中…" : "应用"}
             </button>
             <button
               class="btn btn--sm"
               ?disabled=${!canUpdate}
               @click=${props.onUpdate}
             >
-              ${props.updating ? "Updating…" : "Update"}
+              ${props.updating ? "更新中…" : "更新"}
             </button>
           </div>
         </div>
@@ -595,8 +593,7 @@ export function renderConfig(props: ConfigProps) {
               <details class="config-diff">
                 <summary class="config-diff__summary">
                   <span
-                    >View ${diff.length} pending
-                    change${diff.length !== 1 ? "s" : ""}</span
+                    >查看 ${diff.length} 个待处理的更改</span
                   >
                   <svg
                     class="config-diff__chevron"
@@ -661,7 +658,7 @@ export function renderConfig(props: ConfigProps) {
                   class="config-subnav__item ${effectiveSubsection === null ? "active" : ""}"
                   @click=${() => props.onSubsectionChange(ALL_SUBSECTION)}
                 >
-                  All
+                  全部
                 </button>
                 ${subsections.map(
                   (entry) => html`
@@ -691,7 +688,7 @@ export function renderConfig(props: ConfigProps) {
                     ? html`
                         <div class="config-loading">
                           <div class="config-loading__spinner"></div>
-                          <span>Loading schema…</span>
+                          <span>加载架构中…</span>
                         </div>
                       `
                     : renderConfigForm({
@@ -710,7 +707,7 @@ export function renderConfig(props: ConfigProps) {
                   formUnsafe
                     ? html`
                         <div class="callout danger" style="margin-top: 12px">
-                          Form view can't safely edit some fields. Use Raw to avoid losing config entries.
+                          表单视图无法安全编辑某些字段。使用原始模式以避免丢失配置条目。
                         </div>
                       `
                     : nothing
@@ -718,7 +715,7 @@ export function renderConfig(props: ConfigProps) {
               `
               : html`
                 <label class="field config-raw-field">
-                  <span>Raw JSON5</span>
+                  <span>原始 JSON5</span>
                   <textarea
                     .value=${props.raw}
                     @input=${(e: Event) =>
