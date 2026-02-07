@@ -276,6 +276,26 @@ const SECTIONS: Array<{ key: string; label: string }> = [
   { key: "tools", label: "工具" },
   { key: "gateway", label: "网关" },
   { key: "wizard", label: "设置向导" },
+  { key: "meta", label: "元数据" },
+  { key: "logging", label: "日志" },
+  { key: "browser", label: "浏览器" },
+  { key: "ui", label: "界面" },
+  { key: "models", label: "模型" },
+  { key: "bindings", label: "绑定" },
+  { key: "broadcast", label: "广播" },
+  { key: "audio", label: "音频" },
+  { key: "session", label: "会话" },
+  { key: "cron", label: "定时任务" },
+  { key: "web", label: "Web" },
+  { key: "discovery", label: "发现" },
+  { key: "canvasHost", label: "画布宿主" },
+  { key: "talk", label: "语音" },
+  { key: "plugins", label: "插件" },
+  { key: "diagnostics", label: "诊断" },
+  { key: "nodeHost", label: "节点宿主" },
+  { key: "media", label: "媒体" },
+  { key: "approvals", label: "审批" },
+  { key: "memory", label: "记忆" },
 ];
 
 type SubsectionEntry = {
@@ -396,7 +416,10 @@ export function renderConfig(props: ConfigProps) {
   const knownKeys = new Set(SECTIONS.map((s) => s.key));
   const extraSections = Object.keys(schemaProps)
     .filter((k) => !knownKeys.has(k))
-    .map((k) => ({ key: k, label: k.charAt(0).toUpperCase() + k.slice(1) }));
+    .map((k) => ({
+      key: k,
+      label: SECTION_META[k]?.label ?? k.charAt(0).toUpperCase() + k.slice(1),
+    }));
 
   const allSections = [...availableSections, ...extraSections];
 
